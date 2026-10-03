@@ -4,8 +4,8 @@
     "latestVersion": "0.3.0",
     "minimumVersion": "0.2.1",
     "mandatory": false,
-    "packageUrl": "",
-    "sha256": "",
+    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.3.0/AGLauncher-v0.3.0-win-x64.zip",
+    "sha256": "5b1f92f8d6769d0d059b8705d9887549d6f7578b42f2c97b61d2b93712ef7da4",
     "releaseNotes": "AG Launcher v0.3.0 - redesigned launcher and website, image publishing, local profiles, notifications, password-based admin access, encrypted saved GitHub token, and improved library navigation."
   },
   "socials": {
