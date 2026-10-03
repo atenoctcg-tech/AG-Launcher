@@ -246,7 +246,7 @@
                </LinearGradientBrush>
               </Rectangle.Fill>
              </Rectangle>
-             <Border Background="#CC111419" CornerRadius="999" Padding="8,4" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Visibility="{Binding Pinned, Converter={x:Static BooleanToVisibilityConverter.Instance}}">
+             <Border Background="#CC111419" CornerRadius="999" Padding="8,4" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Visibility="{Binding Pinned, Converter={StaticResource BoolToVisibility}}">
               <TextBlock Text="FEATURED" FontSize="8" FontWeight="Bold"/>
              </Border>
             </Grid>
