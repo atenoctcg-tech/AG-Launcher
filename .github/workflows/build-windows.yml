@@ -7,7 +7,6 @@ on:
       - 'src/**'
       - 'scripts/**'
       - 'manifests/**'
-      - 'launcher-manifest.json'
       - '.github/workflows/build-windows.yml'
   workflow_dispatch:
 
