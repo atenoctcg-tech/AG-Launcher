@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   windows-build:
@@ -27,6 +27,28 @@ jobs:
       - name: Build Windows package
         shell: pwsh
         run: .\scripts\Build-Windows.ps1
+
+      - name: Publish versioned GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [xml]$project = Get-Content ".\src\AGLauncher\AGLauncher.csproj"
+          $version = [string]$project.Project.PropertyGroup.Version
+          if ([string]::IsNullOrWhiteSpace($version)) { throw "Launcher version not found in AGLauncher.csproj" }
+          $tag = "v$version"
+          $zip = ".\dist\AGLauncher-win-x64.zip"
+          $assetName = "AGLauncher-$tag-win-x64.zip"
+          Copy-Item $zip $assetName -Force
+
+          gh release view $tag --repo "${{ github.repository }}" *> $null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Release $tag already exists; replacing Windows asset."
+            gh release upload $tag $assetName --clobber --repo "${{ github.repository }}"
+          } else {
+            gh release create $tag $assetName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Includes the latest Atenoct Games launcher features and fixes."
+          }
+          if ($LASTEXITCODE -ne 0) { throw "GitHub Release publishing failed." }
 
       - name: Upload Windows build
         uses: actions/upload-artifact@v4
@@ -46,4 +68,5 @@ jobs:
             manifests/**
             scripts/**
             src/**
+            docs/**
           if-no-files-found: error
