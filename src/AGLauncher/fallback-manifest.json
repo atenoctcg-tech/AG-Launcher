@@ -1,23 +1,35 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.1.0",
-    "minimumVersion": "0.1.0",
+    "latestVersion": "0.2.1",
+    "minimumVersion": "0.2.1",
     "mandatory": true,
     "packageUrl": "",
     "sha256": "",
-    "releaseNotes": "Initial AG Launcher build"
+    "releaseNotes": "AG Launcher v0.2.1 - verified rebuild with modern dark interface and expanded Admin Panel."
   },
-  "socials": { "discord": "", "telegram": "", "youTube": "" },
+  "socials": {
+    "website": "",
+    "discord": "",
+    "telegram": "",
+    "youTube": "",
+    "support": ""
+  },
+  "presentation": {
+    "announcement": "",
+    "defaultHeroTitle": "Atenoct Games",
+    "defaultHeroSubtitle": "Games, updates and news in one place."
+  },
   "news": [
     {
       "id": "welcome-001",
       "title": "Welcome to AG Launcher",
-      "summary": "Atenoct Games launcher is being prepared for Castle Survival and future games.",
+      "summary": "Atenoct Games launcher is ready for Castle Survival and future games.",
       "imageUrl": "",
       "linkUrl": "",
-      "date": "2026-10-03",
-      "pinned": true
+      "date": "2026-10-04",
+      "pinned": true,
+      "visible": true
     }
   ],
   "games": [
@@ -28,8 +40,15 @@
       "status": "Development",
       "pricing": "free",
       "visible": true,
+      "featured": true,
+      "sortOrder": 1,
       "bannerUrl": "",
-      "manifestUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/manifests/castle-survival.json"
+      "iconUrl": "",
+      "manifestUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/manifests/castle-survival.json",
+      "websiteUrl": "",
+      "productId": "",
+      "purchaseUrl": "",
+      "requiresOwnership": false
     }
   ]
 }
