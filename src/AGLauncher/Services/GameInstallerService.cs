@@ -13,7 +13,7 @@ public sealed class GameInstallerService
     private readonly HttpClient _http = new();
 
     public GameInstallerService() =>
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.2.2");
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.3.0");
 
     public string GetInstallDir(GameCatalogItem game, GameManifest manifest)
     {
@@ -61,9 +61,6 @@ public sealed class GameInstallerService
                 var package = manifest.Packages[i];
                 var zip = Path.Combine(temp, package.Name);
 
-                // Keep the HTTP response and both streams inside this scope.
-                // They must be disposed before SHA verification and ZIP extraction,
-                // otherwise Windows can report that the downloaded ZIP is still in use.
                 using (var response = await _http.GetAsync(
                     package.Url,
                     HttpCompletionOption.ResponseHeadersRead))
