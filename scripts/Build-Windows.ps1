@@ -1,12 +1,26 @@
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $out = Join-Path $root "dist\AGLauncher-win-x64"
+$assets = Join-Path $root "src\AGLauncher\Assets"
+$encoded = Join-Path $root "src\AGLauncher\AssetsEncoded"
+
+function Restore-EncodedAsset([string]$prefix, [string]$destination) {
+    if (Test-Path $destination) { return }
+    $parts = Get-ChildItem -Path $encoded -Filter "$prefix.*.b64" -ErrorAction SilentlyContinue | Sort-Object Name
+    if (-not $parts -or $parts.Count -eq 0) {
+        throw "Brand asset '$destination' is missing and no encoded source was found."
+    }
+    $base64 = ($parts | ForEach-Object { Get-Content $_.FullName -Raw }) -join ""
+    [IO.File]::WriteAllBytes($destination, [Convert]::FromBase64String($base64))
+}
+
+New-Item -ItemType Directory -Path $assets -Force | Out-Null
+Restore-EncodedAsset "icon" (Join-Path $assets "AGLauncher.ico")
+Restore-EncodedAsset "brand" (Join-Path $assets "BrandLogo.png")
+
 Remove-Item $out -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item "$root\dist\updater" -Recurse -Force -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Path $out | Out-Null
-
-& "$root\scripts\Generate-AppIcon.ps1"
-if ($LASTEXITCODE -ne 0) { throw "Icon generation failed." }
+New-Item -ItemType Directory -Path $out -Force | Out-Null
 
 dotnet publish "$root\src\AGLauncher\AGLauncher.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $out
 if ($LASTEXITCODE -ne 0) { throw "AGLauncher publish failed with exit code $LASTEXITCODE" }
