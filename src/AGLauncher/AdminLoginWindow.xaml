@@ -1,0 +1,7 @@
+<Window x:Class="AGLauncher.AdminLoginWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="AG Launcher Admin" Width="520" Height="300" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Background="#EEE0C4">
+ <Grid Margin="24"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <TextBlock Text="ADMIN PANEL" FontSize="24" FontWeight="Bold"/><TextBlock Grid.Row="1" Margin="0,8,0,12" TextWrapping="Wrap" Foreground="#6F5138" Text="GitHub Personal Access Token kiriting. Token faqat joriy sessiyada ishlatiladi va diskka saqlanmaydi."/>
+  <PasswordBox x:Name="TokenBox" Grid.Row="2" Height="34" Padding="8"/><TextBlock x:Name="StatusText" Grid.Row="3" Margin="0,10,0,0" Foreground="#8A3D2E" TextWrapping="Wrap"/>
+  <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right"><Button Content="CANCEL" Click="Cancel_Click" Background="#8B725C"/><Button Content="VERIFY &amp; OPEN" Click="Verify_Click"/></StackPanel>
+ </Grid>
+</Window>
