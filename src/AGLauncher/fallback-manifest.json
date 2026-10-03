@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.2.2",
+    "latestVersion": "0.3.0",
     "minimumVersion": "0.2.1",
     "mandatory": false,
     "packageUrl": "",
     "sha256": "",
-    "releaseNotes": "AG Launcher v0.2.2 - fixes Windows file-lock error while installing or updating game ZIP packages."
+    "releaseNotes": "AG Launcher v0.3.0 - redesigned launcher and website, image publishing, local profiles, notifications, password-based admin access, encrypted saved GitHub token, and improved library navigation."
   },
   "socials": {
-    "website": "",
+    "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
     "discord": "",
     "telegram": "",
     "youTube": "",
