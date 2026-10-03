@@ -5,6 +5,9 @@ Remove-Item $out -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item "$root\dist\updater" -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $out | Out-Null
 
+& "$root\scripts\Generate-AppIcon.ps1"
+if ($LASTEXITCODE -ne 0) { throw "Icon generation failed." }
+
 dotnet publish "$root\src\AGLauncher\AGLauncher.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o $out
 if ($LASTEXITCODE -ne 0) { throw "AGLauncher publish failed with exit code $LASTEXITCODE" }
 
