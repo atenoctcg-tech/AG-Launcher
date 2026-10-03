@@ -10,7 +10,6 @@
         <Color x:Key="Line">#292E36</Color>
         <Color x:Key="Text">#F5F7FA</Color>
         <Color x:Key="Muted">#8C939E</Color>
-        <Color x:Key="Accent">#E7EAF0</Color>
 
         <SolidColorBrush x:Key="BgBrush" Color="{StaticResource Bg0}"/>
         <SolidColorBrush x:Key="PanelBrush" Color="{StaticResource Bg1}"/>
@@ -63,10 +62,19 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Bd" Property="Background" Value="#22262D"/></Trigger>
+                            <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Bd" Property="Opacity" Value="0.35"/></Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style x:Key="ChromeButton" TargetType="Button" BasedOn="{StaticResource GhostButton}">
+            <Setter Property="Width" Value="38"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="3,0"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
 
         <Style TargetType="TextBox">
@@ -78,10 +86,69 @@
             <Setter Property="Padding" Value="12,10"/>
         </Style>
 
+        <Style TargetType="PasswordBox">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Background" Value="#111318"/>
+            <Setter Property="BorderBrush" Value="{StaticResource LineBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CaretBrush" Value="White"/>
+            <Setter Property="Padding" Value="12,10"/>
+        </Style>
+
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
         <Style TargetType="ProgressBar">
             <Setter Property="Foreground" Value="#E8EBF0"/>
             <Setter Property="Background" Value="#22262C"/>
             <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="#0E1014"/>
+            <Setter Property="BorderBrush" Value="#262B32"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style TargetType="TabItem">
+            <Setter Property="Foreground" Value="#8A929D"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="Background" Value="#171A1F"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="#0E1014"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#272C33"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#242932"/>
+            <Setter Property="VerticalGridLinesBrush" Value="#242932"/>
+            <Setter Property="RowBackground" Value="#111419"/>
+            <Setter Property="AlternatingRowBackground" Value="#0E1014"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#171A1F"/>
+            <Setter Property="Foreground" Value="#AAB0B8"/>
+            <Setter Property="BorderBrush" Value="#292E36"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#242932"/>
+            <Setter Property="Padding" Value="8,6"/>
         </Style>
     </Application.Resources>
 </Application>
