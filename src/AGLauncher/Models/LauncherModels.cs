@@ -26,7 +26,12 @@ public sealed class LauncherUpdateInfo
     public string Sha256 { get; set; } = "";
     public string ReleaseNotes { get; set; } = "";
 }
-public sealed class SocialLinks { public string Discord { get; set; }=""; public string Telegram { get; set; }=""; public string YouTube { get; set; }=""; }
+public sealed class SocialLinks
+{
+    public string Discord { get; set; }="";
+    public string Telegram { get; set; }="";
+    public string YouTube { get; set; }="";
+}
 public sealed class NewsItem
 {
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
@@ -45,6 +50,10 @@ public sealed class GameCatalogItem
     public string Status { get; set; }="Available";
     public string Pricing { get; set; }="free";
     public bool Visible { get; set; }=true;
+    public bool Featured { get; set; }
+    public int SortOrder { get; set; }
+    public bool RequiresEntitlement { get; set; }
+    public string PurchaseUrl { get; set; }="";
     public string BannerUrl { get; set; }="";
     public string ManifestUrl { get; set; }="";
 }
@@ -56,5 +65,15 @@ public sealed class GameManifest
     public string InstallFolder { get; set; }="";
     public List<GamePackage> Packages { get; set; }=new();
 }
-public sealed class GamePackage { public string Name { get; set; }="package.zip"; public string Url { get; set; }=""; public string Sha256 { get; set; }=""; }
-public sealed class GameState { public string Id { get; set; }=""; public string Version { get; set; }="0.0.0"; public DateTime InstalledAtUtc { get; set; }=DateTime.UtcNow; }
+public sealed class GamePackage
+{
+    public string Name { get; set; }="package.zip";
+    public string Url { get; set; }="";
+    public string Sha256 { get; set; }="";
+}
+public sealed class GameState
+{
+    public string Id { get; set; }="";
+    public string Version { get; set; }="0.0.0";
+    public DateTime InstalledAtUtc { get; set; }=DateTime.UtcNow;
+}
