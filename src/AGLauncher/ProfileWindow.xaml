@@ -1,0 +1,65 @@
+<Window x:Class="AGLauncher.ProfileWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="AG Launcher — Profile" Width="620" Height="520" WindowStartupLocation="CenterOwner"
+ ResizeMode="NoResize" Background="#080A0D" Icon="Assets/AGLauncher.ico">
+ <Border Margin="12" Background="#0E1318" BorderBrush="#29313A" BorderThickness="1" CornerRadius="20">
+  <Grid Margin="28">
+   <Grid.RowDefinitions><RowDefinition Height="70"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+   <Grid>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <StackPanel>
+     <TextBlock Text="Atenoct Profile" FontSize="24" FontWeight="SemiBold"/>
+     <TextBlock Text="Local profile for AG Launcher" FontSize="9" Foreground="#737D89" Margin="0,5,0,0"/>
+    </StackPanel>
+    <Image Grid.Column="1" Source="Assets/AGLauncher.ico" Width="42" Height="42"/>
+   </Grid>
+
+   <TabControl Grid.Row="1" Margin="0,8,0,16">
+    <TabItem Header="LOGIN">
+     <StackPanel Margin="22">
+      <TextBlock Text="Username or email" Foreground="#9BA4AF" FontSize="10" Margin="0,0,0,6"/>
+      <TextBox x:Name="LoginNameBox" Height="42"/>
+      <TextBlock Text="Password" Foreground="#9BA4AF" FontSize="10" Margin="0,14,0,6"/>
+      <PasswordBox x:Name="LoginPasswordBox" Height="42"/>
+      <Button Style="{StaticResource PrimaryButton}" Content="Login" Height="44" Margin="0,18,0,0" Click="Login_Click"/>
+     </StackPanel>
+    </TabItem>
+    <TabItem Header="REGISTER">
+     <StackPanel Margin="22">
+      <Grid>
+       <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="14"/><ColumnDefinition/></Grid.ColumnDefinitions>
+       <StackPanel>
+        <TextBlock Text="Username" Foreground="#9BA4AF" FontSize="10" Margin="0,0,0,6"/>
+        <TextBox x:Name="RegisterNameBox" Height="42"/>
+       </StackPanel>
+       <StackPanel Grid.Column="2">
+        <TextBlock Text="Email" Foreground="#9BA4AF" FontSize="10" Margin="0,0,0,6"/>
+        <TextBox x:Name="RegisterEmailBox" Height="42"/>
+       </StackPanel>
+      </Grid>
+      <Grid Margin="0,14,0,0">
+       <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="14"/><ColumnDefinition/></Grid.ColumnDefinitions>
+       <StackPanel>
+        <TextBlock Text="Password" Foreground="#9BA4AF" FontSize="10" Margin="0,0,0,6"/>
+        <PasswordBox x:Name="RegisterPasswordBox" Height="42"/>
+       </StackPanel>
+       <StackPanel Grid.Column="2">
+        <TextBlock Text="Confirm password" Foreground="#9BA4AF" FontSize="10" Margin="0,0,0,6"/>
+        <PasswordBox x:Name="RegisterConfirmBox" Height="42"/>
+       </StackPanel>
+      </Grid>
+      <Button Style="{StaticResource PrimaryButton}" Content="Create profile" Height="44" Margin="0,18,0,0" Click="Register_Click"/>
+     </StackPanel>
+    </TabItem>
+   </TabControl>
+
+   <Grid Grid.Row="2">
+    <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <TextBlock x:Name="StatusText" Foreground="#A8B0BA" FontSize="9" TextWrapping="Wrap" VerticalAlignment="Center"
+               Text="Profiles are stored securely on this PC. Cloud account sync requires a real backend and is not stored in public GitHub JSON."/>
+    <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="Cancel" Click="Cancel_Click" Margin="12,0,0,0"/>
+   </Grid>
+  </Grid>
+ </Border>
+</Window>
