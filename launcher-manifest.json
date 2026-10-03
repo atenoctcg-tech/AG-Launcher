@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.2.1",
+    "latestVersion": "0.2.2",
     "minimumVersion": "0.2.1",
-    "mandatory": true,
+    "mandatory": false,
     "packageUrl": "",
     "sha256": "",
-    "releaseNotes": "AG Launcher v0.2.1 - verified rebuild with modern dark interface and expanded Admin Panel."
+    "releaseNotes": "AG Launcher v0.2.2 - fixes Windows file-lock error while installing or updating game ZIP packages."
   },
   "socials": {
     "website": "",

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.2.1",
+    "latestVersion": "0.2.2",
     "minimumVersion": "0.2.1",
-    "mandatory": true,
+    "mandatory": false,
     "packageUrl": "",
     "sha256": "",
-    "releaseNotes": "AG Launcher v0.2.1 - verified rebuild with modern dark interface and expanded Admin Panel."
+    "releaseNotes": "AG Launcher v0.2.2 - fixes Windows file-lock error while installing or updating game ZIP packages."
   },
   "socials": {
     "website": "",
@@ -22,6 +22,16 @@
   },
   "news": [
     {
+      "id": "castle-survival-v081-release",
+      "title": "Castle Survival v0.8.1 is available",
+      "summary": "Castle Survival v0.8.1 can now be installed and updated directly from AG Launcher.",
+      "imageUrl": "",
+      "linkUrl": "https://github.com/atenoctcg-tech/Castle-Survival-Releases/releases/tag/v0.8.1",
+      "date": "2026-10-04",
+      "pinned": true,
+      "visible": true
+    },
+    {
       "id": "welcome-001",
       "title": "Welcome to AG Launcher",
       "summary": "Atenoct Games launcher is ready for Castle Survival and future games.",
@@ -36,8 +46,8 @@
     {
       "id": "castle-survival",
       "name": "Castle Survival",
-      "description": "Medieval castle survival strategy. Install, update and launch the game from one place.",
-      "status": "Development",
+      "description": "Castle Survival v0.8.1 is available now. Install, update and launch it directly from AG Launcher.",
+      "status": "Available",
       "pricing": "free",
       "visible": true,
       "featured": true,
