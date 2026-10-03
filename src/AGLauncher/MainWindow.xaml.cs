@@ -8,6 +8,16 @@ using System.Windows.Media.Imaging;
 
 namespace AGLauncher;
 
+public sealed class LibraryGameEntry
+{
+    public GameCatalogItem Game { get; set; } = new();
+    public GameManifest Manifest { get; set; } = new();
+    public string Name => Game.Name;
+    public string BannerUrl => Game.BannerUrl;
+    public string VersionText { get; set; } = "";
+    public string StatusText { get; set; } = "Installed";
+}
+
 public partial class MainWindow : Window
 {
     private BootstrapConfig _bootstrap = new();
@@ -15,6 +25,10 @@ public partial class MainWindow : Window
     private readonly ManifestService _manifestService = new();
     private readonly GameInstallerService _installer = new();
     private readonly SelfUpdateService _selfUpdate = new();
+    private readonly NotificationService _notificationService = new();
+    private List<GameCatalogItem> _allGames = new();
+    private List<LauncherNotification> _notifications = new();
+    private UserProfile? _currentProfile;
     private GameCatalogItem? _selectedGame;
     private GameManifest? _selectedGameManifest;
 
@@ -33,56 +47,46 @@ public partial class MainWindow : Window
             _manifest = loaded.Manifest;
 
             ConnectionText.Text = loaded.Online
-                ? $"GitHub connected  •  {_bootstrap.Owner}/{_bootstrap.Repo}@{_bootstrap.Branch}"
-                : "Offline mode  •  cached launcher catalog";
+                ? $"Online  •  {_bootstrap.Owner}/{_bootstrap.Repo}@{_bootstrap.Branch}"
+                : "Offline mode  •  fallback catalog";
 
             if (_selfUpdate.UpdateRequired(_manifest.Launcher))
             {
-                ConnectionText.Text = $"Mandatory launcher update {_manifest.Launcher.LatestVersion}...";
+                ConnectionText.Text = $"Updating AG Launcher to {_manifest.Launcher.LatestVersion}...";
                 InstallProgress.Visibility = Visibility.Visible;
                 SideInstallProgress.Visibility = Visibility.Visible;
-
-                await _selfUpdate.StartMandatoryUpdateAsync(
-                    _manifest.Launcher,
-                    new Progress<double>(p =>
-                    {
-                        InstallProgress.Value = p;
-                        SideInstallProgress.Value = p;
-                        SideInstallStatusText.Text = $"Updating launcher... {p:P0}";
-                    }));
-
+                await _selfUpdate.StartMandatoryUpdateAsync(_manifest.Launcher, new Progress<double>(p =>
+                {
+                    InstallProgress.Value = p;
+                    SideInstallProgress.Value = p;
+                    SideInstallStatusText.Text = $"Updating launcher... {p:P0}";
+                }));
                 Application.Current.Shutdown();
                 return;
             }
 
-            var games = _manifest.Games
-                .Where(g => g.Visible)
-                .OrderByDescending(g => g.Featured)
-                .ThenBy(g => g.SortOrder)
-                .ThenBy(g => g.Name)
-                .ToList();
+            _allGames = _manifest.Games.Where(g => g.Visible).OrderByDescending(g => g.Featured).ThenBy(g => g.SortOrder).ThenBy(g => g.Name).ToList();
+            ApplyGameSearch();
+            NewsList.ItemsSource = _manifest.News.Where(n => n.Visible).OrderByDescending(n => n.Pinned).ThenByDescending(n => n.Date).ToList();
 
-            GamesList.ItemsSource = games;
-            NewsList.ItemsSource = _manifest.News
-                .Where(n => n.Visible)
-                .OrderByDescending(n => n.Pinned)
-                .ThenByDescending(n => n.Date)
-                .ToList();
-
-            SetLinkButtonVisibility(WebsiteButton, _manifest.Socials.Website);
-            SetLinkButtonVisibility(DiscordButton, _manifest.Socials.Discord);
-            SetLinkButtonVisibility(TelegramButton, _manifest.Socials.Telegram);
-            SetLinkButtonVisibility(YouTubeButton, _manifest.Socials.YouTube);
-            SetLinkButtonVisibility(SupportButton, _manifest.Socials.Support);
-
-            if (games.Count > 0)
-                GamesList.SelectedIndex = 0;
+            if (_allGames.Count > 0)
+                GamesList.SelectedItem = _allGames[0];
             else
             {
                 GameTitleText.Text = _manifest.Presentation.DefaultHeroTitle;
                 GameDescriptionText.Text = _manifest.Presentation.DefaultHeroSubtitle;
                 GameActionButton.IsEnabled = false;
                 GameActionButton.Content = "NO GAMES YET";
+            }
+
+            await RefreshLibraryAsync();
+            _notifications = await _notificationService.CollectNewAsync(_manifest, _manifestService);
+            UpdateNotificationButton();
+            if (_notifications.Count > 0)
+            {
+                SideInstallStatusText.Text = $"{_notifications.Count} new update{(_notifications.Count == 1 ? "" : "s")}";
+                var popup = new NotificationWindow(_notifications) { Owner = this };
+                popup.Show();
             }
         }
         catch (Exception ex)
@@ -92,30 +96,30 @@ public partial class MainWindow : Window
         }
     }
 
-    private static void SetLinkButtonVisibility(Button button, string? url)
-        => button.Visibility = string.IsNullOrWhiteSpace(url) ? Visibility.Collapsed : Visibility.Visible;
+    private void ApplyGameSearch()
+    {
+        var q = SearchBox?.Text?.Trim() ?? "";
+        var items = string.IsNullOrWhiteSpace(q)
+            ? _allGames
+            : _allGames.Where(x => x.Name.Contains(q, StringComparison.OrdinalIgnoreCase) || x.Description.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+        GamesList.ItemsSource = items;
+    }
+
+    private void SearchBox_TextChanged(object sender, TextChangedEventArgs e) => ApplyGameSearch();
 
     private async void GamesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         _selectedGame = GamesList.SelectedItem as GameCatalogItem;
         _selectedGameManifest = null;
+        if (_selectedGame == null) return;
 
-        if (_selectedGame == null)
-            return;
-
+        ShowHome();
         GameTitleText.Text = _selectedGame.Name;
         GameDescriptionText.Text = _selectedGame.Description;
-        GameStatusText.Text = string.IsNullOrWhiteSpace(_selectedGame.Status)
-            ? "ATENOCT GAMES"
-            : _selectedGame.Status.ToUpperInvariant();
-        PricingText.Text = string.IsNullOrWhiteSpace(_selectedGame.Pricing)
-            ? "FREE"
-            : _selectedGame.Pricing.ToUpperInvariant();
-
-        GameWebsiteButton.Visibility = string.IsNullOrWhiteSpace(_selectedGame.WebsiteUrl)
-            ? Visibility.Collapsed
-            : Visibility.Visible;
-
+        GameStatusText.Text = string.IsNullOrWhiteSpace(_selectedGame.Status) ? "ATENOCT GAMES" : _selectedGame.Status.ToUpperInvariant();
+        PricingText.Text = string.IsNullOrWhiteSpace(_selectedGame.Pricing) ? "FREE" : _selectedGame.Pricing.ToUpperInvariant();
+        GameWebsiteButton.Visibility = string.IsNullOrWhiteSpace(_selectedGame.WebsiteUrl) ? Visibility.Collapsed : Visibility.Visible;
+        OpenInstallFolderButton.Visibility = Visibility.Collapsed;
         SetHeroBanner(_selectedGame.BannerUrl);
 
         GameActionButton.IsEnabled = false;
@@ -125,12 +129,11 @@ public partial class MainWindow : Window
 
         try
         {
-            if (_selectedGame.RequiresOwnership &&
-                !_selectedGame.Pricing.Equals("free", StringComparison.OrdinalIgnoreCase))
+            if (_selectedGame.RequiresOwnership && !_selectedGame.Pricing.Equals("free", StringComparison.OrdinalIgnoreCase))
             {
                 GameActionButton.Content = string.IsNullOrWhiteSpace(_selectedGame.PurchaseUrl) ? "PAID GAME" : "VIEW STORE";
                 GameActionButton.IsEnabled = !string.IsNullOrWhiteSpace(_selectedGame.PurchaseUrl);
-                InstallStatusText.Text = "Ownership verification will be connected to the future Atenoct account/licensing service.";
+                InstallStatusText.Text = "Secure ownership verification requires the future Atenoct account backend.";
                 SideInstallStatusText.Text = $"{_selectedGame.Name} • paid";
                 return;
             }
@@ -158,9 +161,7 @@ public partial class MainWindow : Window
     private void SetHeroBanner(string? url)
     {
         HeroBannerImage.Source = null;
-        if (string.IsNullOrWhiteSpace(url))
-            return;
-
+        if (string.IsNullOrWhiteSpace(url)) return;
         try
         {
             var image = new BitmapImage();
@@ -171,19 +172,15 @@ public partial class MainWindow : Window
             image.EndInit();
             HeroBannerImage.Source = image;
         }
-        catch
-        {
-            HeroBannerImage.Source = null;
-        }
+        catch { HeroBannerImage.Source = null; }
     }
 
     private void RefreshGameAction()
     {
-        if (_selectedGame == null || _selectedGameManifest == null)
-            return;
-
+        if (_selectedGame == null || _selectedGameManifest == null) return;
         var dir = _installer.GetInstallDir(_selectedGame, _selectedGameManifest);
         var state = _installer.ReadState(dir);
+        OpenInstallFolderButton.Visibility = state == null ? Visibility.Collapsed : Visibility.Visible;
 
         if (state == null)
         {
@@ -203,24 +200,18 @@ public partial class MainWindow : Window
             InstallStatusText.Text = $"Installed  •  v{state.Version}";
             SideInstallStatusText.Text = $"{_selectedGame.Name} • v{state.Version}";
         }
-
         GameActionButton.IsEnabled = true;
     }
 
     private async void GameActionButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_selectedGame == null)
-            return;
-
-        if (_selectedGame.RequiresOwnership &&
-            !_selectedGame.Pricing.Equals("free", StringComparison.OrdinalIgnoreCase))
+        if (_selectedGame == null) return;
+        if (_selectedGame.RequiresOwnership && !_selectedGame.Pricing.Equals("free", StringComparison.OrdinalIgnoreCase))
         {
             OpenUrl(_selectedGame.PurchaseUrl);
             return;
         }
-
-        if (_selectedGameManifest == null)
-            return;
+        if (_selectedGameManifest == null) return;
 
         try
         {
@@ -236,20 +227,18 @@ public partial class MainWindow : Window
             InstallProgress.Value = 0;
             SideInstallProgress.Value = 0;
 
-            await _installer.InstallOrUpdateAsync(
-                _selectedGame,
-                _selectedGameManifest,
-                new Progress<(double, string)>(x =>
-                {
-                    InstallProgress.Value = x.Item1;
-                    SideInstallProgress.Value = x.Item1;
-                    InstallStatusText.Text = x.Item2;
-                    SideInstallStatusText.Text = x.Item2;
-                }));
+            await _installer.InstallOrUpdateAsync(_selectedGame, _selectedGameManifest, new Progress<(double, string)>(x =>
+            {
+                InstallProgress.Value = x.Item1;
+                SideInstallProgress.Value = x.Item1;
+                InstallStatusText.Text = x.Item2;
+                SideInstallStatusText.Text = x.Item2;
+            }));
 
             InstallProgress.Visibility = Visibility.Collapsed;
             SideInstallProgress.Visibility = Visibility.Collapsed;
             RefreshGameAction();
+            await RefreshLibraryAsync();
         }
         catch (Exception ex)
         {
@@ -260,8 +249,75 @@ public partial class MainWindow : Window
         }
     }
 
-    private void GameWebsiteButton_Click(object sender, RoutedEventArgs e)
-        => OpenUrl(_selectedGame?.WebsiteUrl);
+    private async Task RefreshLibraryAsync()
+    {
+        var entries = new List<LibraryGameEntry>();
+        foreach (var game in _allGames)
+        {
+            if (string.IsNullOrWhiteSpace(game.ManifestUrl)) continue;
+            try
+            {
+                var gm = await _manifestService.LoadGameAsync(game.ManifestUrl);
+                var state = _installer.ReadState(_installer.GetInstallDir(game, gm));
+                if (state == null) continue;
+                entries.Add(new LibraryGameEntry
+                {
+                    Game = game,
+                    Manifest = gm,
+                    VersionText = $"Installed v{state.Version}",
+                    StatusText = VersionUtil.Parse(gm.Version) > VersionUtil.Parse(state.Version) ? $"Update available: v{gm.Version}" : "Ready to play"
+                });
+            }
+            catch { }
+        }
+        LibraryList.ItemsSource = entries;
+        EmptyLibraryText.Visibility = entries.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void HomeNavButton_Click(object sender, RoutedEventArgs e) => ShowHome();
+
+    private async void LibraryNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        await RefreshLibraryAsync();
+        ShowLibrary();
+    }
+
+    private async void RefreshLibraryButton_Click(object sender, RoutedEventArgs e) => await RefreshLibraryAsync();
+
+    private void LibraryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (LibraryList.SelectedItem is not LibraryGameEntry entry) return;
+        GamesList.SelectedItem = entry.Game;
+        ShowHome();
+    }
+
+    private void ShowHome()
+    {
+        HomeView.Visibility = Visibility.Visible;
+        LibraryView.Visibility = Visibility.Collapsed;
+        PageTitleText.Text = "Home";
+        PageSubtitleText.Text = "Games, releases and studio news";
+    }
+
+    private void ShowLibrary()
+    {
+        HomeView.Visibility = Visibility.Collapsed;
+        LibraryView.Visibility = Visibility.Visible;
+        PageTitleText.Text = "My Library";
+        PageSubtitleText.Text = "Installed games on this PC";
+    }
+
+    private void GameWebsiteButton_Click(object sender, RoutedEventArgs e) => OpenUrl(_selectedGame?.WebsiteUrl);
+
+    private void OpenInstallFolderButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedGame == null || _selectedGameManifest == null) return;
+        var dir = _installer.GetInstallDir(_selectedGame, _selectedGameManifest);
+        if (Directory.Exists(dir))
+        {
+            try { Process.Start(new ProcessStartInfo("explorer.exe", $"\"{dir}\"") { UseShellExecute = true }); } catch { }
+        }
+    }
 
     private void Social_Click(object sender, RoutedEventArgs e)
     {
@@ -275,64 +331,63 @@ public partial class MainWindow : Window
             "support" => _manifest.Socials.Support,
             _ => ""
         };
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            MessageBox.Show($"{tag} link has not been configured yet. Add it from Admin Panel → LINKS.", "AG Launcher", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
         OpenUrl(url);
     }
 
-    private void NewsList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    private void OpenLinkButton_Click(object sender, RoutedEventArgs e) => OpenUrl((sender as Button)?.Tag?.ToString());
+
+    private void ProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        if (NewsList.SelectedItem is NewsItem item)
-            OpenUrl(item.LinkUrl);
+        var dialog = new ProfileWindow { Owner = this };
+        if (dialog.ShowDialog() == true && dialog.Profile != null)
+        {
+            _currentProfile = dialog.Profile;
+            ProfileNameText.Text = _currentProfile.Username;
+            ProfileHintText.Text = _currentProfile.Email;
+        }
     }
+
+    private void NotificationButton_Click(object sender, RoutedEventArgs e)
+    {
+        new NotificationWindow(_notifications) { Owner = this }.ShowDialog();
+        _notifications.Clear();
+        UpdateNotificationButton();
+    }
+
+    private void UpdateNotificationButton() => NotificationButton.Content = _notifications.Count > 0 ? $"🔔 {_notifications.Count}" : "🔔";
 
     private static void OpenUrl(string? url)
     {
-        if (string.IsNullOrWhiteSpace(url))
-            return;
-
-        try
-        {
-            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-        }
-        catch { }
+        if (string.IsNullOrWhiteSpace(url)) return;
+        try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); } catch { }
     }
 
     private async void Window_KeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.A &&
-            Keyboard.Modifiers.HasFlag(ModifierKeys.Control) &&
-            Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+        if (e.Key == Key.A && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
         {
             var login = new AdminLoginWindow(_bootstrap) { Owner = this };
-            if (login.ShowDialog() == true && !string.IsNullOrWhiteSpace(login.Token))
+            if (login.ShowDialog() == true)
             {
-                var admin = new AdminWindow(_bootstrap, _manifest, login.Token) { Owner = this };
-                if (admin.ShowDialog() == true)
-                    await InitializeAsync();
+                var admin = new AdminWindow(_bootstrap, _manifest, login.Token, login.AdminPassword) { Owner = this };
+                if (admin.ShowDialog() == true) await InitializeAsync();
             }
         }
     }
 
     private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.ClickCount == 2)
-        {
-            ToggleMaximize();
-            return;
-        }
-
-        if (e.LeftButton == MouseButtonState.Pressed)
-            DragMove();
+        if (e.ClickCount == 2) { ToggleMaximize(); return; }
+        if (e.LeftButton == MouseButtonState.Pressed) DragMove();
     }
 
-    private void Minimize_Click(object sender, RoutedEventArgs e)
-        => WindowState = WindowState.Minimized;
-
-    private void Maximize_Click(object sender, RoutedEventArgs e)
-        => ToggleMaximize();
-
-    private void Close_Click(object sender, RoutedEventArgs e)
-        => Close();
-
-    private void ToggleMaximize()
-        => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+    private void Maximize_Click(object sender, RoutedEventArgs e) => ToggleMaximize();
+    private void Close_Click(object sender, RoutedEventArgs e) => Close();
+    private void ToggleMaximize() => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 }
