@@ -22,6 +22,16 @@
   },
   "news": [
     {
+      "id": "castle-survival-v082-release",
+      "title": "Castle Survival v0.8.2 is available",
+      "summary": "Castle Survival v0.8.2 is now available as an update in AG Launcher.",
+      "imageUrl": "",
+      "linkUrl": "https://github.com/atenoctcg-tech/Castle-Survival-Releases/releases/tag/v0.8.2",
+      "date": "2026-10-04",
+      "pinned": true,
+      "visible": true
+    },
+    {
       "id": "castle-survival-v081-release",
       "title": "Castle Survival v0.8.1 is available",
       "summary": "Castle Survival v0.8.1 can now be installed and updated directly from AG Launcher.",
@@ -46,7 +56,7 @@
     {
       "id": "castle-survival",
       "name": "Castle Survival",
-      "description": "Castle Survival v0.8.1 is available now. Install, update and launch it directly from AG Launcher.",
+      "description": "Castle Survival v0.8.2 is available now. Install, update and launch it directly from AG Launcher.",
       "status": "Available",
       "pricing": "free",
       "visible": true,
