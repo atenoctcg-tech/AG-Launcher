@@ -1,0 +1,7 @@
+{
+  "id": "castle-survival",
+  "version": "0.7.0",
+  "executable": "CastleSurvival.exe",
+  "installFolder": "Castle Survival",
+  "packages": []
+}
