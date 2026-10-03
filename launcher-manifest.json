@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "launcher": {
+    "latestVersion": "0.1.0",
+    "minimumVersion": "0.1.0",
+    "mandatory": true,
+    "packageUrl": "",
+    "sha256": "",
+    "releaseNotes": "Initial AG Launcher build"
+  },
+  "socials": { "discord": "", "telegram": "", "youTube": "" },
+  "news": [
+    {
+      "id": "welcome-001",
+      "title": "Welcome to AG Launcher",
+      "summary": "Atenoct Games launcher is being prepared for Castle Survival and future games.",
+      "imageUrl": "",
+      "linkUrl": "",
+      "date": "2026-10-03",
+      "pinned": true
+    }
+  ],
+  "games": [
+    {
+      "id": "castle-survival",
+      "name": "Castle Survival",
+      "description": "Medieval castle survival strategy. Install, update and launch the game from one place.",
+      "status": "Development",
+      "pricing": "free",
+      "visible": true,
+      "bannerUrl": "",
+      "manifestUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/manifests/castle-survival.json"
+    }
+  ]
+}
