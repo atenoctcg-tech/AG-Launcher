@@ -1,26 +1,176 @@
-<Window x:Class="AGLauncher.AdminWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- Title="AG Launcher — Admin Panel" Width="1180" Height="760" WindowStartupLocation="CenterOwner" Background="#090A0C">
- <Grid Margin="22">
-  <Grid.RowDefinitions><RowDefinition Height="72"/><RowDefinition Height="*"/><RowDefinition Height="34"/></Grid.RowDefinitions>
-  <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-   <StackPanel><TextBlock Text="Admin panel" FontSize="26" FontWeight="SemiBold"/><TextBlock x:Name="RepoText" Foreground="#68707A" FontSize="10" Margin="0,5,0,0"/></StackPanel>
-   <Button Grid.Column="1" Style="{StaticResource PrimaryButton}" Content="Save to GitHub" Click="Save_Click" Height="44"/>
-  </Grid>
-  <TabControl Grid.Row="1" Background="#0E1014" BorderBrush="#262B32" Foreground="White">
-   <TabItem Header="SOCIAL LINKS">
-    <Grid Margin="20"><Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition/></Grid.ColumnDefinitions><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-     <TextBlock Text="Discord" VerticalAlignment="Center" Foreground="#9CA3AD"/><TextBox x:Name="DiscordBox" Grid.Column="1" Margin="0,4"/>
-     <TextBlock Grid.Row="1" Text="Telegram" VerticalAlignment="Center" Foreground="#9CA3AD"/><TextBox x:Name="TelegramBox" Grid.Row="1" Grid.Column="1" Margin="0,4"/>
-     <TextBlock Grid.Row="2" Text="YouTube" VerticalAlignment="Center" Foreground="#9CA3AD"/><TextBox x:Name="YouTubeBox" Grid.Row="2" Grid.Column="1" Margin="0,4"/>
+<Window x:Class="AGLauncher.AdminWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="AG Launcher — Admin Panel"
+ Width="1240" Height="800" MinWidth="1080" MinHeight="680"
+ WindowStartupLocation="CenterOwner"
+ WindowStyle="None" ResizeMode="CanResizeWithGrip"
+ Background="#090A0C" Icon="Assets/AGLauncher.ico">
+
+ <Border Background="#090A0C" BorderBrush="#2A2F36" BorderThickness="1">
+  <Grid>
+   <Grid.RowDefinitions><RowDefinition Height="52"/><RowDefinition Height="*"/><RowDefinition Height="46"/></Grid.RowDefinitions>
+
+   <Border Grid.Row="0" Background="#0B0D10" BorderBrush="#20242A" BorderThickness="0,0,0,1" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+    <Grid Margin="16,0,8,0">
+     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+      <Image Source="Assets/AGLauncher.ico" Width="22" Height="22"/>
+      <StackPanel Margin="10,0,0,0">
+       <TextBlock Text="Admin Panel" FontSize="13" FontWeight="SemiBold"/>
+       <TextBlock x:Name="RepoText" Foreground="#646C77" FontSize="8"/>
+      </StackPanel>
+     </StackPanel>
+     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+      <Button Style="{StaticResource ChromeButton}" Content="—" Click="Minimize_Click"/>
+      <Button Style="{StaticResource ChromeButton}" Content="□" Click="Maximize_Click"/>
+      <Button Style="{StaticResource ChromeButton}" Content="×" Click="Close_Click"/>
+     </StackPanel>
     </Grid>
-   </TabItem>
-   <TabItem Header="NEWS"><DockPanel Margin="14"><StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right"><Button Style="{StaticResource GhostButton}" Content="+ Add news" Click="AddNews_Click" Margin="0,8,8,0"/><Button Style="{StaticResource GhostButton}" Content="Remove selected" Click="RemoveNews_Click" Margin="0,8,0,0"/></StackPanel>
-    <DataGrid x:Name="NewsGrid" AutoGenerateColumns="False" CanUserAddRows="False" Background="#0E1014" Foreground="White" BorderBrush="#272C33" GridLinesVisibility="Horizontal" RowBackground="#111419" AlternatingRowBackground="#0E1014"><DataGrid.Columns><DataGridCheckBoxColumn Header="PIN" Binding="{Binding Pinned}" Width="45"/><DataGridTextColumn Header="DATE" Binding="{Binding Date}" Width="90"/><DataGridTextColumn Header="TITLE" Binding="{Binding Title}" Width="180"/><DataGridTextColumn Header="SUMMARY" Binding="{Binding Summary}" Width="*"/><DataGridTextColumn Header="IMAGE URL" Binding="{Binding ImageUrl}" Width="180"/><DataGridTextColumn Header="LINK URL" Binding="{Binding LinkUrl}" Width="180"/></DataGrid.Columns></DataGrid>
-   </DockPanel></TabItem>
-   <TabItem Header="GAMES"><DockPanel Margin="14"><StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right"><Button Style="{StaticResource GhostButton}" Content="+ Add game" Click="AddGame_Click" Margin="0,8,8,0"/><Button Style="{StaticResource GhostButton}" Content="Remove selected" Click="RemoveGame_Click" Margin="0,8,0,0"/></StackPanel>
-    <DataGrid x:Name="GamesGrid" AutoGenerateColumns="False" CanUserAddRows="False" Background="#0E1014" Foreground="White" BorderBrush="#272C33" GridLinesVisibility="Horizontal" RowBackground="#111419" AlternatingRowBackground="#0E1014"><DataGrid.Columns><DataGridCheckBoxColumn Header="VISIBLE" Binding="{Binding Visible}" Width="60"/><DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="120"/><DataGridTextColumn Header="NAME" Binding="{Binding Name}" Width="150"/><DataGridTextColumn Header="STATUS" Binding="{Binding Status}" Width="90"/><DataGridTextColumn Header="PRICE" Binding="{Binding Pricing}" Width="70"/><DataGridTextColumn Header="DESCRIPTION" Binding="{Binding Description}" Width="*"/><DataGridTextColumn Header="MANIFEST URL" Binding="{Binding ManifestUrl}" Width="220"/><DataGridTextColumn Header="BANNER URL" Binding="{Binding BannerUrl}" Width="180"/></DataGrid.Columns></DataGrid>
-   </DockPanel></TabItem>
-  </TabControl>
-  <TextBlock x:Name="StatusText" Grid.Row="2" VerticalAlignment="Center" Foreground="#737B86" FontSize="10"/>
- </Grid>
+   </Border>
+
+   <Grid Grid.Row="1" Margin="18,16,18,10">
+    <Grid.RowDefinitions><RowDefinition Height="58"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+
+    <Grid>
+     <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+     <StackPanel>
+      <TextBlock Text="Launcher management" FontSize="24" FontWeight="SemiBold"/>
+      <TextBlock Text="Games, news, social links and mandatory launcher updates are published to GitHub." Foreground="#747C87" FontSize="10" Margin="0,4,0,0"/>
+     </StackPanel>
+     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+      <Button Style="{StaticResource GhostButton}" Content="Validate" Click="Validate_Click" Margin="0,0,8,0"/>
+      <Button Style="{StaticResource PrimaryButton}" Content="Save to GitHub" Click="Save_Click"/>
+     </StackPanel>
+    </Grid>
+
+    <TabControl Grid.Row="1">
+     <TabItem Header="LAUNCHER">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+       <Grid Margin="22">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition Width="*"/><ColumnDefinition Width="26"/><ColumnDefinition Width="170"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+         <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+         <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+         <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Latest version" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="LatestVersionBox" Grid.Column="1" Margin="0,5"/>
+        <TextBlock Grid.Column="3" Text="Minimum version" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="MinimumVersionBox" Grid.Column="4" Margin="0,5"/>
+
+        <TextBlock Grid.Row="1" Text="Mandatory update" Foreground="#9CA3AD" VerticalAlignment="Center"/><CheckBox x:Name="MandatoryUpdateCheck" Grid.Row="1" Grid.Column="1" Content="Block old launcher versions until update finishes"/>
+        <TextBlock Grid.Row="1" Grid.Column="3" Text="Announcement" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="AnnouncementBox" Grid.Row="1" Grid.Column="4" Margin="0,5"/>
+
+        <TextBlock Grid.Row="2" Text="Package URL" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="LauncherPackageUrlBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" Margin="0,5"/>
+
+        <TextBlock Grid.Row="3" Text="SHA-256" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="LauncherShaBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Margin="0,5"/>
+
+        <TextBlock Grid.Row="4" Text="Default hero title" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="DefaultHeroTitleBox" Grid.Row="4" Grid.Column="1" Margin="0,5"/>
+        <TextBlock Grid.Row="4" Grid.Column="3" Text="Default hero subtitle" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="DefaultHeroSubtitleBox" Grid.Row="4" Grid.Column="4" Margin="0,5"/>
+
+        <TextBlock Grid.Row="5" Text="Release notes" Foreground="#9CA3AD" VerticalAlignment="Top" Margin="0,12,0,0"/>
+        <TextBox x:Name="LauncherReleaseNotesBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4" Height="150" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="0,5"/>
+
+        <Border Grid.Row="7" Grid.ColumnSpan="5" Background="#101319" BorderBrush="#262B32" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,18,0,0">
+         <StackPanel>
+          <TextBlock Text="Self-update publishing" FontWeight="SemiBold"/>
+          <TextBlock Foreground="#747C87" FontSize="10" TextWrapping="Wrap" Margin="0,6,0,0"
+                     Text="Publish the launcher ZIP to a stable GitHub Release URL, paste that URL above, calculate its SHA-256, then increase Latest version. When Mandatory update is enabled, old launchers update before games can be opened."/>
+         </StackPanel>
+        </Border>
+       </Grid>
+      </ScrollViewer>
+     </TabItem>
+
+     <TabItem Header="LINKS">
+      <Grid Margin="22">
+       <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+       <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+       <TextBlock Text="Website" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="WebsiteBox" Grid.Column="1" Margin="0,5"/>
+       <TextBlock Grid.Row="1" Text="Discord" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="DiscordBox" Grid.Row="1" Grid.Column="1" Margin="0,5"/>
+       <TextBlock Grid.Row="2" Text="Telegram" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="TelegramBox" Grid.Row="2" Grid.Column="1" Margin="0,5"/>
+       <TextBlock Grid.Row="3" Text="YouTube" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="YouTubeBox" Grid.Row="3" Grid.Column="1" Margin="0,5"/>
+       <TextBlock Grid.Row="4" Text="Support" Foreground="#9CA3AD" VerticalAlignment="Center"/><TextBox x:Name="SupportBox" Grid.Row="4" Grid.Column="1" Margin="0,5"/>
+      </Grid>
+     </TabItem>
+
+     <TabItem Header="NEWS">
+      <DockPanel Margin="14">
+       <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Style="{StaticResource GhostButton}" Content="+ Add news" Click="AddNews_Click" Margin="0,10,8,0"/>
+        <Button Style="{StaticResource GhostButton}" Content="Duplicate" Click="DuplicateNews_Click" Margin="0,10,8,0"/>
+        <Button Style="{StaticResource GhostButton}" Content="Remove selected" Click="RemoveNews_Click" Margin="0,10,0,0"/>
+       </StackPanel>
+       <DataGrid x:Name="NewsGrid" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single">
+        <DataGrid.Columns>
+         <DataGridCheckBoxColumn Header="ON" Binding="{Binding Visible}" Width="46"/>
+         <DataGridCheckBoxColumn Header="PIN" Binding="{Binding Pinned}" Width="48"/>
+         <DataGridTextColumn Header="DATE" Binding="{Binding Date}" Width="94"/>
+         <DataGridTextColumn Header="TITLE" Binding="{Binding Title}" Width="190"/>
+         <DataGridTextColumn Header="SUMMARY" Binding="{Binding Summary}" Width="*"/>
+         <DataGridTextColumn Header="IMAGE URL" Binding="{Binding ImageUrl}" Width="220"/>
+         <DataGridTextColumn Header="LINK URL" Binding="{Binding LinkUrl}" Width="220"/>
+        </DataGrid.Columns>
+       </DataGrid>
+      </DockPanel>
+     </TabItem>
+
+     <TabItem Header="GAMES">
+      <DockPanel Margin="14">
+       <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Style="{StaticResource GhostButton}" Content="+ Add game" Click="AddGame_Click" Margin="0,10,8,0"/>
+        <Button Style="{StaticResource GhostButton}" Content="Duplicate" Click="DuplicateGame_Click" Margin="0,10,8,0"/>
+        <Button Style="{StaticResource GhostButton}" Content="Remove selected" Click="RemoveGame_Click" Margin="0,10,0,0"/>
+       </StackPanel>
+       <DataGrid x:Name="GamesGrid" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single" FrozenColumnCount="4">
+        <DataGrid.Columns>
+         <DataGridCheckBoxColumn Header="ON" Binding="{Binding Visible}" Width="44"/>
+         <DataGridCheckBoxColumn Header="FEATURED" Binding="{Binding Featured}" Width="72"/>
+         <DataGridTextColumn Header="SORT" Binding="{Binding SortOrder}" Width="55"/>
+         <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="130"/>
+         <DataGridTextColumn Header="NAME" Binding="{Binding Name}" Width="155"/>
+         <DataGridTextColumn Header="STATUS" Binding="{Binding Status}" Width="105"/>
+         <DataGridTextColumn Header="PRICE" Binding="{Binding Pricing}" Width="80"/>
+         <DataGridTextColumn Header="DESCRIPTION" Binding="{Binding Description}" Width="260"/>
+         <DataGridTextColumn Header="BANNER URL" Binding="{Binding BannerUrl}" Width="220"/>
+         <DataGridTextColumn Header="ICON URL" Binding="{Binding IconUrl}" Width="180"/>
+         <DataGridTextColumn Header="MANIFEST URL" Binding="{Binding ManifestUrl}" Width="250"/>
+         <DataGridTextColumn Header="WEBSITE URL" Binding="{Binding WebsiteUrl}" Width="200"/>
+         <DataGridCheckBoxColumn Header="OWNERSHIP" Binding="{Binding RequiresOwnership}" Width="86"/>
+         <DataGridTextColumn Header="PRODUCT ID" Binding="{Binding ProductId}" Width="130"/>
+         <DataGridTextColumn Header="PURCHASE URL" Binding="{Binding PurchaseUrl}" Width="220"/>
+        </DataGrid.Columns>
+       </DataGrid>
+      </DockPanel>
+     </TabItem>
+
+     <TabItem Header="SECURITY">
+      <Grid Margin="26">
+       <StackPanel MaxWidth="820" HorizontalAlignment="Left">
+        <TextBlock Text="Admin &amp; publishing security" FontSize="20" FontWeight="SemiBold"/>
+        <TextBlock TextWrapping="Wrap" Foreground="#8A929D" Margin="0,12,0,0" LineHeight="22"
+                   Text="The GitHub Personal Access Token entered in the login dialog is held only in memory for this admin session. It is not written to launcher settings or committed to the repository."/>
+        <TextBlock TextWrapping="Wrap" Foreground="#8A929D" Margin="0,12,0,0" LineHeight="22"
+                   Text="Do not place private API keys, service-account credentials, payment secrets, signing private keys, or future paid-game entitlement secrets in launcher-manifest.json. Public launcher clients can read public repository data."/>
+        <Border Background="#111419" BorderBrush="#2A3038" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,20,0,0">
+         <StackPanel>
+          <TextBlock Text="Future paid games" FontWeight="SemiBold"/>
+          <TextBlock TextWrapping="Wrap" Foreground="#747C87" FontSize="10" Margin="0,6,0,0"
+                     Text="The current catalog already has Product ID, Purchase URL and Requires Ownership fields. Real ownership validation must later use a server-side Atenoct account/licensing service; it must never rely only on a value stored in this public manifest."/>
+         </StackPanel>
+        </Border>
+       </StackPanel>
+      </Grid>
+     </TabItem>
+    </TabControl>
+   </Grid>
+
+   <Border Grid.Row="2" Background="#0B0D10" BorderBrush="#20242A" BorderThickness="0,1,0,0">
+    <Grid Margin="18,0">
+     <TextBlock x:Name="StatusText" VerticalAlignment="Center" Foreground="#737B86" FontSize="10" Text="Ready."/>
+     <TextBlock Text="Changes are published to launcher-manifest.json" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#454C55" FontSize="9"/>
+    </Grid>
+   </Border>
+  </Grid>
+ </Border>
 </Window>
