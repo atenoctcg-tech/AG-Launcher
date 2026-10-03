@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net.Http;
 using AGLauncher.Models;
 using System.Net.Http.Headers;

@@ -1,3 +1,4 @@
+using System.IO;
 using AGLauncher.Models;
 using AGLauncher.Services;
 using Microsoft.Win32;
