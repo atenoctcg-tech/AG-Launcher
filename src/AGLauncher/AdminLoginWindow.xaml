@@ -1,37 +1,26 @@
 <Window x:Class="AGLauncher.AdminLoginWindow"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- Title="AG Launcher Admin"
- Width="560" Height="390"
- WindowStartupLocation="CenterOwner"
- ResizeMode="NoResize"
- Background="#090A0C"
- Icon="Assets/AGLauncher.ico">
- <Border Margin="12" BorderBrush="#2A2F36" BorderThickness="1" CornerRadius="18" Background="#0E1014">
+ Title="AG Launcher Admin" Width="560" Height="430" WindowStartupLocation="CenterOwner"
+ ResizeMode="NoResize" Background="#080A0D" Icon="Assets/AGLauncher.ico">
+ <Border Margin="12" BorderBrush="#2A313A" BorderThickness="1" CornerRadius="18" Background="#0E1318">
   <Grid Margin="30">
-   <Grid.RowDefinitions>
-    <RowDefinition Height="66"/>
-    <RowDefinition Height="Auto"/>
-    <RowDefinition Height="Auto"/>
-    <RowDefinition Height="*"/>
-    <RowDefinition Height="Auto"/>
-   </Grid.RowDefinitions>
-
-   <Image Source="Assets/BrandLogo.png" MaxWidth="250" MaxHeight="48" Stretch="Uniform" HorizontalAlignment="Left"/>
-
-   <StackPanel Grid.Row="1" Margin="0,12,0,14">
-    <TextBlock Text="Admin access" FontSize="24" FontWeight="SemiBold"/>
-    <TextBlock TextWrapping="Wrap" Foreground="#7D8590" FontSize="10" Margin="0,6,0,0"
-               Text="GitHub Personal Access Token kiriting. Token faqat joriy admin sessiyada xotirada ishlatiladi va diskka saqlanmaydi."/>
+   <Grid.RowDefinitions><RowDefinition Height="62"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+   <Image Source="Assets/BrandLogo.png" MaxWidth="235" MaxHeight="44" Stretch="Uniform" HorizontalAlignment="Left"/>
+   <StackPanel Grid.Row="1" Margin="0,14,0,16">
+    <TextBlock x:Name="TitleText" Text="Admin password" FontSize="24" FontWeight="SemiBold"/>
+    <TextBlock x:Name="InfoText" TextWrapping="Wrap" Foreground="#7D8793" FontSize="10" Margin="0,6,0,0"/>
    </StackPanel>
-
-   <PasswordBox x:Name="TokenBox" Grid.Row="2" Height="44"/>
-
-   <TextBlock x:Name="StatusText" Grid.Row="3" Margin="0,12,0,0" Foreground="#AEB4BC" TextWrapping="Wrap"/>
-
-   <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+   <TextBlock Grid.Row="2" Text="Password" Foreground="#A3ABB5" FontSize="9" Margin="0,0,0,6"/>
+   <PasswordBox x:Name="PasswordBox" Grid.Row="2" Height="44" Margin="0,22,0,0"/>
+   <StackPanel x:Name="ConfirmPanel" Grid.Row="3" Margin="0,14,0,0">
+    <TextBlock Text="Confirm password" Foreground="#A3ABB5" FontSize="9" Margin="0,0,0,6"/>
+    <PasswordBox x:Name="ConfirmBox" Height="44"/>
+   </StackPanel>
+   <TextBlock x:Name="StatusText" Grid.Row="4" Margin="0,14,0,0" Foreground="#AEB6C0" FontSize="9" TextWrapping="Wrap"/>
+   <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
     <Button Style="{StaticResource GhostButton}" Content="Cancel" Click="Cancel_Click" Margin="0,0,8,0"/>
-    <Button Style="{StaticResource PrimaryButton}" Content="Verify &amp; open" Click="Verify_Click"/>
+    <Button x:Name="OpenButton" Style="{StaticResource PrimaryButton}" Content="Open admin" Click="Open_Click"/>
    </StackPanel>
   </Grid>
  </Border>
