@@ -8,7 +8,7 @@ namespace AGLauncher.Services;
 public sealed class SelfUpdateService
 {
     private readonly HttpClient _http=new();
-    public SelfUpdateService()=>_http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.1");
+    public SelfUpdateService()=>_http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.3.0");
     public bool UpdateRequired(LauncherUpdateInfo info)
     {
         if(!info.Mandatory||string.IsNullOrWhiteSpace(info.PackageUrl))return false;
