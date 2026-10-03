@@ -1,13 +1,13 @@
 {
   "id": "castle-survival",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "executable": "CastleSurvival.exe",
   "installFolder": "Castle Survival",
   "packages": [
     {
-      "name": "CastleSurvival_v0.8.zip",
-      "url": "https://github.com/atenoctcg-tech/Castle-Survival-Releases/releases/download/v0.8.1/CastleSurvival_v0.8.zip",
-      "sha256": "c28cb55e9c9e412359eba77c46f3699bc7c96dd9f47970d3a96939105067c39a"
+      "name": "CastleSurvival.v0.8.2.zip",
+      "url": "https://github.com/atenoctcg-tech/Castle-Survival-Releases/releases/download/v0.8.2/CastleSurvival.v0.8.2.zip",
+      "sha256": "ec0287823e13acf2662602a3dd82e7cd544d81eb4f455430c5b33cad8661ddba"
     }
   ]
 }
