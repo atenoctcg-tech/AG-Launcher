@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AGLauncher", "src\AGLauncher\AGLauncher.csproj", "{6C01BC0E-3BE4-4D86-AE05-EFBFB4B0AB11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AGLauncher.Updater", "src\AGLauncher.Updater\AGLauncher.Updater.csproj", "{0EDFF9A9-1B5B-4D19-A591-F5D3D1DA7F4B}"
+EndProject
+Global
+    GlobalSection(SolutionConfigurationPlatforms) = preSolution
+        Debug|Any CPU = Debug|Any CPU
+        Release|Any CPU = Release|Any CPU
+    EndGlobalSection
+    GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {6C01BC0E-3BE4-4D86-AE05-EFBFB4B0AB11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {6C01BC0E-3BE4-4D86-AE05-EFBFB4B0AB11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {6C01BC0E-3BE4-4D86-AE05-EFBFB4B0AB11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {6C01BC0E-3BE4-4D86-AE05-EFBFB4B0AB11}.Release|Any CPU.Build.0 = Release|Any CPU
+        {0EDFF9A9-1B5B-4D19-A591-F5D3D1DA7F4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {0EDFF9A9-1B5B-4D19-A591-F5D3D1DA7F4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {0EDFF9A9-1B5B-4D19-A591-F5D3D1DA7F4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {0EDFF9A9-1B5B-4D19-A591-F5D3D1DA7F4B}.Release|Any CPU.Build.0 = Release|Any CPU
+    EndGlobalSection
+EndGlobal
