@@ -1,0 +1,33 @@
+name: Build AG Launcher Windows
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'\n      - 'scripts/**'\n      - 'manifests/**'\n      - 'launcher-manifest.json'
+      - '.github/workflows/build-ag-launcher.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build Windows package
+        shell: pwsh
+        run: .\ag-launcher\scripts\Build-Windows.ps1
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: AGLauncher-win-x64
+          path: dist/AGLauncher-win-x64/**
+          if-no-files-found: error
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: AGLauncher-source
+          path: **
+          if-no-files-found: error

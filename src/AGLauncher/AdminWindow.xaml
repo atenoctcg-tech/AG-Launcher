@@ -1,0 +1,26 @@
+<Window x:Class="AGLauncher.AdminWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="AG Launcher — Admin Panel" Width="1180" Height="760" WindowStartupLocation="CenterOwner" Background="#090A0C">
+ <Grid Margin="22">
+  <Grid.RowDefinitions><RowDefinition Height="72"/><RowDefinition Height="*"/><RowDefinition Height="34"/></Grid.RowDefinitions>
+  <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <StackPanel><TextBlock Text="Admin panel" FontSize="26" FontWeight="SemiBold"/><TextBlock x:Name="RepoText" Foreground="#68707A" FontSize="10" Margin="0,5,0,0"/></StackPanel>
+   <Button Grid.Column="1" Style="{StaticResource PrimaryButton}" Content="Save to GitHub" Click="Save_Click" Height="44"/>
+  </Grid>
+  <TabControl Grid.Row="1" Background="#0E1014" BorderBrush="#262B32" Foreground="White">
+   <TabItem Header="SOCIAL LINKS">
+    <Grid Margin="20"><Grid.ColumnDefinitions><ColumnDefinition Width="140"/><ColumnDefinition/></Grid.ColumnDefinitions><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+     <TextBlock Text="Discord" VerticalAlignment="Center" Foreground="#9CA3AD"/><TextBox x:Name="DiscordBox" Grid.Column="1" Margin="0,4"/>
+     <TextBlock Grid.Row="1" Text="Telegram" VerticalAlignment="Center" Foreground="#9CA3AD"/><TextBox x:Name="TelegramBox" Grid.Row="1" Grid.Column="1" Margin="0,4"/>
+     <TextBlock Grid.Row="2" Text="YouTube" VerticalAlignment="Center" Foreground="#9CA3AD"/><TextBox x:Name="YouTubeBox" Grid.Row="2" Grid.Column="1" Margin="0,4"/>
+    </Grid>
+   </TabItem>
+   <TabItem Header="NEWS"><DockPanel Margin="14"><StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right"><Button Style="{StaticResource GhostButton}" Content="+ Add news" Click="AddNews_Click" Margin="0,8,8,0"/><Button Style="{StaticResource GhostButton}" Content="Remove selected" Click="RemoveNews_Click" Margin="0,8,0,0"/></StackPanel>
+    <DataGrid x:Name="NewsGrid" AutoGenerateColumns="False" CanUserAddRows="False" Background="#0E1014" Foreground="White" BorderBrush="#272C33" GridLinesVisibility="Horizontal" RowBackground="#111419" AlternatingRowBackground="#0E1014"><DataGrid.Columns><DataGridCheckBoxColumn Header="PIN" Binding="{Binding Pinned}" Width="45"/><DataGridTextColumn Header="DATE" Binding="{Binding Date}" Width="90"/><DataGridTextColumn Header="TITLE" Binding="{Binding Title}" Width="180"/><DataGridTextColumn Header="SUMMARY" Binding="{Binding Summary}" Width="*"/><DataGridTextColumn Header="IMAGE URL" Binding="{Binding ImageUrl}" Width="180"/><DataGridTextColumn Header="LINK URL" Binding="{Binding LinkUrl}" Width="180"/></DataGrid.Columns></DataGrid>
+   </DockPanel></TabItem>
+   <TabItem Header="GAMES"><DockPanel Margin="14"><StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right"><Button Style="{StaticResource GhostButton}" Content="+ Add game" Click="AddGame_Click" Margin="0,8,8,0"/><Button Style="{StaticResource GhostButton}" Content="Remove selected" Click="RemoveGame_Click" Margin="0,8,0,0"/></StackPanel>
+    <DataGrid x:Name="GamesGrid" AutoGenerateColumns="False" CanUserAddRows="False" Background="#0E1014" Foreground="White" BorderBrush="#272C33" GridLinesVisibility="Horizontal" RowBackground="#111419" AlternatingRowBackground="#0E1014"><DataGrid.Columns><DataGridCheckBoxColumn Header="VISIBLE" Binding="{Binding Visible}" Width="60"/><DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="120"/><DataGridTextColumn Header="NAME" Binding="{Binding Name}" Width="150"/><DataGridTextColumn Header="STATUS" Binding="{Binding Status}" Width="90"/><DataGridTextColumn Header="PRICE" Binding="{Binding Pricing}" Width="70"/><DataGridTextColumn Header="DESCRIPTION" Binding="{Binding Description}" Width="*"/><DataGridTextColumn Header="MANIFEST URL" Binding="{Binding ManifestUrl}" Width="220"/><DataGridTextColumn Header="BANNER URL" Binding="{Binding BannerUrl}" Width="180"/></DataGrid.Columns></DataGrid>
+   </DockPanel></TabItem>
+  </TabControl>
+  <TextBlock x:Name="StatusText" Grid.Row="2" VerticalAlignment="Center" Foreground="#737B86" FontSize="10"/>
+ </Grid>
+</Window>
