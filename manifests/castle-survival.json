@@ -3,6 +3,8 @@
   "version": "0.8.2",
   "executable": "CastleSurvival.exe",
   "installFolder": "Castle Survival",
+  "releaseRepo": "atenoctcg-tech/Castle-Survival-Releases",
+  "releaseAssetPattern": "^CastleSurvival.*\\.zip$",
   "packages": [
     {
       "name": "CastleSurvival.v0.8.2.zip",

@@ -83,6 +83,8 @@ public sealed class GameManifest
     public string Version { get; set; } = "0.0.0";
     public string Executable { get; set; } = "";
     public string InstallFolder { get; set; } = "";
+    public string ReleaseRepo { get; set; } = "";
+    public string ReleaseAssetPattern { get; set; } = ".*\\.zip$";
     public List<GamePackage> Packages { get; set; } = new();
 }
 
