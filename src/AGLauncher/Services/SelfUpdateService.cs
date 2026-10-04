@@ -8,7 +8,7 @@ namespace AGLauncher.Services;
 public sealed class SelfUpdateService
 {
     private readonly HttpClient _http=new();
-    public SelfUpdateService()=>_http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.3.0");
+    public SelfUpdateService()=>_http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.4.1");
     public bool UpdateRequired(LauncherUpdateInfo info)
     {
         if(!info.Mandatory||string.IsNullOrWhiteSpace(info.PackageUrl))return false;
@@ -24,7 +24,12 @@ public sealed class SelfUpdateService
             var buf=new byte[131072];long read=0;int n;while((n=await src.ReadAsync(buf))>0){await dst.WriteAsync(buf.AsMemory(0,n));read+=n;progress?.Report((double)read/total);}
         }
         if(!string.IsNullOrWhiteSpace(info.Sha256)){await using var fs=File.OpenRead(package);var actual=Convert.ToHexString(await SHA256.HashDataAsync(fs)).ToLowerInvariant();if(!actual.Equals(info.Sha256,StringComparison.OrdinalIgnoreCase))throw new InvalidDataException("Launcher update SHA-256 mismatch.");}
-        var updater=Path.Combine(AppContext.BaseDirectory,"AGLauncher.Updater.exe");if(!File.Exists(updater))throw new FileNotFoundException("Updater is missing.",updater);
+        var updater=Path.Combine(AppContext.BaseDirectory,"AGLauncher.Updater.exe");
+        if(!File.Exists(updater))
+        {
+            try { Process.Start(new ProcessStartInfo(info.PackageUrl){UseShellExecute=true}); } catch { }
+            throw new FileNotFoundException("The automatic updater is missing. The newest launcher download has been opened in your browser.",updater);
+        }
         var updaterTemp=Path.Combine(temp,"AGLauncher.Updater.exe");File.Copy(updater,updaterTemp,true);
         var exe=Process.GetCurrentProcess().MainModule?.FileName??Path.Combine(AppContext.BaseDirectory,"AGLauncher.exe");
         Process.Start(new ProcessStartInfo(updaterTemp,$"--pid {Environment.ProcessId} --package \"{package}\" --target \"{AppContext.BaseDirectory.TrimEnd('\\')}\" --restart \"{exe}\""){UseShellExecute=true,WorkingDirectory=temp});
