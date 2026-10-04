@@ -18,12 +18,17 @@ $('#editor').onclick=e=>{const add=e.target.closest('[data-add]'),remove=e.targe
 $('#editor').onchange=async e=>{if(!e.target.dataset.upload)return;const f=e.target.files[0];if(!f)return;try{if(f.size>10*1024*1024||!['image/png','image/jpeg','image/webp'].includes(f.type))throw Error('Choose a PNG, JPEG or WebP image under 10 MB.');$('#status').textContent='Uploading image…';const ext=(f.name.split('.').pop()||'png').toLowerCase();const path='docs/media/'+crypto.randomUUID()+'.'+ext;const bytes=new Uint8Array(await f.arrayBuffer());let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));await gh('/contents/'+path,{method:'PUT',body:{message:'Upload studio image',branch:'main',content:btoa(binary)}});const box=document.querySelector(`[data-path="${e.target.dataset.upload}"]`);if(box)box.value='https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/'+path;$('#status').textContent='Image uploaded. Select Publish changes to attach it to the post/game.'}catch(x){$('#status').textContent='Image upload failed: '+x.message}};
 $('#preview').onclick=()=>{collect();for(const [k,v] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent'}))if(/^#[0-9a-f]{6}$/i.test(manifest.theme?.[k]))document.documentElement.style.setProperty('--'+v,manifest.theme[k]);document.body.classList.toggle('motion-off',manifest.theme?.motion===false)};
 $('#logout').onclick=()=>location.reload();
+async function publishFile(path,content,message){
+ const current=await gh('/contents/'+path+'?ref=main');
+ const payload={message,branch:'main',sha:current.sha,content:base64Utf8(content)};
+ try{return await gh('/contents/'+path,{method:'PUT',body:payload})}
+ catch(x){if(x.status!==409&&x.status!==422)throw x;const fresh=await gh('/contents/'+path+'?ref=main');payload.sha=fresh.sha;return gh('/contents/'+path,{method:'PUT',body:payload})}
+}
 $('#editor').onsubmit=async e=>{e.preventDefault();collect();const button=e.submitter||$('#editor button[type=submit]');button.disabled=true;$('#status').textContent='Publishing changes to GitHub…';try{
  const ids=new Set();for(const g of manifest.games||[]){if(!g.id||!g.name||ids.has(g.id))throw Error('Every game needs a unique ID and name.');ids.add(g.id)}
- const current=await gh('/contents/launcher-manifest.json?ref=main');sha=current.sha;
- const payload={message:'Update Atenoct Games website and launcher content',branch:'main',sha,content:base64Utf8(JSON.stringify(manifest,null,2)+'\n')};
- let result;
- try{result=await gh('/contents/launcher-manifest.json',{method:'PUT',body:payload})}
- catch(x){if(x.status!==409&&x.status!==422)throw x;const fresh=await gh('/contents/launcher-manifest.json?ref=main');payload.sha=fresh.sha;result=await gh('/contents/launcher-manifest.json',{method:'PUT',body:payload})}
- sha=result.content?.sha||sha;$('#status').textContent='Published successfully. The website and launcher will load these changes automatically.';button.textContent='Published ✓';setTimeout(()=>button.textContent='Publish changes ↗',1800);
+ const content=JSON.stringify(manifest,null,2)+'\n';
+ const result=await publishFile('launcher-manifest.json',content,'Update Atenoct Games website and launcher content');
+ sha=result.content?.sha||sha;
+ await publishFile('docs/catalog.json',content,'Sync website fallback catalog');
+ $('#status').textContent='Published successfully. Website auto-refreshes within about 30 seconds; launcher refreshes automatically too.';button.textContent='Published ✓';setTimeout(()=>button.textContent='Publish changes ↗',1800);
 }catch(x){$('#status').textContent='Publish failed: '+x.message+' Check that the token has Contents: Read and write permission.'}finally{button.disabled=false}};
