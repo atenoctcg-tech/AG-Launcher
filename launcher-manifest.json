@@ -66,20 +66,21 @@
       "iconUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
       "manifestUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/manifests/castle-survival.json",
       "websiteUrl": "",
+      "releaseRepo": "atenoctcg-tech/Castle-Survival-Releases",
+      "releaseAssetPattern": "^(?!.*[Ss]ource).*\\.zip$",
+      "executable": "CastleSurvival.exe",
+      "installFolder": "Castle Survival",
       "productId": "",
       "purchaseUrl": "",
-      "requiresOwnership": false,
-      "releaseRepo": "atenoctcg-tech/Castle-Survival-Releases",
-      "executable": "CastleSurvival.exe",
-      "installFolder": "Castle Survival"
+      "requiresOwnership": false
     }
   ],
+  "workshop": [],
   "theme": {
     "background": "#0B0F17",
     "panel": "#111824",
     "card": "#172132",
     "accent": "#80A8FF",
     "motion": true
-  },
-  "workshop": []
+  }
 }
