@@ -3,10 +3,10 @@
   "launcher": {
     "latestVersion": "0.4.1",
     "minimumVersion": "0.3.1",
-    "mandatory": false,
+    "mandatory": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.1/AGLauncher-v0.4.1-win-x64.zip",
-    "sha256": "",
-    "releaseNotes": "AG Launcher v0.4.1 - removed player login/register, added nickname-only local profiles, fixed website publishing, fixed dark admin selections and improved self-update reliability."
+    "sha256": "f8fd7e86703a4b2de7bf12c9250e6b6039752e4ff2803ed8b05cb39704b65647",
+    "releaseNotes": "AG Launcher v0.4.1 - no player login/register, nickname-only local profile, fixed website publishing, dark admin selection styling, automatic game updates and improved self-updater."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
