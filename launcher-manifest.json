@@ -54,7 +54,7 @@
       "featured": true,
       "sortOrder": 1,
       "bannerUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
-      "animatedBannerUrl": "",
+      "animatedBannerUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/game-media/20261004-174110-1004.mp4",
       "libraryImageUrl": "",
       "iconUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/icons/20261004-163155-photo_2026-09-27_12-23-01.jpg",
       "manifestUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/manifests/castle-survival.json",
