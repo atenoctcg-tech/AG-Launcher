@@ -17,7 +17,7 @@
   },
   "presentation": {
     "announcement": "",
-    "defaultHeroTitle": "Your next adventure is AG LAUNCHER!",
+    "defaultHeroTitle": "Your next adventure is AG!",
     "defaultHeroSubtitle": "Discover new worlds. Build your library. Play your way."
   },
   "news": [
@@ -67,10 +67,10 @@
   ],
   "workshop": [],
   "theme": {
-    "background": "#252d3c",
-    "panel": "#202c40",
+    "background": "#1d232f",
+    "panel": "#202a3c",
     "card": "#172132",
-    "accent": "#80a8ff",
+    "accent": "#6d82b0",
     "motion": true
   }
 }
