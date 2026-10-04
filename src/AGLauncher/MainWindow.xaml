@@ -3,7 +3,7 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  Title="AG Launcher — Atenoct Games" Width="1500" Height="900" MinWidth="1180" MinHeight="720"
  WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResizeWithGrip"
- Background="{DynamicResource BgBrush}" Icon="Assets/AGLauncher.ico" PreviewKeyDown="Window_KeyDown" UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display">
+ Background="{DynamicResource BgBrush}" Icon="Assets/AGLauncher.ico" PreviewKeyDown="Window_KeyDown" PreviewMouseWheel="Window_PreviewMouseWheel" UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display">
  <Border Background="{DynamicResource BgBrush}" BorderBrush="#262B33" BorderThickness="1">
   <Grid>
    <Grid.RowDefinitions><RowDefinition Height="48"/><RowDefinition Height="*"/><RowDefinition Height="30"/></Grid.RowDefinitions>
@@ -70,7 +70,7 @@
 
       <Border Grid.Row="4" Background="{DynamicResource CardBrush}" BorderBrush="#262D36" BorderThickness="1" CornerRadius="13" Padding="11">
        <StackPanel>
-        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="12" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.4.1" Foreground="#747D89" FontSize="12"/></Grid>
+        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="12" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.4.2" Foreground="#747D89" FontSize="12"/></Grid>
         <TextBlock x:Name="SideInstallStatusText" Text="Ready" Foreground="#6B7480" FontSize="12" Margin="0,5,0,0" TextTrimming="CharacterEllipsis"/>
         <ProgressBar x:Name="SideInstallProgress" Height="4" Minimum="0" Maximum="1" Visibility="Collapsed" Margin="0,8,0,0"/>
        </StackPanel>
@@ -87,8 +87,19 @@
        <Grid Margin="12,0"><Grid.ColumnDefinitions><ColumnDefinition Width="24"/><ColumnDefinition/></Grid.ColumnDefinitions><TextBlock Text="⌕" Foreground="#747E8A" VerticalAlignment="Center"/><TextBox x:Name="SearchBox" Grid.Column="1" Background="Transparent" BorderThickness="0" Padding="2,8" TextChanged="SearchBox_TextChanged" ToolTip="Search games"/></Grid>
       </Border>
       <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="12,0,0,0">
-       <Button x:Name="NotificationButton" Style="{StaticResource IconButton}" Content="🔔" Click="NotificationButton_Click"/>
-       <Button Style="{StaticResource ProfileButton}" Click="ProfileButton_Click" Margin="8,0,0,0"><StackPanel Orientation="Horizontal"><Border Width="28" Height="28" Background="#27303A" CornerRadius="14"><TextBlock Text="AG" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11"/></Border><StackPanel Margin="9,0,6,0"><TextBlock x:Name="ProfileNameText" Text="Guest" FontSize="12" FontWeight="SemiBold"/><TextBlock x:Name="ProfileHintText" Text="Set nickname" FontSize="11" Foreground="#707A86"/></StackPanel></StackPanel></Button>
+       <Button x:Name="RefreshButton" Style="{StaticResource IconButton}" Content="↻" Click="RefreshButton_Click" ToolTip="Refresh launcher (Ctrl+R)"/>
+       <Button x:Name="NotificationButton" Style="{StaticResource IconButton}" Content="🔔" Click="NotificationButton_Click" Margin="8,0,0,0"/>
+       <Button Style="{StaticResource ProfileButton}" Click="ProfileButton_Click" Margin="8,0,0,0">
+        <StackPanel Orientation="Horizontal">
+         <Border Width="32" Height="32" Background="#27303A" CornerRadius="16" ClipToBounds="True">
+          <Grid>
+           <TextBlock Text="AG" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11"/>
+           <Image x:Name="ProfileAvatarImage" Stretch="UniformToFill"/>
+          </Grid>
+         </Border>
+         <StackPanel Margin="9,0,6,0"><TextBlock x:Name="ProfileNameText" Text="Guest" FontSize="12" FontWeight="SemiBold"/><TextBlock x:Name="ProfileHintText" Text="Set profile" FontSize="11" Foreground="#707A86"/></StackPanel>
+        </StackPanel>
+       </Button>
       </StackPanel>
      </Grid>
 
