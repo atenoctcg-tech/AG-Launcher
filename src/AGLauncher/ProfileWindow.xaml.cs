@@ -6,36 +6,20 @@ namespace AGLauncher;
 public partial class ProfileWindow : Window
 {
     private readonly ProfileService _profiles = new();
-    public UserProfile? Profile { get; private set; }
 
-    public ProfileWindow() => InitializeComponent();
-
-    private void Login_Click(object sender, RoutedEventArgs e)
+    public ProfileWindow()
     {
-        var result = _profiles.Login(LoginNameBox.Text, LoginPasswordBox.Password);
-        StatusText.Text = result.Message;
-        if (result.Ok)
-        {
-            Profile = result.Profile;
-            DialogResult = true;
-        }
+        InitializeComponent();
+        NicknameBox.Text = _profiles.Load().Nickname;
+        NicknameBox.Focus();
+        NicknameBox.SelectAll();
     }
 
-    private void Register_Click(object sender, RoutedEventArgs e)
+    private void Save_Click(object sender, RoutedEventArgs e)
     {
-        if (RegisterPasswordBox.Password != RegisterConfirmBox.Password)
-        {
-            StatusText.Text = "Passwords do not match.";
-            return;
-        }
-
-        var result = _profiles.Register(RegisterNameBox.Text, RegisterEmailBox.Text, RegisterPasswordBox.Password);
+        var result = _profiles.SaveNickname(NicknameBox.Text);
         StatusText.Text = result.Message;
-        if (result.Ok)
-        {
-            Profile = result.Profile;
-            DialogResult = true;
-        }
+        if (result.Ok) DialogResult = true;
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) => DialogResult = false;
