@@ -6,7 +6,7 @@
     "mandatory": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.2/AGLauncher-v0.4.2-win-x64.zip",
     "sha256": "c83018a51313f03f7ae4df1b9a5589323cb578bc208300fb83018bf9315fa1b1",
-    "releaseNotes": "AG Launcher v0.4.2 - live catalog auto-refresh, Ctrl+R/manual refresh, full-window mouse-wheel scrolling, local nickname + profile photo, selectable game install location with updates kept on the same drive, and synchronized website publishing."
+    "releaseNotes": "AG Launcher v0.4.2 - live catalog auto-refresh, Ctrl\u002BR/manual refresh, full-window mouse-wheel scrolling, local nickname \u002B profile photo, selectable game install location with updates kept on the same drive, and synchronized website publishing."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
@@ -67,10 +67,10 @@
   ],
   "workshop": [],
   "theme": {
-    "background": "#1d232f",
-    "panel": "#202a3c",
+    "background": "#0B0F17",
+    "panel": "#111824",
     "card": "#172132",
-    "accent": "#6d82b0",
+    "accent": "#80A8FF",
     "motion": true
   }
 }
