@@ -29,7 +29,6 @@ public partial class AdminWindow : Window
         _manifest = JsonSerializer.Deserialize<LauncherManifest>(JsonSerializer.Serialize(source, JsonUtil.Options), JsonUtil.Options) ?? new LauncherManifest();
         _news = new(_manifest.News);
         _games = new(_manifest.Games);
-        AccountUrlBox.Text = _manifest.Auth.ApiBaseUrl;
         ThemeJsonBox.Text = JsonSerializer.Serialize(_manifest.Theme, JsonUtil.Options);
         WorkshopJsonBox.Text = JsonSerializer.Serialize(_manifest.Workshop, JsonUtil.Options);
         NewsGrid.ItemsSource = _news;
@@ -161,8 +160,6 @@ public partial class AdminWindow : Window
         GamesGrid.CommitEdit(); GamesGrid.CommitEdit(System.Windows.Controls.DataGridEditingUnit.Row, true);
         _manifest.Theme = JsonSerializer.Deserialize<ThemeConfig>(ThemeJsonBox.Text, JsonUtil.Options) ?? new();
         _manifest.Workshop = JsonSerializer.Deserialize<List<WorkshopItem>>(WorkshopJsonBox.Text, JsonUtil.Options) ?? new();
-        _manifest.Auth.ApiBaseUrl = AccountUrlBox.Text.Trim();
-        if (_manifest.Auth.ApiBaseUrl.Length > 0 && (!Uri.TryCreate(_manifest.Auth.ApiBaseUrl, UriKind.Absolute, out var authUri) || authUri.Scheme != "https")) throw new InvalidOperationException("Account server URL must use HTTPS.");
         _manifest.Launcher.LatestVersion = LatestVersionBox.Text.Trim();
         _manifest.Launcher.MinimumVersion = MinimumVersionBox.Text.Trim();
         _manifest.Launcher.Mandatory = MandatoryUpdateCheck.IsChecked == true;
