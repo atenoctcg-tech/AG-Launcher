@@ -91,3 +91,29 @@
 
 /* Hero is media-first: no title/status/description overlay on the website. */
 .hero-card .hero-copy{display:none!important}
+
+/* Explore our games uses vertical cover art; main hero/banner remains unchanged. */
+#gamesGrid{
+  grid-template-columns:repeat(auto-fill,minmax(240px,300px));
+  align-items:start;
+}
+#gamesGrid .game-card{
+  width:100%;
+  max-width:300px;
+}
+#gamesGrid .game-media{
+  aspect-ratio:4/5;
+}
+#gamesGrid .game-media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+@media(max-width:720px){
+  #gamesGrid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  #gamesGrid .game-card{
+    max-width:none;
+  }
+}
