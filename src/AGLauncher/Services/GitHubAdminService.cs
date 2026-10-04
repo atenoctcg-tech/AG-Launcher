@@ -42,21 +42,37 @@ public sealed class GitHubAdminService
     public async Task SaveManifestAsync(BootstrapConfig cfg, string token, LauncherManifest manifest)
     {
         using var c = Client(token);
-        var getUrl = $"https://api.github.com/repos/{cfg.Owner}/{cfg.Repo}/contents/{cfg.ManifestPath}?ref={Uri.EscapeDataString(cfg.Branch)}";
+        var json = JsonSerializer.Serialize(manifest, JsonUtil.Options);
+        var message = $"AG Launcher admin update {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC";
+
+        await SaveJsonFileAsync(c, cfg, cfg.ManifestPath, json, message);
+        // Keep the static GitHub Pages fallback catalog synchronized with the same content.
+        await SaveJsonFileAsync(c, cfg, "docs/catalog.json", json, message + " (website fallback)");
+    }
+
+    private static async Task SaveJsonFileAsync(HttpClient c, BootstrapConfig cfg, string path, string json, string message)
+    {
+        var getUrl = $"https://api.github.com/repos/{cfg.Owner}/{cfg.Repo}/contents/{path}?ref={Uri.EscapeDataString(cfg.Branch)}";
         using var get = await c.GetAsync(getUrl);
-        get.EnsureSuccessStatusCode();
+        if (!get.IsSuccessStatusCode)
+            throw new HttpRequestException($"GitHub read failed for {path}: {(int)get.StatusCode} {await get.Content.ReadAsStringAsync()}");
+
         using var current = JsonDocument.Parse(await get.Content.ReadAsStringAsync());
         var sha = current.RootElement.GetProperty("sha").GetString()!;
-        var json = JsonSerializer.Serialize(manifest, JsonUtil.Options);
         var payload = JsonSerializer.Serialize(new
         {
-            message = $"AG Launcher admin update {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC",
+            message,
             content = Convert.ToBase64String(Encoding.UTF8.GetBytes(json)),
             sha,
             branch = cfg.Branch
         });
-        using var put = await c.PutAsync($"https://api.github.com/repos/{cfg.Owner}/{cfg.Repo}/contents/{cfg.ManifestPath}", new StringContent(payload, Encoding.UTF8, "application/json"));
-        if (!put.IsSuccessStatusCode) throw new HttpRequestException($"GitHub save failed: {(int)put.StatusCode} {await put.Content.ReadAsStringAsync()}");
+
+        using var put = await c.PutAsync(
+            $"https://api.github.com/repos/{cfg.Owner}/{cfg.Repo}/contents/{path}",
+            new StringContent(payload, Encoding.UTF8, "application/json"));
+
+        if (!put.IsSuccessStatusCode)
+            throw new HttpRequestException($"GitHub save failed for {path}: {(int)put.StatusCode} {await put.Content.ReadAsStringAsync()}");
     }
 
     public async Task<string> UploadImageAsync(BootstrapConfig cfg, string token, byte[] bytes, string originalName, string folder)
