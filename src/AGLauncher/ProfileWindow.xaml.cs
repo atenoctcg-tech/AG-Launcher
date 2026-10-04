@@ -1,4 +1,5 @@
 using AGLauncher.Services;
+using System.IO;
 using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -60,7 +61,7 @@ public partial class ProfileWindow : Window
             var image = new BitmapImage();
             image.BeginInit();
             image.CacheOption = BitmapCacheOption.OnLoad;
-            image.UriSource = new Uri(path, UriKind.Absolute);
+            image.UriSource = new Uri(path!, UriKind.Absolute);
             image.EndInit();
             image.Freeze();
             PhotoPreview.Source = image;
