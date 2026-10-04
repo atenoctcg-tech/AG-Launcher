@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "launcher": {
     "latestVersion": "0.4.5",
-    "minimumVersion": "0.4.5",
+    "minimumVersion": "0.4.3",
     "mandatory": false,
     "autoUpdate": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.5/AGLauncher-v0.4.5-win-x64.zip",
@@ -74,7 +74,7 @@
       "visible": true,
       "featured": false,
       "sortOrder": 99,
-      "bannerUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "bannerUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/games/20261004-113011-0103.jpg",
       "iconUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
       "manifestUrl": "",
       "websiteUrl": "",
