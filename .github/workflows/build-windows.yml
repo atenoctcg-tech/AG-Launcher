@@ -7,7 +7,6 @@ on:
       - 'src/**'
       - 'scripts/**'
       - 'manifests/**'
-      - 'server/**'
       - '.github/workflows/build-windows.yml'
   workflow_dispatch:
 
@@ -23,13 +22,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Test account verification
-        run: node --test server/server.test.mjs
 
       - name: Build Windows package
         shell: pwsh
@@ -55,7 +47,7 @@ jobs:
             Write-Host "Release $tag already exists; replacing Windows asset."
             gh release upload $tag $assetName $sourceName --clobber --repo "${{ github.repository }}"
           } else {
-            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Dark studio design, subtle zoom motion, shared admin, Workshop and verified email account integration. IMPORTANT: mandatory email sign-in requires the studio account server to be configured. See server/README.md. Existing v0.3.1 is not forced to update until account service deployment is complete."
+            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. No login required, local nickname profile, fixed website publishing, dark admin selection styling, automatic game updates and self-updater support."
           }
           if ($LASTEXITCODE -ne 0) { throw "GitHub Release publishing failed." }
 
@@ -78,5 +70,4 @@ jobs:
             scripts/**
             src/**
             docs/**
-            server/**
           if-no-files-found: error
