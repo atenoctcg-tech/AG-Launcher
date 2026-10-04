@@ -25,3 +25,66 @@
 
 /* Website keeps discovery/search/notifications inside the Windows launcher only. */
 .topbar{justify-content:flex-end}
+
+/* Keep website hero copy away from typography baked into animated/static game banners. */
+.hero-card{position:relative}
+.hero-copy{
+  position:absolute;
+  top:34px;
+  right:34px;
+  width:min(440px,38%);
+  max-width:none;
+  min-height:0;
+  height:auto;
+  padding:22px 26px;
+  border:1px solid #ffffff16;
+  border-radius:14px;
+  background:linear-gradient(135deg,#07101adb,#07101a9c);
+  backdrop-filter:blur(3px);
+  box-shadow:0 14px 40px #0005;
+  z-index:2;
+}
+.hero-copy h2{
+  font-size:38px;
+  line-height:1.08;
+  margin:14px 0 9px;
+  letter-spacing:-1px;
+  text-shadow:0 2px 14px #000b;
+}
+.hero-copy p{
+  font-size:13px;
+  line-height:1.55;
+  margin:0;
+  max-width:none;
+  color:#e1e7ef;
+  text-shadow:0 1px 10px #000a;
+}
+.hero-copy .pill{font-size:8px}
+.hero-download{
+  position:absolute;
+  left:48px;
+  bottom:42px;
+  z-index:2;
+}
+@media(min-width:1600px){
+  .hero-copy{top:40px;right:40px;width:min(480px,36%);padding:24px 28px}
+  .hero-copy h2{font-size:42px}
+  .hero-download{left:48px;bottom:46px}
+}
+@media(max-width:1100px){
+  .hero-copy{top:26px;right:26px;width:min(420px,48%);padding:20px 22px}
+  .hero-copy h2{font-size:32px}
+  .hero-download{left:30px;bottom:30px}
+}
+@media(max-width:720px){
+  .hero-copy{
+    top:18px;
+    left:18px;
+    right:18px;
+    width:auto;
+    padding:18px;
+  }
+  .hero-copy h2{font-size:28px}
+  .hero-copy p{font-size:12px}
+  .hero-download{left:18px;bottom:18px}
+}
