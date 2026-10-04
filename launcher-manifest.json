@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.4.3",
-    "minimumVersion": "0.4.2",
+    "latestVersion": "0.4.4",
+    "minimumVersion": "0.4.3",
     "mandatory": true,
-    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.3/AGLauncher-v0.4.3-win-x64.zip",
-    "sha256": "f37977cdc11f7005157fa76215329c8ab2df44d2213fe1e4712ba2810a71ceeb",
-    "releaseNotes": "AG Launcher v0.4.3 - dark blue + black theme, white default text, and editable text/muted text theme colors."
+    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.4/AGLauncher-v0.4.4-win-x64.zip",
+    "sha256": "1e21c387997839ab4c8c22d80e5ed11b976f7fbbf7c925f331a1690058938e14",
+    "releaseNotes": "AG Launcher v0.4.4 - INSTALL / UPDATE / PLAY button now uses a dark grey-teal style with white text."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
