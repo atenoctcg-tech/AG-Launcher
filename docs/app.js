@@ -66,17 +66,17 @@ function openNickname(){
  $('#nicknameForm').onsubmit=async e=>{e.preventDefault();const n=String(new FormData(e.target).get('nickname')||'').trim();if(n&&n.length<2){$('#nicknameError').textContent='Nickname must contain at least 2 characters.';return}try{let data='';if(photo.files[0])data=await avatarData(photo.files[0]);localStorage.setItem(nicknameKey,n);if(removeAvatar)localStorage.removeItem(avatarKey);else if(data)localStorage.setItem(avatarKey,data);refreshNickname();$('#modal').close();toast('Profile saved.')}catch(x){$('#nicknameError').textContent=x.message}}
 }
 function render(){
- const q=$('#search').value.toLowerCase();const games=(catalog.games||[]).filter(g=>g.visible!==false).sort((a,b)=>Number(b.featured)-Number(a.featured)||(a.sortOrder||0)-(b.sortOrder||0));
+ const q='';const games=(catalog.games||[]).filter(g=>g.visible!==false).sort((a,b)=>Number(b.featured)-Number(a.featured)||(a.sortOrder||0)-(b.sortOrder||0));
  const news=(catalog.news||[]).filter(n=>n.visible!==false).sort((a,b)=>Number(b.pinned)-Number(a.pinned)||String(b.date).localeCompare(String(a.date)));
  const g=games[0];$('#heroGrid').innerHTML=g?`<article class="hero-card">${heroMedia(g)}<div class="hero-copy"><span class="pill">FEATURED · ${esc(g.pricing||'FREE').toUpperCase()}</span><h2>${esc(g.name)}</h2><p>${esc(g.description)}</p><a class="primary" data-launcher-download href="${esc(download())}">Download launcher <span>↓</span></a></div></article>`:'<div class="empty">New worlds are on their way.</div>';
  $('#gamesGrid').innerHTML=games.filter(g=>(g.name+' '+g.description).toLowerCase().includes(q)).map(g=>`<article class="game-card"><div class="game-media">${image(g.bannerUrl,g.name)}<span class="pill">${esc(g.status)}</span></div><div class="game-info"><div class="game-top"><h3>${esc(g.name)}</h3><small>${esc(versions.get(g.id)||'')}</small></div><p>${esc(g.description)}</p><div class="game-bottom"><span>${esc(g.pricing||'FREE').toUpperCase()}</span><span class="subtle">Play in AG Launcher</span></div></div></article>`).join('')||'<p class="empty">No matching games.</p>';
  $('#libraryGrid').innerHTML=games.filter(g=>g.name.toLowerCase().includes(q)).map(g=>`<article class="library-card" aria-label="${esc(g.name)}">${image(g.libraryImageUrl||g.bannerUrl,g.name)}<h3>${esc(g.name)}</h3><span class="subtle">${esc(versions.get(g.id)||g.status)} · ${esc(g.pricing||'Free')}</span></article>`).join('')||'<p class="empty">No matching games.</p>';
  $('#newsGrid').innerHTML=news.filter(n=>(n.title+' '+n.summary).toLowerCase().includes(q)).map(n=>`<article class="news-card" data-news="${esc(n.id)}" tabindex="0" role="button" aria-label="Open ${esc(n.title)}">${image(n.imageUrl)}<div><small>${esc(n.date)} · ${n.pinned?'FEATURED':'NEWS'}</small><h3>${esc(n.title)}</h3><p>${esc(n.summary)}</p><span class="news-more">View details</span></div></article>`).join('');
  $('#workshopGrid').innerHTML=(catalog.workshop||[]).filter(w=>w.visible&&(category==='All'||w.category===category)&&(w.name+' '+w.description).toLowerCase().includes(q)).map(w=>`<article class="game-card"><div class="game-media">${image(w.imageUrl,w.name)}<span class="pill">${esc(w.category)}</span></div><div class="game-info"><h3>${esc(w.name)}</h3><p>${esc(w.description)}</p>${w.pricing==='free'&&safe(w.downloadUrl)?`<a class="secondary" href="${esc(safe(w.downloadUrl))}" target="_blank" rel="noopener">Download free ↗</a>`:'<span class="subtle">Coming soon</span>'}</div></article>`).join('')||'<div class="empty"><span>◇</span><h2>A space for your imagination.</h2><p>Mods, 3D models and tools will appear here when the studio publishes them.</p></div>';
- $('#notificationCount').textContent=news.length;
+
 }
 function route(){const page=['home','library','workshop'].includes(location.hash.slice(1))?location.hash.slice(1):'home';$$('.page').forEach(e=>e.hidden=e.id!==page);$$('[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page))}
-$('#modal .close-modal').onclick=()=>$('#modal').close();$('#modal').onclick=e=>{if(e.target===$('#modal'))$('#modal').close()};$('#profileButton').onclick=openNickname;$('#search').oninput=render;window.onhashchange=route;
+$('#modal .close-modal').onclick=()=>$('#modal').close();$('#modal').onclick=e=>{if(e.target===$('#modal'))$('#modal').close()};$('#profileButton').onclick=openNickname;window.onhashchange=route;
 $$('[data-category]').forEach(b=>b.onclick=()=>{category=b.dataset.category;$$('[data-category]').forEach(x=>x.classList.toggle('selected',x===b));render()});
 function openNewsItem(id){
  const item=(catalog.news||[]).find(x=>x.id===id);
@@ -86,8 +86,6 @@ function openNewsItem(id){
 }
 document.addEventListener('click',e=>{const dl=e.target.closest('.download,[data-launcher-download]');if(dl){downloadLauncher({preventDefault:()=>e.preventDefault(),currentTarget:dl});return}const n=e.target.closest('[data-news]');if(n){e.preventDefault();openNewsItem(n.dataset.news)}});
 document.addEventListener('keydown',e=>{const n=e.target.closest?.('[data-news]');if(n&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openNewsItem(n.dataset.news)}});
-document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('#search').focus()}});
-$('#notifications').onclick=()=>modal('<h2>Studio updates</h2>'+(catalog.news||[]).filter(n=>n.visible!==false).map(n=>`<p><b>${esc(n.title)}</b><br>${esc(n.date)} · ${esc(n.summary)}</p>`).join(''));
 function applyTheme(){
  for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent',text:'text',mutedText:'muted'}))
   if(/^#[0-9a-f]{6}$/i.test(catalog?.theme?.[key]))

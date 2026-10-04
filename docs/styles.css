@@ -22,3 +22,6 @@
 @media(max-width:720px){dialog{width:96vw;padding:16px;max-height:92vh}.modal-news{gap:16px}.modal-news-copy h2{font-size:22px}}
 
 .library-card{cursor:default;user-select:none}
+
+/* Website keeps discovery/search/notifications inside the Windows launcher only. */
+.topbar{justify-content:flex-end}
