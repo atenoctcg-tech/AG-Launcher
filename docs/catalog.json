@@ -64,6 +64,27 @@
       "productId": "",
       "purchaseUrl": "",
       "requiresOwnership": false
+    },
+    {
+      "id": "atenoct-test-project",
+      "name": "Atenoct Test Project",
+      "description": "Launcher va website sinovi uchun qo‘shilgan test loyiha. Bu haqiqiy o‘yin emas.",
+      "status": "Test",
+      "pricing": "free",
+      "visible": true,
+      "featured": false,
+      "sortOrder": 99,
+      "bannerUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "iconUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "manifestUrl": "",
+      "websiteUrl": "",
+      "releaseRepo": "",
+      "releaseAssetPattern": "^(?!.*[Ss]ource).*\\.zip$",
+      "executable": "",
+      "installFolder": "",
+      "productId": "",
+      "purchaseUrl": "",
+      "requiresOwnership": false
     }
   ],
   "workshop": [],
