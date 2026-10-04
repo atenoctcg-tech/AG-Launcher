@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.4.5",
-    "minimumVersion": "0.4.3",
+    "latestVersion": "0.4.6",
+    "minimumVersion": "0.4.5",
     "mandatory": false,
     "autoUpdate": true,
-    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.5/AGLauncher-v0.4.5-win-x64.zip",
-    "sha256": "9f22220722b91a7c418c56896a4364bc25f474ea4d66430391114ac991329c81",
-    "releaseNotes": "AG Launcher v0.4.5 - repaired self-updater. v0.4.4 and older must install v0.4.5 once manually; v0.4.5\u002B uses the repaired automatic updater."
+    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.6/AGLauncher-v0.4.6-win-x64.zip",
+    "sha256": "5299165aba001287404c35b81b0a628c02242fff1363a223dc07fe4b72c2c086",
+    "releaseNotes": "AG Launcher v0.4.6 - search suggestions, larger UI text, dark teal action buttons, fixed studio admin password gate, configurable QUICK LAUNCH icons, and website fixes."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
@@ -68,7 +68,7 @@
     {
       "id": "atenoct-test-project",
       "name": "Atenoct Test Project",
-      "description": "Launcher va website sinovi uchun qo\u2018shilgan test loyiha. Bu haqiqiy o\u2018yin emas.",
+      "description": "Launcher va website sinovi uchun qo‘shilgan test loyiha. Bu haqiqiy o‘yin emas.",
       "status": "Test",
       "pricing": "free",
       "visible": true,
