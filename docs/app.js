@@ -9,7 +9,74 @@ async function json(url,options={}){const r=await fetch(url,{cache:'no-store',..
 function modal(html){$('#modalContent').innerHTML=html;if(!$('#modal').open)$('#modal').showModal()}
 function toast(message){$('#toast').textContent=message;$('#toast').hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>$('#toast').hidden=true,4200)}
 const image=(url,alt='')=>`<img src="${esc(safe(url)||'media/castle-survival.png')}" alt="${esc(alt)}" loading="lazy">`;
-const download=()=>$('.download').href;
+const download=()=>safe(catalog?.launcher?.packageUrl)||'https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.5/AGLauncher-v0.4.5-win-x64.zip';
+
+function applyDownloadLinks(){
+ const url=download();
+ $('.download,[data-launcher-download]').forEach(a=>{
+  a.href=url;
+  a.removeAttribute('target');
+  a.setAttribute('download','AGLauncher-Windows-x64.zip');
+ });
+}
+
+async function downloadLauncher(e){
+ e.preventDefault();
+ const url=download();
+ if(!url){toast('Launcher download is temporarily unavailable.');return}
+
+ const link=e.currentTarget.closest('a,button')||e.currentTarget;
+ const original=link.innerHTML;
+ link.setAttribute('aria-busy','true');
+ link.classList.add('downloading');
+
+ try{
+  toast('Preparing AG Launcher download…');
+  const response=await fetch(url,{redirect:'follow',cache:'no-store'});
+  if(!response.ok)throw Error('Download failed ('+response.status+').');
+
+  const total=Number(response.headers.get('content-length')||0);
+  const reader=response.body?.getReader();
+  if(!reader)throw Error('Streaming download is not supported by this browser.');
+
+  const chunks=[];let received=0;
+  while(true){
+   const {done,value}=await reader.read();
+   if(done)break;
+   chunks.push(value);received+=value.byteLength;
+   if(total){
+    const percent=Math.min(100,Math.round(received/total*100));
+    toast('Downloading AG Launcher… '+percent+'%');
+   }
+  }
+
+  const blob=new Blob(chunks,{type:'application/zip'});
+  const objectUrl=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=objectUrl;
+  a.download='AGLauncher-Windows-x64.zip';
+  a.style.display='none';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(objectUrl),60000);
+  toast('AG Launcher download started.');
+ }catch(err){
+  // Fallback still points directly to the ZIP asset, not to a GitHub release page.
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='AGLauncher-Windows-x64.zip';
+  a.style.display='none';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  toast('Download started.');
+ }finally{
+  link.removeAttribute('aria-busy');
+  link.classList.remove('downloading');
+  link.innerHTML=original;
+ }
+}
 function nickname(){return (localStorage.getItem(nicknameKey)||'').trim()}
 function refreshNickname(){
  const n=nickname(),avatar=localStorage.getItem(avatarKey)||'';
@@ -43,9 +110,9 @@ function openNickname(){
 function render(){
  const q=$('#search').value.toLowerCase();const games=(catalog.games||[]).filter(g=>g.visible!==false).sort((a,b)=>Number(b.featured)-Number(a.featured)||(a.sortOrder||0)-(b.sortOrder||0));
  const news=(catalog.news||[]).filter(n=>n.visible!==false).sort((a,b)=>Number(b.pinned)-Number(a.pinned)||String(b.date).localeCompare(String(a.date)));
- const g=games[0];$('#heroGrid').innerHTML=g?`<article class="hero-card">${image(g.bannerUrl,g.name)}<div class="hero-copy"><span class="pill">FEATURED · ${esc(g.pricing||'FREE').toUpperCase()}</span><h2>${esc(g.name)}</h2><p>${esc(g.description)}</p><a class="primary" href="${esc(download())}">Get in launcher <span>↗</span></a></div></article><div class="hero-side">${news.slice(0,2).map(n=>`<article class="mini-news">${image(n.imageUrl)}<div><small>STUDIO NEWS · ${esc(n.date)}</small><h3>${esc(n.title)}</h3><a href="#" data-news="${esc(n.id)}">Read story ↗</a></div></article>`).join('')}</div>`:'<div class="empty">New worlds are on their way.</div>';
- $('#gamesGrid').innerHTML=games.filter(g=>(g.name+' '+g.description).toLowerCase().includes(q)).map(g=>`<article class="game-card"><div class="game-media">${image(g.bannerUrl,g.name)}<span class="pill">${esc(g.status)}</span></div><div class="game-info"><div class="game-top"><h3>${esc(g.name)}</h3><small>${esc(versions.get(g.id)||'')}</small></div><p>${esc(g.description)}</p><div class="game-bottom"><span>${esc(g.pricing||'FREE').toUpperCase()}</span><a class="secondary" href="${esc(download())}">Get in launcher ↗</a></div></div></article>`).join('')||'<p class="empty">No matching games.</p>';
- $('#libraryGrid').innerHTML=games.filter(g=>g.name.toLowerCase().includes(q)).map(g=>`<a class="library-card" href="${esc(download())}">${image(g.bannerUrl,g.name)}<h3>${esc(g.name)}</h3><span class="subtle">${esc(versions.get(g.id)||g.status)} · ${esc(g.pricing||'Free')}</span></a>`).join('')||'<p class="empty">No matching games.</p>';
+ const g=games[0];$('#heroGrid').innerHTML=g?`<article class="hero-card">${image(g.bannerUrl,g.name)}<div class="hero-copy"><span class="pill">FEATURED · ${esc(g.pricing||'FREE').toUpperCase()}</span><h2>${esc(g.name)}</h2><p>${esc(g.description)}</p><a class="primary" data-launcher-download href="${esc(download())}">Download launcher <span>↓</span></a></div></article><div class="hero-side">${news.slice(0,2).map(n=>`<article class="mini-news">${image(n.imageUrl)}<div><small>STUDIO NEWS · ${esc(n.date)}</small><h3>${esc(n.title)}</h3><a href="#" data-news="${esc(n.id)}">Read story ↗</a></div></article>`).join('')}</div>`:'<div class="empty">New worlds are on their way.</div>';
+ $('#gamesGrid').innerHTML=games.filter(g=>(g.name+' '+g.description).toLowerCase().includes(q)).map(g=>`<article class="game-card"><div class="game-media">${image(g.bannerUrl,g.name)}<span class="pill">${esc(g.status)}</span></div><div class="game-info"><div class="game-top"><h3>${esc(g.name)}</h3><small>${esc(versions.get(g.id)||'')}</small></div><p>${esc(g.description)}</p><div class="game-bottom"><span>${esc(g.pricing||'FREE').toUpperCase()}</span><a class="secondary" data-launcher-download href="${esc(download())}">Download launcher ↓</a></div></div></article>`).join('')||'<p class="empty">No matching games.</p>';
+ $('#libraryGrid').innerHTML=games.filter(g=>g.name.toLowerCase().includes(q)).map(g=>`<a class="library-card" data-launcher-download href="${esc(download())}">${image(g.bannerUrl,g.name)}<h3>${esc(g.name)}</h3><span class="subtle">${esc(versions.get(g.id)||g.status)} · ${esc(g.pricing||'Free')}</span></a>`).join('')||'<p class="empty">No matching games.</p>';
  $('#newsGrid').innerHTML=news.filter(n=>(n.title+' '+n.summary).toLowerCase().includes(q)).map(n=>`<article class="news-card">${image(n.imageUrl)}<div><small>${esc(n.date)} · ${n.pinned?'FEATURED':'NEWS'}</small><h3>${esc(n.title)}</h3><p>${esc(n.summary)}</p><a href="#" data-news="${esc(n.id)}">Read story ↗</a></div></article>`).join('');
  $('#workshopGrid').innerHTML=(catalog.workshop||[]).filter(w=>w.visible&&(category==='All'||w.category===category)&&(w.name+' '+w.description).toLowerCase().includes(q)).map(w=>`<article class="game-card"><div class="game-media">${image(w.imageUrl,w.name)}<span class="pill">${esc(w.category)}</span></div><div class="game-info"><h3>${esc(w.name)}</h3><p>${esc(w.description)}</p>${w.pricing==='free'&&safe(w.downloadUrl)?`<a class="secondary" href="${esc(safe(w.downloadUrl))}" target="_blank" rel="noopener">Download free ↗</a>`:'<span class="subtle">Coming soon</span>'}</div></article>`).join('')||'<div class="empty"><span>◇</span><h2>A space for your imagination.</h2><p>Mods, 3D models and tools will appear here when the studio publishes them.</p></div>';
  $('#notificationCount').textContent=news.length;
@@ -53,7 +120,7 @@ function render(){
 function route(){const page=['home','library','workshop'].includes(location.hash.slice(1))?location.hash.slice(1):'home';$$('.page').forEach(e=>e.hidden=e.id!==page);$$('[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page))}
 $('#modal .close-modal').onclick=()=>$('#modal').close();$('#modal').onclick=e=>{if(e.target===$('#modal'))$('#modal').close()};$('#profileButton').onclick=openNickname;$('#search').oninput=render;window.onhashchange=route;
 $$('[data-category]').forEach(b=>b.onclick=()=>{category=b.dataset.category;$$('[data-category]').forEach(x=>x.classList.toggle('selected',x===b));render()});
-document.addEventListener('click',e=>{const n=e.target.closest('[data-news]');if(n){e.preventDefault();const item=(catalog.news||[]).find(x=>x.id===n.dataset.news);if(item)modal(`${image(item.imageUrl)}<p class="eyebrow">${esc(item.date)}</p><h2>${esc(item.title)}</h2><p>${esc(item.summary)}</p>${safe(item.linkUrl)?`<a class="secondary" href="${esc(safe(item.linkUrl))}" target="_blank" rel="noopener">Full story ↗</a>`:''}`)}});
+document.addEventListener('click',e=>{const dl=e.target.closest('.download,[data-launcher-download]');if(dl){downloadLauncher({preventDefault:()=>e.preventDefault(),currentTarget:dl});return}const n=e.target.closest('[data-news]');if(n){e.preventDefault();const item=(catalog.news||[]).find(x=>x.id===n.dataset.news);if(item)modal(`${image(item.imageUrl)}<p class="eyebrow">${esc(item.date)}</p><h2>${esc(item.title)}</h2><p>${esc(item.summary)}</p>${safe(item.linkUrl)?`<a class="secondary" href="${esc(safe(item.linkUrl))}" target="_blank" rel="noopener">Full story ↗</a>`:''}`)}});
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('#search').focus()}});
 $('#notifications').onclick=()=>modal('<h2>Studio updates</h2>'+(catalog.news||[]).filter(n=>n.visible!==false).map(n=>`<p><b>${esc(n.title)}</b><br>${esc(n.date)} · ${esc(n.summary)}</p>`).join(''));
 async function load(){
@@ -61,8 +128,7 @@ async function load(){
  for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent',text:'text',mutedText:'muted'}))if(/^#[0-9a-f]{6}$/i.test(catalog.theme?.[key]))document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);document.body.classList.toggle('motion-off',catalog.theme?.motion===false);
  $$('[data-social]').forEach(a=>{const key=a.dataset.social;const url=safe(catalog.socials?.[key]||catalog.socials?.[key==='youtube'?'youTube':key]);if(url){a.href=url;a.target='_blank';a.rel='noopener'}else a.onclick=e=>{e.preventDefault();toast('The studio has not added this community link yet.')}});
  const heading=document.querySelector('#home h1');heading.textContent=catalog.presentation?.defaultHeroTitle||'Your next adventure.';
- refreshNickname();render();route();
- try{const r=await json('https://api.github.com/repos/atenoctcg-tech/AG-Launcher/releases/latest');const a=(r.assets||[]).find(a=>/^AGLauncher.*win.*x64.*\.zip$/i.test(a.name)&&!/source/i.test(a.name));if(a&&safe(a.browser_download_url))$$('.download').forEach(x=>x.href=safe(a.browser_download_url))}catch{}
+ refreshNickname();applyDownloadLinks();render();applyDownloadLinks();route();
  await Promise.allSettled((catalog.games||[]).filter(g=>g.visible!==false).map(async g=>{let gm=g;if(g.manifestUrl)gm=await json(g.manifestUrl+(g.manifestUrl.includes('?')?'&':'?')+'_ag='+Date.now());if(gm.releaseRepo){const r=await json('https://api.github.com/repos/'+gm.releaseRepo+'/releases/latest');if((r.assets||[]).some(a=>/\.zip$/i.test(a.name)&&!/source/i.test(a.name)))versions.set(g.id,r.tag_name)}else if(gm.version)versions.set(g.id,'v'+gm.version)}));render();
 }
 async function syncLiveCatalog(){
@@ -72,7 +138,9 @@ async function syncLiveCatalog(){
    catalog=next;
    for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent',text:'text',mutedText:'muted'}))if(/^#[0-9a-f]{6}$/i.test(catalog.theme?.[key]))document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);
    document.body.classList.toggle('motion-off',catalog.theme?.motion===false);
+   applyDownloadLinks();
    render();
+   applyDownloadLinks();
    toast('Website content refreshed.');
   }
  }catch{}
