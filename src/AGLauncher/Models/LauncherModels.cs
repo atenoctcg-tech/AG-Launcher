@@ -110,10 +110,12 @@ public sealed class GameState
 
 public sealed class ThemeConfig
 {
- public string Background { get; set; } = "#0B0F17";
- public string Panel { get; set; } = "#111824";
- public string Card { get; set; } = "#172132";
- public string Accent { get; set; } = "#80A8FF";
+ public string Background { get; set; } = "#070A0F";
+ public string Panel { get; set; } = "#0D1726";
+ public string Card { get; set; } = "#111D2D";
+ public string Accent { get; set; } = "#6FA8FF";
+ public string Text { get; set; } = "#F7F9FC";
+ public string MutedText { get; set; } = "#9AA7B8";
  public bool Motion { get; set; } = true;
 }
 public sealed class WorkshopItem
