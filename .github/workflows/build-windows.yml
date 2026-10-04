@@ -57,7 +57,7 @@ jobs:
             Write-Host "Release $tag already exists; replacing Windows asset."
             gh release upload $tag $assetName $sourceName --clobber --repo "${{ github.repository }}"
           } else {
-            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. No login required, local nickname profile, fixed website publishing, dark admin selection styling, automatic game updates and self-updater support."
+            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Live launcher refresh, profile photo + nickname, selectable game install drive, synchronized website publishing and automatic game updates."
           }
           if ($LASTEXITCODE -ne 0) { throw "GitHub Release publishing failed." }
 
