@@ -1,23 +1,76 @@
 using AGLauncher.Services;
+using Microsoft.Win32;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace AGLauncher;
 
 public partial class ProfileWindow : Window
 {
     private readonly ProfileService _profiles = new();
+    private string? _selectedPhotoPath;
+    private bool _removePhoto;
 
     public ProfileWindow()
     {
         InitializeComponent();
-        NicknameBox.Text = _profiles.Load().Nickname;
+        var profile = _profiles.Load();
+        NicknameBox.Text = profile.Nickname;
+        SetPreview(profile.PhotoPath);
         NicknameBox.Focus();
         NicknameBox.SelectAll();
     }
 
+    private void ChoosePhoto_Click(object sender, RoutedEventArgs e)
+    {
+        var picker = new OpenFileDialog
+        {
+            Title = "Choose profile photo",
+            Filter = "Images|*.png;*.jpg;*.jpeg;*.webp|All files|*.*"
+        };
+        if (picker.ShowDialog(this) != true) return;
+
+        var info = new FileInfo(picker.FileName);
+        if (info.Length > 8 * 1024 * 1024)
+        {
+            StatusText.Text = "Profile photo must be smaller than 8 MB.";
+            return;
+        }
+
+        _selectedPhotoPath = picker.FileName;
+        _removePhoto = false;
+        SetPreview(_selectedPhotoPath);
+        StatusText.Text = "Photo selected. Save profile to apply it.";
+    }
+
+    private void RemovePhoto_Click(object sender, RoutedEventArgs e)
+    {
+        _selectedPhotoPath = null;
+        _removePhoto = true;
+        PhotoPreview.Source = null;
+        StatusText.Text = "Profile photo will be removed when you save.";
+    }
+
+    private void SetPreview(string? path)
+    {
+        PhotoPreview.Source = null;
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return;
+        try
+        {
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.UriSource = new Uri(path, UriKind.Absolute);
+            image.EndInit();
+            image.Freeze();
+            PhotoPreview.Source = image;
+        }
+        catch { }
+    }
+
     private void Save_Click(object sender, RoutedEventArgs e)
     {
-        var result = _profiles.SaveNickname(NicknameBox.Text);
+        var result = _profiles.Save(NicknameBox.Text, _selectedPhotoPath, _removePhoto);
         StatusText.Text = result.Message;
         if (result.Ok) DialogResult = true;
     }
