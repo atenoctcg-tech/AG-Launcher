@@ -29,6 +29,7 @@ public partial class MainWindow : Window
     private readonly GameInstallerService _installer = new();
     private readonly SelfUpdateService _selfUpdate = new();
     private readonly NotificationService _notificationService = new();
+    private readonly ProfileService _profileService = new();
     private List<GameCatalogItem> _allGames = new();
     private List<LauncherNotification> _notifications = new();
     private GameCatalogItem? _selectedGame;
@@ -52,16 +53,9 @@ public partial class MainWindow : Window
             App.MotionEnabled = _manifest.Theme.Motion;
             foreach (var pair in new[] { ("BgBrush", _manifest.Theme.Background), ("PanelBrush", _manifest.Theme.Panel), ("CardBrush", _manifest.Theme.Card) })
                 try { Application.Current.Resources[pair.Item1] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(pair.Item2)); } catch { }
-            AccountService.BaseUrl = _manifest.Auth.ApiBaseUrl;
-            if (AccountService.User == null)
-            {
-                Hide();
-                var account = new AccountWindow(_manifest, _bootstrap);
-                if (account.ShowDialog() != true) { Close(); return; }
-                Show();
-            }
-            ProfileNameText.Text = AccountService.User?.Username ?? "Account";
-            ProfileHintText.Text = "View profile";
+            var localProfile = _profileService.Load();
+            ProfileNameText.Text = string.IsNullOrWhiteSpace(localProfile.Nickname) ? "Guest" : localProfile.Nickname;
+            ProfileHintText.Text = string.IsNullOrWhiteSpace(localProfile.Nickname) ? "Set nickname" : "Local nickname";
             WorkshopItems.ItemsSource = _manifest.Workshop.Where(w => w.Visible).ToList();
             WorkshopEmpty.Visibility = _manifest.Workshop.Any(w => w.Visible) ? Visibility.Collapsed : Visibility.Visible;
 
@@ -401,11 +395,12 @@ public partial class MainWindow : Window
 
     private void ProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new AccountWindow(_manifest, _bootstrap, true) { Owner = this };
+        var dialog = new ProfileWindow { Owner = this };
         if (dialog.ShowDialog() == true)
         {
-            ProfileNameText.Text = AccountService.User?.Username ?? "Account";
-            ProfileHintText.Text = "View profile";
+            var profile = _profileService.Load();
+            ProfileNameText.Text = string.IsNullOrWhiteSpace(profile.Nickname) ? "Guest" : profile.Nickname;
+            ProfileHintText.Text = string.IsNullOrWhiteSpace(profile.Nickname) ? "Set nickname" : "Local nickname";
         }
     }
 
