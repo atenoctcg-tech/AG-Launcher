@@ -12,7 +12,7 @@ public sealed class ManifestService
 
     public ManifestService()
     {
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.4.0");
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.4.2");
         _http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
         _http.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
     }
@@ -21,7 +21,7 @@ public sealed class ManifestService
     {
         try
         {
-            var json = await _http.GetStringAsync(cfg.ManifestUrl);
+            var json = await _http.GetStringAsync(CacheBust(cfg.ManifestUrl));
             var m = JsonSerializer.Deserialize<LauncherManifest>(json, JsonUtil.Options);
             if (m != null) return (m, true);
         }
@@ -43,7 +43,7 @@ public sealed class ManifestService
 
     public async Task<GameManifest> LoadGameAsync(string url)
     {
-        var json = await _http.GetStringAsync(url);
+        var json = await _http.GetStringAsync(CacheBust(url));
         var manifest = JsonSerializer.Deserialize<GameManifest>(json, JsonUtil.Options)
             ?? throw new InvalidOperationException("Game manifest is invalid.");
 
@@ -127,6 +127,12 @@ public sealed class ManifestService
                 Sha256 = sha
             }
         };
+    }
+
+    private static string CacheBust(string url)
+    {
+        var separator = url.Contains('?') ? "&" : "?";
+        return url + separator + "_ag=" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     }
 
     private static string NormalizeVersion(string tag)
