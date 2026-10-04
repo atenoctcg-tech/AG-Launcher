@@ -20,62 +20,19 @@ function applyDownloadLinks(){
  });
 }
 
-async function downloadLauncher(e){
+function downloadLauncher(e){
  e.preventDefault();
  const url=download();
  if(!url){toast('Launcher download is temporarily unavailable.');return}
-
- const link=e.currentTarget.closest('a,button')||e.currentTarget;
- const original=link.innerHTML;
- link.setAttribute('aria-busy','true');
- link.classList.add('downloading');
-
- try{
-  toast('Preparing AG Launcher download…');
-  const response=await fetch(url,{redirect:'follow',cache:'no-store'});
-  if(!response.ok)throw Error('Download failed ('+response.status+').');
-
-  const total=Number(response.headers.get('content-length')||0);
-  const reader=response.body?.getReader();
-  if(!reader)throw Error('Streaming download is not supported by this browser.');
-
-  const chunks=[];let received=0;
-  while(true){
-   const {done,value}=await reader.read();
-   if(done)break;
-   chunks.push(value);received+=value.byteLength;
-   if(total){
-    const percent=Math.min(100,Math.round(received/total*100));
-    toast('Downloading AG Launcher… '+percent+'%');
-   }
-  }
-
-  const blob=new Blob(chunks,{type:'application/zip'});
-  const objectUrl=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=objectUrl;
-  a.download='AGLauncher-Windows-x64.zip';
-  a.style.display='none';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=>URL.revokeObjectURL(objectUrl),60000);
-  toast('AG Launcher download started.');
- }catch(err){
-  // Fallback still points directly to the ZIP asset, not to a GitHub release page.
-  const a=document.createElement('a');
-  a.href=url;
-  a.download='AGLauncher-Windows-x64.zip';
-  a.style.display='none';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  toast('Download started.');
- }finally{
-  link.removeAttribute('aria-busy');
-  link.classList.remove('downloading');
-  link.innerHTML=original;
- }
+ const a=document.createElement('a');
+ a.href=url;
+ a.download='AGLauncher-Windows-x64.zip';
+ a.rel='noopener';
+ a.style.display='none';
+ document.body.appendChild(a);
+ a.click();
+ a.remove();
+ toast('AG Launcher download started.');
 }
 function nickname(){return (localStorage.getItem(nicknameKey)||'').trim()}
 function refreshNickname(){
@@ -123,26 +80,76 @@ $$('[data-category]').forEach(b=>b.onclick=()=>{category=b.dataset.category;$$('
 document.addEventListener('click',e=>{const dl=e.target.closest('.download,[data-launcher-download]');if(dl){downloadLauncher({preventDefault:()=>e.preventDefault(),currentTarget:dl});return}const n=e.target.closest('[data-news]');if(n){e.preventDefault();const item=(catalog.news||[]).find(x=>x.id===n.dataset.news);if(item)modal(`${image(item.imageUrl)}<p class="eyebrow">${esc(item.date)}</p><h2>${esc(item.title)}</h2><p>${esc(item.summary)}</p>${safe(item.linkUrl)?`<a class="secondary" href="${esc(safe(item.linkUrl))}" target="_blank" rel="noopener">Full story ↗</a>`:''}`)}});
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('#search').focus()}});
 $('#notifications').onclick=()=>modal('<h2>Studio updates</h2>'+(catalog.news||[]).filter(n=>n.visible!==false).map(n=>`<p><b>${esc(n.title)}</b><br>${esc(n.date)} · ${esc(n.summary)}</p>`).join(''));
-async function load(){
- try{catalog=await json(liveManifestUrl())}catch{catalog=await json('catalog.json');$('#status').hidden=false;$('#status').textContent='Showing the bundled catalog. Live content is temporarily unavailable.'}
- for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent',text:'text',mutedText:'muted'}))if(/^#[0-9a-f]{6}$/i.test(catalog.theme?.[key]))document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);document.body.classList.toggle('motion-off',catalog.theme?.motion===false);
- $$('[data-social]').forEach(a=>{const key=a.dataset.social;const url=safe(catalog.socials?.[key]||catalog.socials?.[key==='youtube'?'youTube':key]);if(url){a.href=url;a.target='_blank';a.rel='noopener'}else a.onclick=e=>{e.preventDefault();toast('The studio has not added this community link yet.')}});
- const heading=document.querySelector('#home h1');heading.textContent=catalog.presentation?.defaultHeroTitle||'Your next adventure.';
- refreshNickname();applyDownloadLinks();render();applyDownloadLinks();route();
- await Promise.allSettled((catalog.games||[]).filter(g=>g.visible!==false).map(async g=>{let gm=g;if(g.manifestUrl)gm=await json(g.manifestUrl+(g.manifestUrl.includes('?')?'&':'?')+'_ag='+Date.now());if(gm.releaseRepo){const r=await json('https://api.github.com/repos/'+gm.releaseRepo+'/releases/latest');if((r.assets||[]).some(a=>/\.zip$/i.test(a.name)&&!/source/i.test(a.name)))versions.set(g.id,r.tag_name)}else if(gm.version)versions.set(g.id,'v'+gm.version)}));render();
+function applyTheme(){
+ for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent',text:'text',mutedText:'muted'}))
+  if(/^#[0-9a-f]{6}$/i.test(catalog?.theme?.[key]))
+   document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);
+ document.body.classList.toggle('motion-off',catalog?.theme?.motion===false);
 }
+
+function applySocials(){
+ $$('[data-social]').forEach(a=>{
+  const key=a.dataset.social;
+  const url=safe(catalog?.socials?.[key]||catalog?.socials?.[key==='youtube'?'youTube':key]);
+  if(url){a.href=url;a.target='_blank';a.rel='noopener'}
+  else a.onclick=e=>{e.preventDefault();toast('The studio has not added this community link yet.')}
+ });
+}
+
+function paintCatalog(){
+ applyTheme();
+ applySocials();
+ const heading=document.querySelector('#home h1');
+ if(heading)heading.textContent=catalog?.presentation?.defaultHeroTitle||'Your next adventure.';
+ refreshNickname();
+ render();
+ applyDownloadLinks();
+ route();
+}
+
+async function load(){
+ let localError=null;
+ try{
+  // Same-origin catalog is the reliable website source and is published together with launcher-manifest.json.
+  catalog=await json('catalog.json?_ag='+Date.now());
+ }catch(err){
+  localError=err;
+  try{catalog=await json(liveManifestUrl())}
+  catch(liveErr){throw Error('Catalog could not be loaded: '+(localError?.message||liveErr.message))}
+ }
+
+ paintCatalog();
+ $('#status').hidden=true;
+
+ // Refresh from the live launcher manifest when available, but never blank the website if it fails.
+ try{
+  const live=await json(liveManifestUrl());
+  if(live&&JSON.stringify(live)!==JSON.stringify(catalog)){
+   catalog=live;
+   paintCatalog();
+  }
+ }catch{}
+
+ await Promise.allSettled((catalog.games||[]).filter(g=>g.visible!==false).map(async g=>{
+  let gm=g;
+  if(g.manifestUrl)gm=await json(g.manifestUrl+(g.manifestUrl.includes('?')?'&':'?')+'_ag='+Date.now());
+  if(gm.releaseRepo){
+   const r=await json('https://api.github.com/repos/'+gm.releaseRepo+'/releases/latest');
+   if((r.assets||[]).some(a=>/\.zip$/i.test(a.name)&&!/source/i.test(a.name)))versions.set(g.id,r.tag_name);
+  }else if(gm.version)versions.set(g.id,'v'+gm.version);
+ }));
+ render();
+ applyDownloadLinks();
+}
+
 async function syncLiveCatalog(){
  try{
   const next=await json(liveManifestUrl());
   if(JSON.stringify(next)!==JSON.stringify(catalog)){
    catalog=next;
-   for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent',text:'text',mutedText:'muted'}))if(/^#[0-9a-f]{6}$/i.test(catalog.theme?.[key]))document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);
-   document.body.classList.toggle('motion-off',catalog.theme?.motion===false);
-   applyDownloadLinks();
-   render();
-   applyDownloadLinks();
+   paintCatalog();
    toast('Website content refreshed.');
   }
  }catch{}
 }
-load().then(()=>setInterval(syncLiveCatalog,30000)).catch(()=>{$('#status').hidden=false;$('#status').textContent='Unable to load the catalog. Please refresh.'});
+load().then(()=>setInterval(syncLiveCatalog,30000)).catch(err=>{$('#status').hidden=false;$('#status').textContent='Unable to load the catalog: '+(err?.message||'Unknown error')+'. Please refresh.';console.error(err)});
