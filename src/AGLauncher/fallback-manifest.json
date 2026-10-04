@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.4.6",
+    "latestVersion": "0.4.7",
     "minimumVersion": "0.4.5",
     "mandatory": false,
-    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.6/AGLauncher-v0.4.6-win-x64.zip",
+    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.7/AG%20Launcher.zip",
     "sha256": "",
-    "releaseNotes": "AG Launcher v0.4.6 - search suggestions, larger UI text, dark teal action buttons, fixed studio admin password gate, and configurable QUICK LAUNCH icons.",
+    "releaseNotes": "AG Launcher v0.4.7 - animated GIF/MP4 main banners, fixed QUICK LAUNCH during installs, separate Library images, and improved Library cards.",
     "autoUpdate": true
   },
   "socials": {
@@ -72,7 +72,9 @@
       "requiresOwnership": false,
       "releaseRepo": "atenoctcg-tech/Castle-Survival-Releases",
       "executable": "CastleSurvival.exe",
-      "installFolder": "Castle Survival"
+      "installFolder": "Castle Survival",
+      "animatedBannerUrl": "",
+      "libraryImageUrl": ""
     }
   ],
   "theme": {

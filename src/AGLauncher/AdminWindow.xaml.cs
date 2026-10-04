@@ -74,6 +74,7 @@ public partial class AdminWindow : Window
         {
             Id = source.Id + "-copy", Name = source.Name + " (copy)", Description = source.Description, Status = source.Status,
             Pricing = source.Pricing, Visible = false, Featured = false, SortOrder = source.SortOrder + 1, BannerUrl = source.BannerUrl,
+            AnimatedBannerUrl = source.AnimatedBannerUrl, LibraryImageUrl = source.LibraryImageUrl,
             IconUrl = source.IconUrl, ManifestUrl = source.ManifestUrl, WebsiteUrl = source.WebsiteUrl, ProductId = "", PurchaseUrl = source.PurchaseUrl,
             RequiresOwnership = source.RequiresOwnership
         });
@@ -98,11 +99,57 @@ public partial class AdminWindow : Window
         if (!string.IsNullOrWhiteSpace(url)) { item.BannerUrl = url; GamesGrid.Items.Refresh(); StatusText.Text = "Game banner uploaded."; }
     }
 
+    private async void UploadGameAnimatedBanner_Click(object sender, RoutedEventArgs e)
+    {
+        if (GamesGrid.SelectedItem is not GameCatalogItem item) { MessageBox.Show("Select a game row first."); return; }
+        var url = await UploadAnimatedMediaAsync("game-media");
+        if (!string.IsNullOrWhiteSpace(url)) { item.AnimatedBannerUrl = url; GamesGrid.Items.Refresh(); StatusText.Text = "Animated game banner uploaded."; }
+    }
+
+    private async void UploadGameLibraryImage_Click(object sender, RoutedEventArgs e)
+    {
+        if (GamesGrid.SelectedItem is not GameCatalogItem item) { MessageBox.Show("Select a game row first."); return; }
+        var url = await UploadImageAsync("library");
+        if (!string.IsNullOrWhiteSpace(url)) { item.LibraryImageUrl = url; GamesGrid.Items.Refresh(); StatusText.Text = "Library image uploaded."; }
+    }
+
     private async void UploadGameIcon_Click(object sender, RoutedEventArgs e)
     {
         if (GamesGrid.SelectedItem is not GameCatalogItem item) { MessageBox.Show("Select a game row first."); return; }
         var url = await UploadImageAsync("icons");
         if (!string.IsNullOrWhiteSpace(url)) { item.IconUrl = url; GamesGrid.Items.Refresh(); StatusText.Text = "Game icon uploaded."; }
+    }
+
+    private async Task<string> UploadAnimatedMediaAsync(string folder)
+    {
+        if (string.IsNullOrWhiteSpace(_token))
+        {
+            MessageBox.Show("Save your GitHub token in SECURITY first.", "AG Launcher Admin", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return "";
+        }
+
+        var picker = new OpenFileDialog { Filter = "Animated banner|*.gif;*.mp4|GIF|*.gif|MP4 video|*.mp4|All files|*.*" };
+        if (picker.ShowDialog(this) != true) return "";
+
+        var info = new FileInfo(picker.FileName);
+        if (info.Length > 50 * 1024 * 1024)
+        {
+            MessageBox.Show("Please use a GIF / MP4 smaller than 50 MB.");
+            return "";
+        }
+
+        try
+        {
+            StatusText.Text = "Uploading animated banner to GitHub...";
+            return await new GitHubAdminService().UploadMediaAsync(
+                _cfg, _token, await File.ReadAllBytesAsync(picker.FileName),
+                Path.GetFileName(picker.FileName), folder);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Animated banner upload failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            return "";
+        }
     }
 
     private async Task<string> UploadImageAsync(string folder)

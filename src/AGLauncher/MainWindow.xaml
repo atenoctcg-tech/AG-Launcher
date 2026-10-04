@@ -70,7 +70,7 @@
 
       <Border Grid.Row="4" Background="{DynamicResource CardBrush}" BorderBrush="#262D36" BorderThickness="1" CornerRadius="13" Padding="11">
        <StackPanel>
-        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="13" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.4.6" Foreground="#747D89" FontSize="13"/></Grid>
+        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="13" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.4.7" Foreground="#747D89" FontSize="13"/></Grid>
         <TextBlock x:Name="SideInstallStatusText" Text="Ready" Foreground="#6B7480" FontSize="13" Margin="0,5,0,0" TextTrimming="CharacterEllipsis"/>
         <ProgressBar x:Name="SideInstallProgress" Height="4" Minimum="0" Maximum="1" Visibility="Collapsed" Margin="0,8,0,0"/>
        </StackPanel>
@@ -150,7 +150,14 @@
       <StackPanel Margin="28,4,28,34">
        <Border Style="{StaticResource ZoomPanel}" Height="420" CornerRadius="22" ClipToBounds="True" BorderBrush="#2B323B" BorderThickness="1" Background="#11161C">
         <Grid>
-         <Image x:Name="HeroBannerImage" Stretch="UniformToFill" Opacity="0.72"/>
+         <Grid x:Name="HeroMediaHost" Opacity="0.72">
+          <Image x:Name="HeroBannerImage" Stretch="UniformToFill"/>
+          <MediaElement x:Name="HeroBannerVideo" Stretch="UniformToFill" Visibility="Collapsed"
+                        LoadedBehavior="Manual" UnloadedBehavior="Stop" IsMuted="True"
+                        MediaOpened="HeroBannerVideo_MediaOpened"
+                        MediaEnded="HeroBannerVideo_MediaEnded"
+                        MediaFailed="HeroBannerVideo_MediaFailed"/>
+         </Grid>
          <Rectangle><Rectangle.Fill><LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5"><GradientStop Color="#FA090C10" Offset="0"/><GradientStop Color="#E6090C10" Offset="0.42"/><GradientStop Color="#60090C10" Offset="0.76"/><GradientStop Color="#18090C10" Offset="1"/></LinearGradientBrush></Rectangle.Fill></Rectangle>
          <Grid Margin="42,36"><Grid.RowDefinitions><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
           <StackPanel Width="660" HorizontalAlignment="Left" VerticalAlignment="Center">
@@ -191,7 +198,7 @@
        <ListBox x:Name="LibraryList" Background="Transparent" BorderThickness="0" SelectionChanged="LibraryList_SelectionChanged">
         <ListBox.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ListBox.ItemsPanel>
         <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,0,14,14"/></Style></ListBox.ItemContainerStyle>
-        <ListBox.ItemTemplate><DataTemplate><Border Style="{StaticResource ZoomPanel}" Width="210" Height="360" CornerRadius="16" Background="{DynamicResource CardBrush}" BorderBrush="#252C35" BorderThickness="1" ClipToBounds="True"><Grid><Grid.RowDefinitions><RowDefinition Height="280"/><RowDefinition/></Grid.RowDefinitions><Border Background="#151B22"><Image Source="{Binding BannerUrl}" Stretch="UniformToFill"/></Border><Grid Grid.Row="1" Margin="14"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"/><TextBlock Text="{Binding VersionText}" Foreground="#737D89" FontSize="13" Margin="0,4,0,0"/><TextBlock Text="{Binding StatusText}" Foreground="#9CA5B1" FontSize="13" Margin="0,4,0,0"/></StackPanel><TextBlock Grid.Column="1" Text="OPEN →" Foreground="#D7DCE3" FontSize="13" VerticalAlignment="Bottom"/></Grid></Grid></Border></DataTemplate></ListBox.ItemTemplate>
+        <ListBox.ItemTemplate><DataTemplate><Border Style="{StaticResource ZoomPanel}" Width="240" Height="410" CornerRadius="16" Background="{DynamicResource CardBrush}" BorderBrush="#252C35" BorderThickness="1" ClipToBounds="True"><Grid><Grid.RowDefinitions><RowDefinition Height="288"/><RowDefinition Height="*"/></Grid.RowDefinitions><Border Background="#151B22"><Image Source="{Binding LibraryImageUrl}" Stretch="UniformToFill"/></Border><Grid Grid.Row="1" Margin="15,13"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><Grid><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"/><TextBlock Grid.Row="1" Text="{Binding VersionText}" Foreground="#8794A4" FontSize="13" Margin="0,5,0,0" TextWrapping="Wrap"/><TextBlock Grid.Row="2" Text="{Binding StatusText}" Foreground="#A8B3C1" FontSize="13" Margin="0,5,8,0" TextWrapping="Wrap" TextTrimming="CharacterEllipsis"/></Grid><TextBlock Grid.Column="1" Text="OPEN →" Foreground="#D7DCE3" FontSize="13" Margin="12,0,0,0" VerticalAlignment="Bottom"/></Grid></Grid></Border></DataTemplate></ListBox.ItemTemplate>
        </ListBox>
        <TextBlock x:Name="EmptyLibraryText" Text="No installed games yet. Install a game from Home and it will appear here." Foreground="#6F7884" FontSize="13" Margin="4,16,0,0" Visibility="Collapsed"/>
       </StackPanel>

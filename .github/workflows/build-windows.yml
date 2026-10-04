@@ -70,9 +70,9 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($version)) { throw "Launcher version not found in AGLauncher.csproj" }
           $tag = "v$version"
           $zip = ".\dist\AGLauncher-win-x64.zip"
-          $assetName = "AGLauncher-$tag-win-x64.zip"
+          $assetName = "AG Launcher.zip"
           Copy-Item $zip $assetName -Force
-          $sourceName = "AGLauncher-$tag-Source.zip"
+          $sourceName = "AG Launcher Source.zip"
           git archive --format=zip --output=$sourceName HEAD
 
           gh release view $tag --repo "${{ github.repository }}" *> $null
@@ -80,7 +80,7 @@ jobs:
             Write-Host "Release $tag already exists; replacing Windows asset."
             gh release upload $tag $assetName $sourceName --clobber --repo "${{ github.repository }}"
           } else {
-            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Repaired self-updater, dark launcher UI, live refresh, profile photo + nickname, selectable game install drive and automatic game updates."
+            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Animated GIF/MP4 banners, separate Library art, improved install UI and automatic updates."
           }
           if ($LASTEXITCODE -ne 0) { throw "GitHub Release publishing failed." }
 

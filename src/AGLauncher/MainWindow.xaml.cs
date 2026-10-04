@@ -2,10 +2,12 @@ using System.IO;
 using AGLauncher.Models;
 using AGLauncher.Services;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using System.Text.Json;
 using Microsoft.Win32;
 
@@ -17,6 +19,7 @@ public sealed class LibraryGameEntry
     public GameManifest Manifest { get; set; } = new();
     public string Name => Game.Name;
     public string BannerUrl => Game.BannerUrl;
+    public string LibraryImageUrl => string.IsNullOrWhiteSpace(Game.LibraryImageUrl) ? Game.BannerUrl : Game.LibraryImageUrl;
     public string VersionText { get; set; } = "";
     public string StatusText { get; set; } = "Installed";
 }
@@ -24,6 +27,7 @@ public sealed class LibraryGameEntry
 public partial class MainWindow : Window
 {
     private bool _refreshing;
+    private bool _installing;
     private readonly System.Windows.Threading.DispatcherTimer _poll = new() { Interval = TimeSpan.FromSeconds(45) };
     private int _pollCounter;
     private string _manifestFingerprint = "";
@@ -38,6 +42,12 @@ public partial class MainWindow : Window
     private List<LauncherNotification> _notifications = new();
     private GameCatalogItem? _selectedGame;
     private GameManifest? _selectedGameManifest;
+    private readonly HttpClient _heroHttp = new();
+    private CancellationTokenSource? _heroMediaCts;
+    private DispatcherTimer? _heroGifTimer;
+    private List<BitmapFrame> _heroGifFrames = new();
+    private List<TimeSpan> _heroGifDelays = new();
+    private int _heroGifIndex;
 
     public MainWindow()
     {
@@ -112,7 +122,7 @@ public partial class MainWindow : Window
 
     private async Task PollUpdatesAsync()
     {
-        if (_refreshing || !GamesList.IsEnabled) return;
+        if (_refreshing || _installing) return;
         _refreshing = true;
         try
         {
@@ -322,7 +332,7 @@ public partial class MainWindow : Window
         PricingText.Text = string.IsNullOrWhiteSpace(_selectedGame.Pricing) ? "FREE" : _selectedGame.Pricing.ToUpperInvariant();
         GameWebsiteButton.Visibility = string.IsNullOrWhiteSpace(_selectedGame.WebsiteUrl) ? Visibility.Collapsed : Visibility.Visible;
         OpenInstallFolderButton.Visibility = Visibility.Collapsed;
-        SetHeroBanner(_selectedGame.BannerUrl);
+        SetHeroBanner(_selectedGame.BannerUrl, _selectedGame.AnimatedBannerUrl);
 
         GameActionButton.IsEnabled = false;
         GameActionButton.Content = "CHECKING...";
@@ -363,10 +373,73 @@ public partial class MainWindow : Window
         }
     }
 
-    private void SetHeroBanner(string? url)
+    private async void SetHeroBanner(string? fallbackUrl, string? animatedUrl)
     {
+        _heroMediaCts?.Cancel();
+        _heroMediaCts = new CancellationTokenSource();
+        var token = _heroMediaCts.Token;
+
+        StopHeroMedia();
+        HeroBannerImage.Source = null;
+
+        var animated = animatedUrl?.Trim() ?? "";
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(animated))
+            {
+                var ext = Path.GetExtension(new Uri(animated).AbsolutePath).ToLowerInvariant();
+
+                if (ext == ".mp4")
+                {
+                    HeroBannerVideo.Source = new Uri(animated, UriKind.Absolute);
+                    HeroBannerVideo.Visibility = Visibility.Visible;
+                    HeroBannerImage.Visibility = Visibility.Collapsed;
+                    return;
+                }
+
+                if (ext == ".gif")
+                {
+                    var bytes = await _heroHttp.GetByteArrayAsync(animated, token);
+                    if (token.IsCancellationRequested) return;
+
+                    using var stream = new MemoryStream(bytes);
+                    var decoder = new GifBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+                    _heroGifFrames = decoder.Frames.ToList();
+                    _heroGifDelays = _heroGifFrames.Select(GetGifFrameDelay).ToList();
+
+                    if (_heroGifFrames.Count > 0)
+                    {
+                        _heroGifIndex = 0;
+                        HeroBannerImage.Source = _heroGifFrames[0];
+                        HeroBannerImage.Visibility = Visibility.Visible;
+                        HeroBannerVideo.Visibility = Visibility.Collapsed;
+
+                        if (_heroGifFrames.Count > 1)
+                        {
+                            _heroGifTimer = new DispatcherTimer { Interval = _heroGifDelays[0] };
+                            _heroGifTimer.Tick += HeroGifTick;
+                            _heroGifTimer.Start();
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // Fall back to the normal image below.
+        }
+
+        LoadStaticHeroImage(fallbackUrl);
+    }
+
+    private void LoadStaticHeroImage(string? url)
+    {
+        HeroBannerVideo.Visibility = Visibility.Collapsed;
+        HeroBannerImage.Visibility = Visibility.Visible;
         HeroBannerImage.Source = null;
         if (string.IsNullOrWhiteSpace(url)) return;
+
         try
         {
             var image = new BitmapImage();
@@ -379,6 +452,70 @@ public partial class MainWindow : Window
         }
         catch { HeroBannerImage.Source = null; }
     }
+
+    private void StopHeroMedia()
+    {
+        if (_heroGifTimer != null)
+        {
+            _heroGifTimer.Stop();
+            _heroGifTimer.Tick -= HeroGifTick;
+            _heroGifTimer = null;
+        }
+        _heroGifFrames.Clear();
+        _heroGifDelays.Clear();
+
+        try { HeroBannerVideo.Stop(); } catch { }
+        HeroBannerVideo.Source = null;
+        HeroBannerVideo.Visibility = Visibility.Collapsed;
+    }
+
+    private void HeroGifTick(object? sender, EventArgs e)
+    {
+        if (_heroGifFrames.Count == 0 || _heroGifTimer == null) return;
+        _heroGifIndex = (_heroGifIndex + 1) % _heroGifFrames.Count;
+        HeroBannerImage.Source = _heroGifFrames[_heroGifIndex];
+        _heroGifTimer.Interval = _heroGifDelays.Count > _heroGifIndex
+            ? _heroGifDelays[_heroGifIndex]
+            : TimeSpan.FromMilliseconds(100);
+    }
+
+    private static TimeSpan GetGifFrameDelay(BitmapFrame frame)
+    {
+        try
+        {
+            if (frame.Metadata is BitmapMetadata metadata &&
+                metadata.GetQuery("/grctlext/Delay") is ushort delay &&
+                delay > 0)
+                return TimeSpan.FromMilliseconds(Math.Max(20, delay * 10));
+        }
+        catch { }
+
+        return TimeSpan.FromMilliseconds(100);
+    }
+
+    private void HeroBannerVideo_MediaOpened(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            HeroBannerVideo.IsMuted = true;
+            HeroBannerVideo.Position = TimeSpan.Zero;
+            HeroBannerVideo.Play();
+        }
+        catch { }
+    }
+
+    private void HeroBannerVideo_MediaEnded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            HeroBannerVideo.Position = TimeSpan.Zero;
+            HeroBannerVideo.Play();
+        }
+        catch { }
+    }
+
+    private void HeroBannerVideo_MediaFailed(object sender, ExceptionRoutedEventArgs e) =>
+        LoadStaticHeroImage(_selectedGame?.BannerUrl);
 
     private void RefreshGameAction()
     {
@@ -456,7 +593,10 @@ public partial class MainWindow : Window
             }
 
             GameActionButton.IsEnabled = false;
-            GamesList.IsEnabled = GameCards.IsEnabled = SearchBox.IsEnabled = false;
+            _installing = true;
+            GamesList.IsHitTestVisible = false;
+            GameCards.IsHitTestVisible = false;
+            SearchBox.IsHitTestVisible = false;
             InstallProgress.Visibility = Visibility.Visible;
             SideInstallProgress.Visibility = Visibility.Visible;
             InstallProgress.Value = 0;
@@ -482,7 +622,13 @@ public partial class MainWindow : Window
             MessageBox.Show(ex.Message, "Install error", MessageBoxButton.OK, MessageBoxImage.Error);
             RefreshGameAction();
         }
-        finally { GamesList.IsEnabled = GameCards.IsEnabled = SearchBox.IsEnabled = true; }
+        finally
+        {
+            _installing = false;
+            GamesList.IsHitTestVisible = true;
+            GameCards.IsHitTestVisible = true;
+            SearchBox.IsHitTestVisible = true;
+        }
     }
 
     private async Task RefreshLibraryAsync()

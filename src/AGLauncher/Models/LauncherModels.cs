@@ -72,6 +72,8 @@ public sealed class GameCatalogItem
     public bool Featured { get; set; }
     public int SortOrder { get; set; }
     public string BannerUrl { get; set; } = "";
+    public string AnimatedBannerUrl { get; set; } = "";
+    public string LibraryImageUrl { get; set; } = "";
     public string IconUrl { get; set; } = "";
     public string ManifestUrl { get; set; } = "";
     public string WebsiteUrl { get; set; } = "";

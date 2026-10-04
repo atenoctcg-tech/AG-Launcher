@@ -95,4 +95,34 @@ public sealed class GitHubAdminService
         if (!put.IsSuccessStatusCode) throw new HttpRequestException($"Image upload failed: {(int)put.StatusCode} {await put.Content.ReadAsStringAsync()}");
         return $"https://raw.githubusercontent.com/{cfg.Owner}/{cfg.Repo}/{cfg.Branch}/{path}";
     }
+    public async Task<string> UploadMediaAsync(BootstrapConfig cfg, string token, byte[] bytes, string originalName, string folder)
+    {
+        using var c = Client(token);
+        var ext = Path.GetExtension(originalName).ToLowerInvariant();
+        if (ext is not ".gif" and not ".mp4")
+            throw new InvalidDataException("Only GIF and MP4 animated banners are supported.");
+
+        var stem = Path.GetFileNameWithoutExtension(originalName);
+        stem = Regex.Replace(stem, "[^a-zA-Z0-9_-]+", "-").Trim('-');
+        if (string.IsNullOrWhiteSpace(stem)) stem = "animated-banner";
+
+        var safeFolder = Regex.Replace(folder, "[^a-zA-Z0-9_-]+", "-");
+        var path = $"docs/media/{safeFolder}/{DateTime.UtcNow:yyyyMMdd-HHmmss}-{stem}{ext}";
+        var payload = JsonSerializer.Serialize(new
+        {
+            message = $"Upload {safeFolder} media for AG Launcher",
+            content = Convert.ToBase64String(bytes),
+            branch = cfg.Branch
+        });
+
+        using var put = await c.PutAsync(
+            $"https://api.github.com/repos/{cfg.Owner}/{cfg.Repo}/contents/{path}",
+            new StringContent(payload, Encoding.UTF8, "application/json"));
+
+        if (!put.IsSuccessStatusCode)
+            throw new HttpRequestException($"Media upload failed: {(int)put.StatusCode} {await put.Content.ReadAsStringAsync()}");
+
+        return $"https://raw.githubusercontent.com/{cfg.Owner}/{cfg.Repo}/{cfg.Branch}/{path}";
+    }
+
 }
