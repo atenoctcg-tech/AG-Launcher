@@ -70,7 +70,7 @@
 
       <Border Grid.Row="4" Background="{DynamicResource CardBrush}" BorderBrush="#262D36" BorderThickness="1" CornerRadius="13" Padding="11">
        <StackPanel>
-        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="12" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.4.4" Foreground="#747D89" FontSize="12"/></Grid>
+        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="12" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.4.5" Foreground="#747D89" FontSize="12"/></Grid>
         <TextBlock x:Name="SideInstallStatusText" Text="Ready" Foreground="#6B7480" FontSize="12" Margin="0,5,0,0" TextTrimming="CharacterEllipsis"/>
         <ProgressBar x:Name="SideInstallProgress" Height="4" Minimum="0" Maximum="1" Visibility="Collapsed" Margin="0,8,0,0"/>
        </StackPanel>
