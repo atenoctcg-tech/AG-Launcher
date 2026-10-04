@@ -181,8 +181,23 @@ public partial class MainWindow : Window
     private void ApplyTheme()
     {
         App.MotionEnabled = _manifest.Theme.Motion;
-        foreach (var pair in new[] { ("BgBrush", _manifest.Theme.Background), ("PanelBrush", _manifest.Theme.Panel), ("CardBrush", _manifest.Theme.Card) })
-            try { Application.Current.Resources[pair.Item1] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(pair.Item2)); } catch { }
+        foreach (var pair in new[]
+        {
+            ("BgBrush", _manifest.Theme.Background),
+            ("PanelBrush", _manifest.Theme.Panel),
+            ("CardBrush", _manifest.Theme.Card),
+            ("TextBrush", _manifest.Theme.Text),
+            ("MutedBrush", _manifest.Theme.MutedText)
+        })
+        {
+            try
+            {
+                Application.Current.Resources[pair.Item1] =
+                    new System.Windows.Media.SolidColorBrush(
+                        (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(pair.Item2));
+            }
+            catch { }
+        }
     }
 
     private void RefreshProfileUi()
