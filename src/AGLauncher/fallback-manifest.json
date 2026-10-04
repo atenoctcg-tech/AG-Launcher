@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.4.4",
+    "latestVersion": "0.4.5",
     "minimumVersion": "0.4.3",
     "mandatory": false,
-    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.4/AGLauncher-v0.4.4-win-x64.zip",
+    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.5/AGLauncher-v0.4.5-win-x64.zip",
     "sha256": "",
-    "releaseNotes": "AG Launcher v0.4.4 - game INSTALL / UPDATE / PLAY button now uses a dark grey-teal style with white text."
+    "releaseNotes": "AG Launcher v0.4.5 - repaired self-updater. Legacy v0.4.4 and older builds must install v0.4.5 once manually; v0.4.5+ can auto-update without the Windows ShellExecute cancellation error.",
+    "autoUpdate": true
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
