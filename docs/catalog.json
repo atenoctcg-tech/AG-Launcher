@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.3.1",
+    "latestVersion": "0.4.1",
     "minimumVersion": "0.3.1",
     "mandatory": true,
-    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.3.1/AGLauncher-v0.3.1-win-x64.zip",
-    "sha256": "1defde5b285058916764e6d0af8bd4830b33c21bb78e5fad4ccbb1f2d8cae327",
-    "releaseNotes": "AG Launcher v0.3.1 - Castle Survival and future game updates can now be detected automatically from each game's latest GitHub Release. Website game versions are auto-synced too."
+    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.1/AGLauncher-v0.4.1-win-x64.zip",
+    "sha256": "f8fd7e86703a4b2de7bf12c9250e6b6039752e4ff2803ed8b05cb39704b65647",
+    "releaseNotes": "AG Launcher v0.4.1 - no player login/register, nickname-only local profile, fixed website publishing, dark admin selection styling, automatic game updates and improved self-updater."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
@@ -80,9 +80,6 @@
     "card": "#172132",
     "accent": "#80A8FF",
     "motion": true
-  },
-  "auth": {
-    "apiBaseUrl": ""
   },
   "workshop": []
 }
