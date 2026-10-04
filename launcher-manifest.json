@@ -11,7 +11,7 @@
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
     "discord": "",
-    "telegram": "",
+    "telegram": "https://t.me/castlesurvival",
     "youTube": "https://www.youtube.com/@atenoct",
     "support": ""
   },
@@ -67,10 +67,10 @@
   ],
   "workshop": [],
   "theme": {
-    "background": "#0B0F17",
+    "background": "#0b0f17",
     "panel": "#111824",
     "card": "#172132",
-    "accent": "#80A8FF",
+    "accent": "#80a8ff",
     "motion": true
   }
 }
