@@ -23,6 +23,16 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate website JavaScript
+        shell: pwsh
+        run: |
+          node --check .\docs\app.js
+          node --check .\docs\admin.js
+
       - name: Build Windows package
         shell: pwsh
         run: .\scripts\Build-Windows.ps1
