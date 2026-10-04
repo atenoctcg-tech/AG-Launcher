@@ -88,3 +88,6 @@
   .hero-copy p{font-size:12px}
   .hero-download{left:18px;bottom:18px}
 }
+
+/* Hero is media-first: no title/status/description overlay on the website. */
+.hero-card .hero-copy{display:none!important}
