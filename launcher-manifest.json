@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "launcher": {
     "latestVersion": "0.4.5",
-    "minimumVersion": "0.4.3",
+    "minimumVersion": "0.4.5",
     "mandatory": false,
+    "autoUpdate": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.5/AGLauncher-v0.4.5-win-x64.zip",
     "sha256": "9f22220722b91a7c418c56896a4364bc25f474ea4d66430391114ac991329c81",
-    "releaseNotes": "AG Launcher v0.4.5 - repaired self-updater. v0.4.4 and older must install v0.4.5 once manually; v0.4.5+ uses the repaired automatic updater.",
-    "autoUpdate": true
+    "releaseNotes": "AG Launcher v0.4.5 - repaired self-updater. v0.4.4 and older must install v0.4.5 once manually; v0.4.5\u002B uses the repaired automatic updater."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
@@ -68,7 +68,7 @@
     {
       "id": "atenoct-test-project",
       "name": "Atenoct Test Project",
-      "description": "Launcher va website sinovi uchun qo‘shilgan test loyiha. Bu haqiqiy o‘yin emas.",
+      "description": "Launcher va website sinovi uchun qo\u2018shilgan test loyiha. Bu haqiqiy o\u2018yin emas.",
       "status": "Test",
       "pricing": "free",
       "visible": true,
