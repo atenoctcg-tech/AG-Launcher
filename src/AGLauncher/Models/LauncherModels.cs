@@ -20,7 +20,6 @@ public sealed class LauncherManifest
     public List<GameCatalogItem> Games { get; set; } = new();
     public List<WorkshopItem> Workshop { get; set; } = new();
     public ThemeConfig Theme { get; set; } = new();
-    public AuthConfig Auth { get; set; } = new();
 }
 
 public sealed class LauncherUpdateInfo
@@ -117,7 +116,6 @@ public sealed class ThemeConfig
  public string Accent { get; set; } = "#80A8FF";
  public bool Motion { get; set; } = true;
 }
-public sealed class AuthConfig { public string ApiBaseUrl { get; set; } = ""; }
 public sealed class WorkshopItem
 {
  public string Id { get; set; } = Guid.NewGuid().ToString("N");
