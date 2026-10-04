@@ -11,9 +11,9 @@
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
     "discord": "",
-    "telegram": "https://t.me/castlesurvival",
+    "telegram": "",
     "youTube": "https://www.youtube.com/@atenoct",
-    "support": "https://t.me/castle_survival"
+    "support": ""
   },
   "presentation": {
     "announcement": "",
@@ -27,16 +27,6 @@
       "summary": "New mines. Smarter knights. A kingdom worth fighting for. Discover everything in Castle Survival 0.8.2.",
       "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
       "linkUrl": "https://github.com/atenoctcg-tech/Castle-Survival-Releases/releases/tag/v0.8.2",
-      "date": "2026-10-04",
-      "pinned": true,
-      "visible": true
-    },
-    {
-      "id": "castle-survival-v081-release",
-      "title": "Castle Survival v0.8.1 is available",
-      "summary": "Castle Survival v0.8.1 can now be installed and updated directly from AG Launcher.",
-      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
-      "linkUrl": "https://github.com/atenoctcg-tech/Castle-Survival-Releases/releases/tag/v0.8.1",
       "date": "2026-10-04",
       "pinned": true,
       "visible": true
