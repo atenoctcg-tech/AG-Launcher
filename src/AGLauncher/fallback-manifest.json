@@ -75,10 +75,12 @@
     }
   ],
   "theme": {
-    "background": "#0B0F17",
-    "panel": "#111824",
-    "card": "#172132",
-    "accent": "#80A8FF",
+    "background": "#070A0F",
+    "panel": "#0D1726",
+    "card": "#111D2D",
+    "accent": "#6FA8FF",
+    "text": "#F7F9FC",
+    "mutedText": "#9AA7B8",
     "motion": true
   },
   "workshop": []
