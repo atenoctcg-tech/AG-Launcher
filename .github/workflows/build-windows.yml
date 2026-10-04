@@ -37,6 +37,29 @@ jobs:
         shell: pwsh
         run: .\scripts\Build-Windows.ps1
 
+      - name: Smoke-test updater
+        shell: pwsh
+        run: |
+          $root = Join-Path $env:TEMP ("AGLauncherUpdaterSmoke-" + [guid]::NewGuid().ToString("N"))
+          $payload = Join-Path $root "payload"
+          $target = Join-Path $root "target"
+          $zip = Join-Path $root "update.zip"
+          New-Item -ItemType Directory -Force -Path $payload, $target | Out-Null
+          Set-Content -Path (Join-Path $payload "updater-smoke.txt") -Value "AG Launcher updater OK"
+          Compress-Archive -Path (Join-Path $payload "*") -DestinationPath $zip -Force
+          $updater = Resolve-Path ".\dist\updater\AGLauncher.Updater.exe"
+          $restart = "$env:WINDIR\System32\where.exe"
+          $p = Start-Process -FilePath $updater -ArgumentList @(
+            "--pid","2147483647",
+            "--package",$zip,
+            "--target",$target,
+            "--restart",$restart
+          ) -PassThru
+          if (-not $p.WaitForExit(30000)) { $p.Kill(); throw "Updater smoke test timed out." }
+          if (-not (Test-Path (Join-Path $target "updater-smoke.txt"))) { throw "Updater smoke test failed: marker file missing." }
+          Write-Host "Updater smoke test passed."
+
+
       - name: Publish versioned GitHub Release
         shell: pwsh
         env:
@@ -57,7 +80,7 @@ jobs:
             Write-Host "Release $tag already exists; replacing Windows asset."
             gh release upload $tag $assetName $sourceName --clobber --repo "${{ github.repository }}"
           } else {
-            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Live launcher refresh, profile photo + nickname, selectable game install drive, synchronized website publishing and automatic game updates."
+            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Repaired self-updater, dark launcher UI, live refresh, profile photo + nickname, selectable game install drive and automatic game updates."
           }
           if ($LASTEXITCODE -ne 0) { throw "GitHub Release publishing failed." }
 
