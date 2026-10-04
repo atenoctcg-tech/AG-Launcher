@@ -29,6 +29,9 @@ public partial class AdminWindow : Window
         _manifest = JsonSerializer.Deserialize<LauncherManifest>(JsonSerializer.Serialize(source, JsonUtil.Options), JsonUtil.Options) ?? new LauncherManifest();
         _news = new(_manifest.News);
         _games = new(_manifest.Games);
+        AccountUrlBox.Text = _manifest.Auth.ApiBaseUrl;
+        ThemeJsonBox.Text = JsonSerializer.Serialize(_manifest.Theme, JsonUtil.Options);
+        WorkshopJsonBox.Text = JsonSerializer.Serialize(_manifest.Workshop, JsonUtil.Options);
         NewsGrid.ItemsSource = _news;
         GamesGrid.ItemsSource = _games;
 
@@ -154,6 +157,12 @@ public partial class AdminWindow : Window
 
     private void ApplyEditorValues()
     {
+        NewsGrid.CommitEdit(); NewsGrid.CommitEdit(System.Windows.Controls.DataGridEditingUnit.Row, true);
+        GamesGrid.CommitEdit(); GamesGrid.CommitEdit(System.Windows.Controls.DataGridEditingUnit.Row, true);
+        _manifest.Theme = JsonSerializer.Deserialize<ThemeConfig>(ThemeJsonBox.Text, JsonUtil.Options) ?? new();
+        _manifest.Workshop = JsonSerializer.Deserialize<List<WorkshopItem>>(WorkshopJsonBox.Text, JsonUtil.Options) ?? new();
+        _manifest.Auth.ApiBaseUrl = AccountUrlBox.Text.Trim();
+        if (_manifest.Auth.ApiBaseUrl.Length > 0 && (!Uri.TryCreate(_manifest.Auth.ApiBaseUrl, UriKind.Absolute, out var authUri) || authUri.Scheme != "https")) throw new InvalidOperationException("Account server URL must use HTTPS.");
         _manifest.Launcher.LatestVersion = LatestVersionBox.Text.Trim();
         _manifest.Launcher.MinimumVersion = MinimumVersionBox.Text.Trim();
         _manifest.Launcher.Mandatory = MandatoryUpdateCheck.IsChecked == true;
@@ -174,7 +183,7 @@ public partial class AdminWindow : Window
 
     private string? ValidateManifest()
     {
-        ApplyEditorValues();
+        try { ApplyEditorValues(); } catch (Exception ex) { return ex.Message; }
         if (VersionUtil.Parse(_manifest.Launcher.LatestVersion) == new Version(0, 0, 0) && _manifest.Launcher.LatestVersion != "0.0.0") return "Latest launcher version is not a valid version number.";
         if (VersionUtil.Parse(_manifest.Launcher.MinimumVersion) > VersionUtil.Parse(_manifest.Launcher.LatestVersion)) return "Minimum launcher version cannot be newer than Latest version.";
         if (!string.IsNullOrWhiteSpace(_manifest.Launcher.Sha256) && (_manifest.Launcher.Sha256.Length != 64 || !_manifest.Launcher.Sha256.All(Uri.IsHexDigit))) return "Launcher SHA-256 must contain exactly 64 hexadecimal characters.";
@@ -216,6 +225,7 @@ public partial class AdminWindow : Window
         }
     }
 
+    private void OpenWebEditor_Click(object sender, RoutedEventArgs e) => System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://atenoctcg-tech.github.io/AG-Launcher/admin.html") { UseShellExecute = true });
     private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 2) { ToggleMaximize(); return; }

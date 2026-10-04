@@ -3,6 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        <Style x:Key="ZoomPanel" TargetType="Border">
+          <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+          <Setter Property="RenderTransform"><Setter.Value><ScaleTransform ScaleX="1" ScaleY="1"/></Setter.Value></Setter>
+          <EventSetter Event="MouseEnter" Handler="Panel_MouseEnter"/>
+          <EventSetter Event="MouseLeave" Handler="Panel_MouseLeave"/>
+        </Style>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
         <Color x:Key="Bg0">#090A0C</Color>
         <Color x:Key="Bg1">#0E1013</Color>

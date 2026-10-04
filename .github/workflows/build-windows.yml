@@ -7,6 +7,7 @@ on:
       - 'src/**'
       - 'scripts/**'
       - 'manifests/**'
+      - 'server/**'
       - '.github/workflows/build-windows.yml'
   workflow_dispatch:
 
@@ -22,6 +23,13 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Test account verification
+        run: node --test server/server.test.mjs
 
       - name: Build Windows package
         shell: pwsh
@@ -39,13 +47,15 @@ jobs:
           $zip = ".\dist\AGLauncher-win-x64.zip"
           $assetName = "AGLauncher-$tag-win-x64.zip"
           Copy-Item $zip $assetName -Force
+          $sourceName = "AGLauncher-$tag-Source.zip"
+          git archive --format=zip --output=$sourceName HEAD
 
           gh release view $tag --repo "${{ github.repository }}" *> $null
           if ($LASTEXITCODE -eq 0) {
             Write-Host "Release $tag already exists; replacing Windows asset."
-            gh release upload $tag $assetName --clobber --repo "${{ github.repository }}"
+            gh release upload $tag $assetName $sourceName --clobber --repo "${{ github.repository }}"
           } else {
-            gh release create $tag $assetName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Includes the latest Atenoct Games launcher features and fixes."
+            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Dark studio design, subtle zoom motion, shared admin, Workshop and verified email account integration. IMPORTANT: mandatory email sign-in requires the studio account server to be configured. See server/README.md. Existing v0.3.1 is not forced to update until account service deployment is complete."
           }
           if ($LASTEXITCODE -ne 0) { throw "GitHub Release publishing failed." }
 
@@ -68,4 +78,5 @@ jobs:
             scripts/**
             src/**
             docs/**
+            server/**
           if-no-files-found: error

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.3.0",
-    "minimumVersion": "0.2.1",
-    "mandatory": false,
-    "packageUrl": "",
-    "sha256": "",
-    "releaseNotes": "AG Launcher v0.3.0 - redesigned launcher and website, image publishing, local profiles, notifications, password-based admin access, encrypted saved GitHub token, and improved library navigation."
+    "latestVersion": "0.3.1",
+    "minimumVersion": "0.3.1",
+    "mandatory": true,
+    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.3.1/AGLauncher-v0.3.1-win-x64.zip",
+    "sha256": "1defde5b285058916764e6d0af8bd4830b33c21bb78e5fad4ccbb1f2d8cae327",
+    "releaseNotes": "AG Launcher v0.3.1 - Castle Survival and future game updates can now be detected automatically from each game's latest GitHub Release. Website game versions are auto-synced too."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
@@ -17,15 +17,25 @@
   },
   "presentation": {
     "announcement": "",
-    "defaultHeroTitle": "Atenoct Games",
-    "defaultHeroSubtitle": "Games, updates and news in one place."
+    "defaultHeroTitle": "Your next adventure.",
+    "defaultHeroSubtitle": "Discover new worlds. Build your library. Play your way."
   },
   "news": [
+    {
+      "id": "castle-survival-v082-release",
+      "title": "Castle Survival v0.8.2 is available",
+      "summary": "New mines. Smarter knights. A kingdom worth fighting for. Discover everything in Castle Survival 0.8.2.",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "linkUrl": "https://github.com/atenoctcg-tech/Castle-Survival-Releases/releases/tag/v0.8.2",
+      "date": "2026-10-04",
+      "pinned": true,
+      "visible": true
+    },
     {
       "id": "castle-survival-v081-release",
       "title": "Castle Survival v0.8.1 is available",
       "summary": "Castle Survival v0.8.1 can now be installed and updated directly from AG Launcher.",
-      "imageUrl": "",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
       "linkUrl": "https://github.com/atenoctcg-tech/Castle-Survival-Releases/releases/tag/v0.8.1",
       "date": "2026-10-04",
       "pinned": true,
@@ -35,7 +45,7 @@
       "id": "welcome-001",
       "title": "Welcome to AG Launcher",
       "summary": "Atenoct Games launcher is ready for Castle Survival and future games.",
-      "imageUrl": "",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
       "linkUrl": "",
       "date": "2026-10-04",
       "pinned": true,
@@ -46,19 +56,33 @@
     {
       "id": "castle-survival",
       "name": "Castle Survival",
-      "description": "Castle Survival v0.8.1 is available now. Install, update and launch it directly from AG Launcher.",
+      "description": "Castle Survival v0.8.2 is available now. Install, update and launch it directly from AG Launcher.",
       "status": "Available",
       "pricing": "free",
       "visible": true,
       "featured": true,
       "sortOrder": 1,
-      "bannerUrl": "",
-      "iconUrl": "",
+      "bannerUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "iconUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
       "manifestUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/manifests/castle-survival.json",
       "websiteUrl": "",
       "productId": "",
       "purchaseUrl": "",
-      "requiresOwnership": false
+      "requiresOwnership": false,
+      "releaseRepo": "atenoctcg-tech/Castle-Survival-Releases",
+      "executable": "CastleSurvival.exe",
+      "installFolder": "Castle Survival"
     }
-  ]
+  ],
+  "theme": {
+    "background": "#0B0F17",
+    "panel": "#111824",
+    "card": "#172132",
+    "accent": "#80A8FF",
+    "motion": true
+  },
+  "auth": {
+    "apiBaseUrl": ""
+  },
+  "workshop": []
 }

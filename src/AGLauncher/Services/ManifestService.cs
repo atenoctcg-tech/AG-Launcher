@@ -8,11 +8,11 @@ namespace AGLauncher.Services;
 
 public sealed class ManifestService
 {
-    private readonly HttpClient _http = new();
+    private readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(20) };
 
     public ManifestService()
     {
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.3.1");
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.4.0");
         _http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
         _http.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
     }
@@ -31,6 +31,14 @@ public sealed class ManifestService
         return (
             JsonSerializer.Deserialize<LauncherManifest>(File.ReadAllText(path), JsonUtil.Options) ?? new LauncherManifest(),
             false);
+    }
+
+    public async Task<GameManifest> LoadGameAsync(GameCatalogItem game)
+    {
+        if (!string.IsNullOrWhiteSpace(game.ManifestUrl)) return await LoadGameAsync(game.ManifestUrl);
+        var manifest = new GameManifest { Id = game.Id, ReleaseRepo = game.ReleaseRepo, ReleaseAssetPattern = game.ReleaseAssetPattern, Executable = game.Executable, InstallFolder = string.IsNullOrWhiteSpace(game.InstallFolder) ? game.Id : game.InstallFolder };
+        await ApplyLatestGitHubReleaseAsync(manifest);
+        return manifest;
     }
 
     public async Task<GameManifest> LoadGameAsync(string url)
@@ -75,7 +83,7 @@ public sealed class ManifestService
         var patternText = string.IsNullOrWhiteSpace(manifest.ReleaseAssetPattern)
             ? @".*\.zip$"
             : manifest.ReleaseAssetPattern;
-        var pattern = new Regex(patternText, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        var pattern = new Regex(patternText, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
 
         JsonElement? selected = null;
         if (root.TryGetProperty("assets", out var assets) && assets.ValueKind == JsonValueKind.Array)
@@ -83,25 +91,14 @@ public sealed class ManifestService
             foreach (var asset in assets.EnumerateArray())
             {
                 var name = asset.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "";
-                if (pattern.IsMatch(name))
+                if (pattern.IsMatch(name) && !name.Contains("source", StringComparison.OrdinalIgnoreCase))
                 {
                     selected = asset;
                     break;
                 }
             }
 
-            if (selected == null)
-            {
-                foreach (var asset in assets.EnumerateArray())
-                {
-                    var name = asset.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "";
-                    if (name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                    {
-                        selected = asset;
-                        break;
-                    }
-                }
-            }
+
         }
 
         if (selected == null)

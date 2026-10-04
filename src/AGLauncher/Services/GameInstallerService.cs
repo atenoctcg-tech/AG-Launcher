@@ -13,11 +13,12 @@ public sealed class GameInstallerService
     private readonly HttpClient _http = new();
 
     public GameInstallerService() =>
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.3.0");
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd("AGLauncher/0.4.0");
 
     public string GetInstallDir(GameCatalogItem game, GameManifest manifest)
     {
         var folder = string.IsNullOrWhiteSpace(manifest.InstallFolder) ? game.Id : manifest.InstallFolder;
+        if (folder.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 || folder is "." or "..") throw new InvalidDataException("Invalid installation folder.");
         return Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Atenoct Games", "Games", folder);
@@ -44,7 +45,9 @@ public sealed class GameInstallerService
         IProgress<(double, string)> progress)
     {
         var dir = GetInstallDir(game, manifest);
-        Directory.CreateDirectory(dir);
+        if (manifest.Packages.Count == 0) throw new InvalidDataException("No downloadable game packages are available.");
+        var staged = dir + ".staging-" + Guid.NewGuid().ToString("N");
+        Directory.CreateDirectory(staged);
 
         var temp = Path.Combine(
             Path.GetTempPath(),
@@ -59,7 +62,8 @@ public sealed class GameInstallerService
             for (var i = 0; i < manifest.Packages.Count; i++)
             {
                 var package = manifest.Packages[i];
-                var zip = Path.Combine(temp, package.Name);
+                var zip = Path.Combine(temp, $"package-{i}.zip");
+                if (!Uri.TryCreate(package.Url, UriKind.Absolute, out var downloadUri) || downloadUri.Scheme != "https") throw new InvalidDataException("Game downloads must use HTTPS.");
 
                 using (var response = await _http.GetAsync(
                     package.Url,
@@ -101,31 +105,56 @@ public sealed class GameInstallerService
                 }
 
                 progress.Report(((i + 0.95) / count, $"Extracting {package.Name}..."));
-                ZipFile.ExtractToDirectory(zip, dir, true);
+                await Task.Run(() => ZipFile.ExtractToDirectory(zip, staged, true));
 
                 try { File.Delete(zip); } catch { }
             }
 
+            var executable = ResolveExecutable(staged, manifest.Executable);
+            if (!File.Exists(executable)) throw new FileNotFoundException("The ZIP does not contain the configured game executable. The installed version was preserved.");
+            // Keep user-created files while replacing the complete new build atomically.
+            if (Directory.Exists(dir))
+                foreach (var previous in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories))
+                {
+                    var destination = Path.Combine(staged, Path.GetRelativePath(dir, previous));
+                    if (!File.Exists(destination)) { Directory.CreateDirectory(Path.GetDirectoryName(destination)!); File.Copy(previous, destination); }
+                }
             File.WriteAllText(
-                Path.Combine(dir, ".aglauncher-state.json"),
+                Path.Combine(staged, ".aglauncher-state.json"),
                 JsonSerializer.Serialize(
                     new GameState { Id = game.Id, Version = manifest.Version },
                     JsonUtil.Options));
 
+            var backup = dir + ".backup-" + Guid.NewGuid().ToString("N");
+            var existed = Directory.Exists(dir);
+            if (existed) Directory.Move(dir, backup);
+            try { Directory.Move(staged, dir); }
+            catch { if (existed) Directory.Move(backup, dir); throw; }
+            try { if (existed) Directory.Delete(backup, true); } catch { }
             progress.Report((1, "Ready"));
         }
         finally
         {
             try { Directory.Delete(temp, true); } catch { }
+            try { if (Directory.Exists(staged)) Directory.Delete(staged, true); } catch { }
         }
+    }
+
+    private static string ResolveExecutable(string dir, string executable)
+    {
+        var root = Path.GetFullPath(dir) + Path.DirectorySeparatorChar;
+        var path = Path.GetFullPath(Path.Combine(dir, executable.Replace('/', Path.DirectorySeparatorChar)));
+        if (string.IsNullOrWhiteSpace(executable) || !path.StartsWith(root, StringComparison.OrdinalIgnoreCase) || !path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) throw new InvalidDataException("Invalid game executable path.");
+        if (File.Exists(path)) return path;
+        // Support releases wrapped in a single top-level folder.
+        var matches = Directory.EnumerateFiles(dir, Path.GetFileName(executable), SearchOption.AllDirectories).ToList();
+        return matches.Count == 1 ? matches[0] : path;
     }
 
     public void Play(GameCatalogItem game, GameManifest manifest)
     {
         var dir = GetInstallDir(game, manifest);
-        var exe = Path.Combine(
-            dir,
-            manifest.Executable.Replace('/', Path.DirectorySeparatorChar));
+        var exe = ResolveExecutable(dir, manifest.Executable);
 
         if (!File.Exists(exe))
             throw new FileNotFoundException("Game executable not found.", exe);

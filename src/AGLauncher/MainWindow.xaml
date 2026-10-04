@@ -3,8 +3,8 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  Title="AG Launcher — Atenoct Games" Width="1500" Height="900" MinWidth="1180" MinHeight="720"
  WindowStartupLocation="CenterScreen" WindowStyle="None" ResizeMode="CanResizeWithGrip"
- Background="#080A0D" Icon="Assets/AGLauncher.ico" PreviewKeyDown="Window_KeyDown">
- <Border Background="#080A0D" BorderBrush="#262B33" BorderThickness="1">
+ Background="{DynamicResource BgBrush}" Icon="Assets/AGLauncher.ico" PreviewKeyDown="Window_KeyDown" UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display">
+ <Border Background="{DynamicResource BgBrush}" BorderBrush="#262B33" BorderThickness="1">
   <Grid>
    <Grid.RowDefinitions><RowDefinition Height="48"/><RowDefinition Height="*"/><RowDefinition Height="30"/></Grid.RowDefinitions>
 
@@ -14,7 +14,7 @@
      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
       <Image Source="Assets/AGLauncher.ico" Width="24" Height="24"/>
       <TextBlock Text="AG Launcher" Margin="9,0,0,0" FontWeight="SemiBold" FontSize="12"/>
-      <TextBlock Text="ATENOCT GAMES" Margin="12,2,0,0" Foreground="#59636F" FontSize="8"/>
+      <TextBlock Text="ATENOCT GAMES" Margin="12,2,0,0" Foreground="#59636F" FontSize="11"/>
      </StackPanel>
      <StackPanel Grid.Column="1" Orientation="Horizontal">
       <Button Style="{StaticResource ChromeButton}" Content="—" Click="Minimize_Click"/>
@@ -27,24 +27,24 @@
    <Grid Grid.Row="1">
     <Grid.ColumnDefinitions><ColumnDefinition Width="258"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
 
-    <Border Background="#0C1015" BorderBrush="#222831" BorderThickness="0,0,1,0">
+    <Border Background="{DynamicResource PanelBrush}" BorderBrush="#222831" BorderThickness="0,0,1,0">
      <Grid Margin="16">
-      <Grid.RowDefinitions><RowDefinition Height="72"/><RowDefinition Height="205"/><RowDefinition Height="*"/><RowDefinition Height="126"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+      <Grid.RowDefinitions><RowDefinition Height="72"/><RowDefinition Height="310"/><RowDefinition Height="*"/><RowDefinition Height="126"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
       <Border Background="#0A0D11" BorderBrush="#252B33" BorderThickness="1" CornerRadius="14" Padding="12">
-       <Image Source="Assets/BrandLogo.png" Stretch="Uniform" HorizontalAlignment="Left" MaxWidth="198" MaxHeight="46"/>
+       <Image Source="Assets/BrandLogo.png" Stretch="Uniform" HorizontalAlignment="Left" MaxWidth="210" MaxHeight="52" RenderOptions.BitmapScalingMode="HighQuality"/>
       </Border>
 
       <StackPanel Grid.Row="1" Margin="0,14,0,8">
        <Button Style="{StaticResource SidebarButton}" Content="⌂   Home" Click="HomeNavButton_Click" Margin="0,0,0,6"/>
        <Button Style="{StaticResource SidebarButton}" Content="▣   My Library" Click="LibraryNavButton_Click" Margin="0,0,0,10"/>
-       <Separator Background="#222831" Margin="5,0,5,7"/>
+       <Button Style="{StaticResource SidebarButton}" Content="◇   Workshop" Click="WorkshopNavButton_Click" Margin="0,0,0,8"/><Separator Background="#222831" Margin="5,0,5,7"/>
        <Button Style="{StaticResource SidebarButton}" Content="◉   Discord" Tag="discord" Click="Social_Click" Margin="0,0,0,4"/>
        <Button Style="{StaticResource SidebarButton}" Content="✈   Telegram" Tag="telegram" Click="Social_Click" Margin="0,0,0,4"/>
        <Button Style="{StaticResource SidebarButton}" Content="▶   YouTube" Tag="youtube" Click="Social_Click"/>
       </StackPanel>
 
       <DockPanel Grid.Row="2">
-       <TextBlock DockPanel.Dock="Top" Text="QUICK LAUNCH" Foreground="#626B77" FontSize="9" FontWeight="SemiBold" Margin="8,0,0,8"/>
+       <TextBlock DockPanel.Dock="Top" Text="QUICK LAUNCH" Foreground="#626B77" FontSize="12" FontWeight="SemiBold" Margin="8,0,0,8"/>
        <ListBox x:Name="GamesList" Background="Transparent" BorderThickness="0" SelectionChanged="GamesList_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Auto">
         <ListBox.ItemContainerStyle>
          <Style TargetType="ListBoxItem"><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,0,0,6"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -56,22 +56,22 @@
         </ListBox.ItemContainerStyle>
         <ListBox.ItemTemplate><DataTemplate><Grid>
          <Grid.ColumnDefinitions><ColumnDefinition Width="42"/><ColumnDefinition/></Grid.ColumnDefinitions>
-         <Border Width="36" Height="36" Background="#232A33" CornerRadius="8" ClipToBounds="True"><Grid><TextBlock Text="AG" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="8"/><Image Source="{Binding IconUrl}" Stretch="UniformToFill"/></Grid></Border>
-         <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center"><TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="11"/><TextBlock Text="{Binding Status}" Foreground="#6C7581" FontSize="8"/></StackPanel>
+         <Border Width="36" Height="36" Background="#232A33" CornerRadius="8" ClipToBounds="True"><Grid><TextBlock Text="AG" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11"/><Image Source="{Binding IconUrl}" Stretch="UniformToFill"/></Grid></Border>
+         <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center"><TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="11"/><TextBlock Text="{Binding Status}" Foreground="#6C7581" FontSize="11"/></StackPanel>
         </Grid></DataTemplate></ListBox.ItemTemplate>
        </ListBox>
       </DockPanel>
 
       <StackPanel Grid.Row="3" Margin="0,8,0,8">
-       <TextBlock Text="ATENOCT LINKS" Foreground="#626B77" FontSize="9" FontWeight="SemiBold" Margin="8,0,0,7"/>
+       <TextBlock Text="ATENOCT LINKS" Foreground="#626B77" FontSize="12" FontWeight="SemiBold" Margin="8,0,0,7"/>
        <Button Style="{StaticResource SidebarButton}" Content="◎   Website" Tag="website" Click="Social_Click" Margin="0,0,0,4"/>
        <Button Style="{StaticResource SidebarButton}" Content="?   Support" Tag="support" Click="Social_Click"/>
       </StackPanel>
 
-      <Border Grid.Row="4" Background="#10151B" BorderBrush="#262D36" BorderThickness="1" CornerRadius="13" Padding="11">
+      <Border Grid.Row="4" Background="{DynamicResource CardBrush}" BorderBrush="#262D36" BorderThickness="1" CornerRadius="13" Padding="11">
        <StackPanel>
-        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="10" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.3.0" Foreground="#747D89" FontSize="9"/></Grid>
-        <TextBlock x:Name="SideInstallStatusText" Text="Ready" Foreground="#6B7480" FontSize="9" Margin="0,5,0,0" TextTrimming="CharacterEllipsis"/>
+        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="12" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.4.0" Foreground="#747D89" FontSize="12"/></Grid>
+        <TextBlock x:Name="SideInstallStatusText" Text="Ready" Foreground="#6B7480" FontSize="12" Margin="0,5,0,0" TextTrimming="CharacterEllipsis"/>
         <ProgressBar x:Name="SideInstallProgress" Height="4" Minimum="0" Maximum="1" Visibility="Collapsed" Margin="0,8,0,0"/>
        </StackPanel>
       </Border>
@@ -82,25 +82,25 @@
      <Grid.RowDefinitions><RowDefinition Height="78"/><RowDefinition Height="*"/></Grid.RowDefinitions>
      <Grid Margin="28,14,28,8">
       <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="330"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-      <StackPanel VerticalAlignment="Center"><TextBlock x:Name="PageTitleText" Text="Home" FontSize="23" FontWeight="SemiBold"/><TextBlock x:Name="PageSubtitleText" Text="Games, releases and studio news" Foreground="#6F7884" FontSize="9"/></StackPanel>
+      <StackPanel VerticalAlignment="Center"><TextBlock x:Name="PageTitleText" Text="Home" FontSize="23" FontWeight="SemiBold"/><TextBlock x:Name="PageSubtitleText" Text="Games, releases and studio news" Foreground="#6F7884" FontSize="12"/></StackPanel>
       <Border Grid.Column="1" Height="42" Background="#11161C" BorderBrush="#272E37" BorderThickness="1" CornerRadius="11">
        <Grid Margin="12,0"><Grid.ColumnDefinitions><ColumnDefinition Width="24"/><ColumnDefinition/></Grid.ColumnDefinitions><TextBlock Text="⌕" Foreground="#747E8A" VerticalAlignment="Center"/><TextBox x:Name="SearchBox" Grid.Column="1" Background="Transparent" BorderThickness="0" Padding="2,8" TextChanged="SearchBox_TextChanged" ToolTip="Search games"/></Grid>
       </Border>
       <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="12,0,0,0">
        <Button x:Name="NotificationButton" Style="{StaticResource IconButton}" Content="🔔" Click="NotificationButton_Click"/>
-       <Button Style="{StaticResource ProfileButton}" Click="ProfileButton_Click" Margin="8,0,0,0"><StackPanel Orientation="Horizontal"><Border Width="28" Height="28" Background="#27303A" CornerRadius="14"><TextBlock Text="AG" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="8"/></Border><StackPanel Margin="9,0,6,0"><TextBlock x:Name="ProfileNameText" Text="Guest" FontSize="10" FontWeight="SemiBold"/><TextBlock x:Name="ProfileHintText" Text="Login / Register" FontSize="8" Foreground="#707A86"/></StackPanel></StackPanel></Button>
+       <Button Style="{StaticResource ProfileButton}" Click="ProfileButton_Click" Margin="8,0,0,0"><StackPanel Orientation="Horizontal"><Border Width="28" Height="28" Background="#27303A" CornerRadius="14"><TextBlock Text="AG" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11"/></Border><StackPanel Margin="9,0,6,0"><TextBlock x:Name="ProfileNameText" Text="Guest" FontSize="12" FontWeight="SemiBold"/><TextBlock x:Name="ProfileHintText" Text="Login / Register" FontSize="11" Foreground="#707A86"/></StackPanel></StackPanel></Button>
       </StackPanel>
      </Grid>
 
      <ScrollViewer x:Name="HomeView" Grid.Row="1" VerticalScrollBarVisibility="Auto">
       <StackPanel Margin="28,4,28,34">
-       <Border Height="420" CornerRadius="22" ClipToBounds="True" BorderBrush="#2B323B" BorderThickness="1" Background="#11161C">
+       <Border Style="{StaticResource ZoomPanel}" Height="420" CornerRadius="22" ClipToBounds="True" BorderBrush="#2B323B" BorderThickness="1" Background="#11161C">
         <Grid>
          <Image x:Name="HeroBannerImage" Stretch="UniformToFill" Opacity="0.72"/>
          <Rectangle><Rectangle.Fill><LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5"><GradientStop Color="#FA090C10" Offset="0"/><GradientStop Color="#E6090C10" Offset="0.42"/><GradientStop Color="#60090C10" Offset="0.76"/><GradientStop Color="#18090C10" Offset="1"/></LinearGradientBrush></Rectangle.Fill></Rectangle>
          <Grid Margin="42,36"><Grid.RowDefinitions><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
           <StackPanel Width="660" HorizontalAlignment="Left" VerticalAlignment="Center">
-           <StackPanel Orientation="Horizontal"><Border Background="#25151B22" BorderBrush="#40FFFFFF" BorderThickness="1" CornerRadius="999" Padding="10,5"><TextBlock x:Name="GameStatusText" Text="ATENOCT GAMES" FontSize="8"/></Border><Border Background="#12171D" BorderBrush="#303842" BorderThickness="1" CornerRadius="999" Padding="10,5" Margin="8,0,0,0"><TextBlock x:Name="PricingText" Text="FREE" FontSize="8"/></Border></StackPanel>
+           <StackPanel Orientation="Horizontal"><Border Background="#25151B22" BorderBrush="#40FFFFFF" BorderThickness="1" CornerRadius="999" Padding="10,5"><TextBlock x:Name="GameStatusText" Text="ATENOCT GAMES" FontSize="11"/></Border><Border Background="#12171D" BorderBrush="#303842" BorderThickness="1" CornerRadius="999" Padding="10,5" Margin="8,0,0,0"><TextBlock x:Name="PricingText" Text="FREE" FontSize="11"/></Border></StackPanel>
            <TextBlock x:Name="GameTitleText" Text="Atenoct Games" FontSize="54" FontWeight="SemiBold" Margin="0,16,0,11" TextWrapping="Wrap"/>
            <TextBlock x:Name="GameDescriptionText" Text="Select a game." FontSize="14" Foreground="#A2AAB5" MaxWidth="640" TextWrapping="Wrap" LineHeight="22"/>
           </StackPanel>
@@ -108,40 +108,49 @@
            <Button x:Name="GameActionButton" Style="{StaticResource PrimaryButton}" Content="SELECT GAME" MinWidth="176" Height="48" Click="GameActionButton_Click"/>
            <Button x:Name="GameWebsiteButton" Grid.Column="1" Style="{StaticResource GhostButton}" Content="Game website" Height="48" Margin="9,0,0,0" Click="GameWebsiteButton_Click" Visibility="Collapsed"/>
            <Button x:Name="OpenInstallFolderButton" Grid.Column="2" Style="{StaticResource GhostButton}" Content="Open folder" Height="48" Margin="9,0,0,0" Click="OpenInstallFolderButton_Click" Visibility="Collapsed"/>
-           <StackPanel Grid.Column="3" Margin="18,0,0,0" VerticalAlignment="Center"><TextBlock x:Name="InstallStatusText" Foreground="#858E9A" FontSize="9"/><ProgressBar x:Name="InstallProgress" Height="5" Minimum="0" Maximum="1" Visibility="Collapsed" Margin="0,7,0,0"/></StackPanel>
+           <StackPanel Grid.Column="3" Margin="18,0,0,0" VerticalAlignment="Center"><TextBlock x:Name="InstallStatusText" Foreground="#858E9A" FontSize="12"/><ProgressBar x:Name="InstallProgress" Height="5" Minimum="0" Maximum="1" Visibility="Collapsed" Margin="0,7,0,0"/></StackPanel>
           </Grid>
          </Grid>
         </Grid>
        </Border>
 
-       <Grid Margin="2,24,2,12"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="Latest news" FontSize="18" FontWeight="SemiBold"/><TextBlock Text="Image posts, releases and development updates" Foreground="#6F7884" FontSize="9"/></StackPanel><TextBlock Grid.Column="1" Text="Managed from Admin Panel" Foreground="#4E5661" FontSize="8" VerticalAlignment="Bottom"/></Grid>
+       <Grid Margin="2,24,2,12"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="Latest news" FontSize="18" FontWeight="SemiBold"/><TextBlock Text="Image posts, releases and development updates" Foreground="#6F7884" FontSize="12"/></StackPanel><TextBlock Grid.Column="1" Text="ATENOCT GAMES" Foreground="#4E5661" FontSize="11" VerticalAlignment="Bottom"/></Grid>
        <ListBox x:Name="NewsList" Background="Transparent" BorderThickness="0" ScrollViewer.VerticalScrollBarVisibility="Disabled">
         <ListBox.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ListBox.ItemsPanel>
         <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,0,14,14"/></Style></ListBox.ItemContainerStyle>
-        <ListBox.ItemTemplate><DataTemplate><Border Width="325" Height="286" Background="#10151B" BorderBrush="#252C35" BorderThickness="1" CornerRadius="16" ClipToBounds="True"><Grid>
+        <ListBox.ItemTemplate><DataTemplate><Border Style="{StaticResource ZoomPanel}" Width="325" Height="340" Background="{DynamicResource CardBrush}" BorderBrush="#252C35" BorderThickness="1" CornerRadius="16" ClipToBounds="True"><Grid>
          <Grid.RowDefinitions><RowDefinition Height="160"/><RowDefinition/></Grid.RowDefinitions>
-         <Border Background="#161C23"><Grid><Image Source="{Binding ImageUrl}" Stretch="UniformToFill"/><Border Background="#D012171D" CornerRadius="999" Padding="8,4" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Visibility="{Binding Pinned, Converter={StaticResource BoolToVisibility}}"><TextBlock Text="FEATURED" FontSize="7"/></Border></Grid></Border>
-         <Grid Grid.Row="1" Margin="14,11"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions><TextBlock Text="{Binding Date}" Foreground="#5D6672" FontSize="8"/><TextBlock Grid.Row="1" Text="{Binding Title}" FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap" Margin="0,6,0,0"/><TextBlock Grid.Row="2" Text="{Binding Summary}" Foreground="#7C8591" FontSize="9" TextWrapping="Wrap" Margin="0,5,0,0"/><Button Grid.Row="3" Style="{StaticResource TextButton}" Content="Read post  →" Tag="{Binding LinkUrl}" Click="OpenLinkButton_Click" HorizontalAlignment="Left"/></Grid>
+         <Border Background="#161C23"><Grid><Image Source="{Binding ImageUrl}" Stretch="UniformToFill"/><Border Background="#D012171D" CornerRadius="999" Padding="8,4" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Visibility="{Binding Pinned, Converter={StaticResource BoolToVisibility}}"><TextBlock Text="FEATURED" FontSize="12"/></Border></Grid></Border>
+         <Grid Grid.Row="1" Margin="14,11"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions><TextBlock Text="{Binding Date}" Foreground="#5D6672" FontSize="11"/><TextBlock Grid.Row="1" Text="{Binding Title}" FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap" Margin="0,6,0,0"/><TextBlock Grid.Row="2" Text="{Binding Summary}" Foreground="#7C8591" FontSize="12" TextWrapping="Wrap" Margin="0,5,0,0"/><Button Grid.Row="3" Style="{StaticResource TextButton}" Content="Read post  →" Tag="{Binding LinkUrl}" Click="OpenLinkButton_Click" HorizontalAlignment="Left"/></Grid>
         </Grid></Border></DataTemplate></ListBox.ItemTemplate>
        </ListBox>
+       <TextBlock Text="Explore our games" FontSize="24" FontWeight="SemiBold" Margin="0,24,0,18"/>
+       <ItemsControl x:Name="GameCards"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate>
+        <Border Style="{StaticResource ZoomPanel}" Width="325" Margin="0,0,18,18" Background="{DynamicResource CardBrush}" CornerRadius="14" ClipToBounds="True"><StackPanel><Image Source="{Binding BannerUrl}" Height="180" Stretch="UniformToFill"/><StackPanel Margin="18"><TextBlock Text="{Binding Name}" FontSize="19" FontWeight="SemiBold"/><TextBlock Text="{Binding Description}" Foreground="#B7C3D6" TextWrapping="Wrap" MaxHeight="64" Margin="0,8"/><Button Style="{StaticResource GhostButton}" Content="VIEW GAME  →" Tag="{Binding}" Click="GameCard_Click"/></StackPanel></StackPanel></Border>
+       </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
       </StackPanel>
      </ScrollViewer>
 
      <ScrollViewer x:Name="LibraryView" Grid.Row="1" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
       <StackPanel Margin="28,10,28,34">
-       <Border Background="#10151B" BorderBrush="#272E37" BorderThickness="1" CornerRadius="18" Padding="22" Margin="0,0,0,18"><Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="My Library" FontSize="26" FontWeight="SemiBold"/><TextBlock Text="Installed Atenoct Games on this PC" Foreground="#737D89" FontSize="10"/></StackPanel><Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="Refresh library" Click="RefreshLibraryButton_Click"/></Grid></Border>
+       <Border Background="{DynamicResource CardBrush}" BorderBrush="#272E37" BorderThickness="1" CornerRadius="18" Padding="22" Margin="0,0,0,18"><Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="My Library" FontSize="26" FontWeight="SemiBold"/><TextBlock Text="Installed Atenoct Games on this PC" Foreground="#737D89" FontSize="12"/></StackPanel><Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="Refresh library" Click="RefreshLibraryButton_Click"/></Grid></Border>
        <ListBox x:Name="LibraryList" Background="Transparent" BorderThickness="0" SelectionChanged="LibraryList_SelectionChanged">
         <ListBox.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ListBox.ItemsPanel>
         <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,0,14,14"/></Style></ListBox.ItemContainerStyle>
-        <ListBox.ItemTemplate><DataTemplate><Border Width="340" Height="230" CornerRadius="16" Background="#10151B" BorderBrush="#252C35" BorderThickness="1" ClipToBounds="True"><Grid><Grid.RowDefinitions><RowDefinition Height="130"/><RowDefinition/></Grid.RowDefinitions><Border Background="#151B22"><Image Source="{Binding BannerUrl}" Stretch="UniformToFill"/></Border><Grid Grid.Row="1" Margin="14"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"/><TextBlock Text="{Binding VersionText}" Foreground="#737D89" FontSize="9" Margin="0,4,0,0"/><TextBlock Text="{Binding StatusText}" Foreground="#9CA5B1" FontSize="9" Margin="0,4,0,0"/></StackPanel><TextBlock Grid.Column="1" Text="OPEN →" Foreground="#D7DCE3" FontSize="9" VerticalAlignment="Bottom"/></Grid></Grid></Border></DataTemplate></ListBox.ItemTemplate>
+        <ListBox.ItemTemplate><DataTemplate><Border Style="{StaticResource ZoomPanel}" Width="210" Height="360" CornerRadius="16" Background="{DynamicResource CardBrush}" BorderBrush="#252C35" BorderThickness="1" ClipToBounds="True"><Grid><Grid.RowDefinitions><RowDefinition Height="280"/><RowDefinition/></Grid.RowDefinitions><Border Background="#151B22"><Image Source="{Binding BannerUrl}" Stretch="UniformToFill"/></Border><Grid Grid.Row="1" Margin="14"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"/><TextBlock Text="{Binding VersionText}" Foreground="#737D89" FontSize="12" Margin="0,4,0,0"/><TextBlock Text="{Binding StatusText}" Foreground="#9CA5B1" FontSize="12" Margin="0,4,0,0"/></StackPanel><TextBlock Grid.Column="1" Text="OPEN →" Foreground="#D7DCE3" FontSize="12" VerticalAlignment="Bottom"/></Grid></Grid></Border></DataTemplate></ListBox.ItemTemplate>
        </ListBox>
        <TextBlock x:Name="EmptyLibraryText" Text="No installed games yet. Install a game from Home and it will appear here." Foreground="#6F7884" FontSize="12" Margin="4,16,0,0" Visibility="Collapsed"/>
       </StackPanel>
      </ScrollViewer>
+     <ScrollViewer x:Name="WorkshopView" Grid.Row="1" Visibility="Collapsed" VerticalScrollBarVisibility="Auto"><StackPanel Margin="28,10,28,34">
+      <TextBlock Text="The Workshop" FontSize="32" FontWeight="SemiBold"/><TextBlock Text="Mods, 3D models and tools for your next creation." Foreground="#A5B4CA" Margin="0,12,0,28"/>
+      <ItemsControl x:Name="WorkshopItems"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate><Border Style="{StaticResource ZoomPanel}" Width="310" Background="{DynamicResource CardBrush}" Margin="0,0,18,18" CornerRadius="14" ClipToBounds="True"><StackPanel><Image Source="{Binding ImageUrl}" Height="174" Stretch="UniformToFill"/><StackPanel Margin="18"><TextBlock Text="{Binding Category}" Foreground="#80A8FF"/><TextBlock Text="{Binding Name}" FontSize="20" Margin="0,8"/><TextBlock Text="{Binding Description}" TextWrapping="Wrap" Foreground="#B7C3D6"/><Button Content="View creation →" Style="{StaticResource GhostButton}" Margin="0,14,0,0" Tag="{Binding DownloadUrl}" Click="OpenLinkButton_Click"/></StackPanel></StackPanel></Border></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+      <TextBlock x:Name="WorkshopEmpty" Text="New community creations will appear here when published." Foreground="#A5B4CA" Margin="0,32"/>
+     </StackPanel></ScrollViewer>
     </Grid>
    </Grid>
 
-   <Border Grid.Row="2" Background="#0A0D11" BorderBrush="#20252C" BorderThickness="0,1,0,0"><Grid Margin="16,0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock x:Name="ConnectionText" Text="Connecting..." Foreground="#626B77" FontSize="8" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="ATENOCT GAMES LAUNCHER" Foreground="#3E4650" FontSize="8" VerticalAlignment="Center"/></Grid></Border>
+   <Border Grid.Row="2" Background="#0A0D11" BorderBrush="#20252C" BorderThickness="0,1,0,0"><Grid Margin="16,0"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock x:Name="ConnectionText" Text="Connecting..." Foreground="#626B77" FontSize="11" VerticalAlignment="Center"/><TextBlock Grid.Column="1" Text="ATENOCT GAMES LAUNCHER" Foreground="#3E4650" FontSize="11" VerticalAlignment="Center"/></Grid></Border>
   </Grid>
  </Border>
 </Window>

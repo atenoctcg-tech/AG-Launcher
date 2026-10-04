@@ -21,6 +21,8 @@ public sealed class LibraryGameEntry
 
 public partial class MainWindow : Window
 {
+    private bool _refreshing;
+    private readonly System.Windows.Threading.DispatcherTimer _poll = new() { Interval = TimeSpan.FromMinutes(2) };
     private BootstrapConfig _bootstrap = new();
     private LauncherManifest _manifest = new();
     private readonly ManifestService _manifestService = new();
@@ -29,14 +31,15 @@ public partial class MainWindow : Window
     private readonly NotificationService _notificationService = new();
     private List<GameCatalogItem> _allGames = new();
     private List<LauncherNotification> _notifications = new();
-    private UserProfile? _currentProfile;
     private GameCatalogItem? _selectedGame;
     private GameManifest? _selectedGameManifest;
 
     public MainWindow()
     {
         InitializeComponent();
-        Loaded += async (_, __) => await InitializeAsync();
+        Loaded += async (_, __) => { await InitializeAsync(); _poll.Start(); };
+        _poll.Tick += async (_, __) => await PollUpdatesAsync();
+        Closed += (_, __) => _poll.Stop();
     }
 
     private async Task InitializeAsync()
@@ -46,9 +49,24 @@ public partial class MainWindow : Window
             _bootstrap = BootstrapService.Load();
             var loaded = await _manifestService.LoadLauncherAsync(_bootstrap);
             _manifest = loaded.Manifest;
+            App.MotionEnabled = _manifest.Theme.Motion;
+            foreach (var pair in new[] { ("BgBrush", _manifest.Theme.Background), ("PanelBrush", _manifest.Theme.Panel), ("CardBrush", _manifest.Theme.Card) })
+                try { Application.Current.Resources[pair.Item1] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(pair.Item2)); } catch { }
+            AccountService.BaseUrl = _manifest.Auth.ApiBaseUrl;
+            if (AccountService.User == null)
+            {
+                Hide();
+                var account = new AccountWindow(_manifest, _bootstrap);
+                if (account.ShowDialog() != true) { Close(); return; }
+                Show();
+            }
+            ProfileNameText.Text = AccountService.User?.Username ?? "Account";
+            ProfileHintText.Text = "View profile";
+            WorkshopItems.ItemsSource = _manifest.Workshop.Where(w => w.Visible).ToList();
+            WorkshopEmpty.Visibility = _manifest.Workshop.Any(w => w.Visible) ? Visibility.Collapsed : Visibility.Visible;
 
             ConnectionText.Text = loaded.Online
-                ? $"Online  •  {_bootstrap.Owner}/{_bootstrap.Repo}@{_bootstrap.Branch}"
+                ? "Connected to Atenoct Games"
                 : "Offline mode  •  fallback catalog";
 
             if (_selfUpdate.UpdateRequired(_manifest.Launcher))
@@ -97,6 +115,28 @@ public partial class MainWindow : Window
         }
     }
 
+    private async Task PollUpdatesAsync()
+    {
+        if (_refreshing || !GamesList.IsEnabled) return;
+        _refreshing = true;
+        try
+        {
+            var loaded = await _manifestService.LoadLauncherAsync(_bootstrap);
+            if (!loaded.Online) return;
+            var fresh = await _notificationService.CollectNewAsync(loaded.Manifest, _manifestService);
+            _notifications.AddRange(fresh); UpdateNotificationButton();
+            if (fresh.Count > 0) { SideInstallStatusText.Text = $"{fresh.Count} new studio updates"; new NotificationWindow(fresh) { Owner = this }.Show(); }
+            var selected = _selectedGame;
+            if (selected != null && GamesList.IsEnabled)
+            {
+                var latest = await _manifestService.LoadGameAsync(selected);
+                if (_selectedGame == selected && GamesList.IsEnabled) { _selectedGameManifest = latest; RefreshGameAction(); }
+            }
+        }
+        catch { }
+        finally { _refreshing = false; }
+    }
+
     private void ApplyGameSearch()
     {
         var q = SearchBox?.Text?.Trim() ?? "";
@@ -104,6 +144,7 @@ public partial class MainWindow : Window
             ? _allGames
             : _allGames.Where(x => x.Name.Contains(q, StringComparison.OrdinalIgnoreCase) || x.Description.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
         GamesList.ItemsSource = items;
+        if (GameCards != null) GameCards.ItemsSource = items;
     }
 
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e) => ApplyGameSearch();
@@ -139,7 +180,7 @@ public partial class MainWindow : Window
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(_selectedGame.ManifestUrl))
+            if (string.IsNullOrWhiteSpace(_selectedGame.ManifestUrl) && string.IsNullOrWhiteSpace(_selectedGame.ReleaseRepo))
             {
                 GameActionButton.Content = "COMING SOON";
                 InstallStatusText.Text = "No downloadable build is published yet.";
@@ -147,7 +188,10 @@ public partial class MainWindow : Window
                 return;
             }
 
-            _selectedGameManifest = await _manifestService.LoadGameAsync(_selectedGame.ManifestUrl);
+            var selected = _selectedGame;
+            var result = await _manifestService.LoadGameAsync(selected);
+            if (_selectedGame != selected) return;
+            _selectedGameManifest = result;
             RefreshGameAction();
         }
         catch (Exception ex)
@@ -212,7 +256,7 @@ public partial class MainWindow : Window
             OpenUrl(_selectedGame.PurchaseUrl);
             return;
         }
-        if (_selectedGameManifest == null) return;
+        if (_selectedGameManifest == null) { GamesList_SelectionChanged(GamesList, null!); return; }
 
         try
         {
@@ -223,6 +267,7 @@ public partial class MainWindow : Window
             }
 
             GameActionButton.IsEnabled = false;
+            GamesList.IsEnabled = GameCards.IsEnabled = SearchBox.IsEnabled = false;
             InstallProgress.Visibility = Visibility.Visible;
             SideInstallProgress.Visibility = Visibility.Visible;
             InstallProgress.Value = 0;
@@ -248,6 +293,7 @@ public partial class MainWindow : Window
             MessageBox.Show(ex.Message, "Install error", MessageBoxButton.OK, MessageBoxImage.Error);
             RefreshGameAction();
         }
+        finally { GamesList.IsEnabled = GameCards.IsEnabled = SearchBox.IsEnabled = true; }
     }
 
     private async Task RefreshLibraryAsync()
@@ -255,10 +301,10 @@ public partial class MainWindow : Window
         var entries = new List<LibraryGameEntry>();
         foreach (var game in _allGames)
         {
-            if (string.IsNullOrWhiteSpace(game.ManifestUrl)) continue;
+            if (string.IsNullOrWhiteSpace(game.ManifestUrl) && string.IsNullOrWhiteSpace(game.ReleaseRepo)) continue;
             try
             {
-                var gm = await _manifestService.LoadGameAsync(game.ManifestUrl);
+                var gm = await _manifestService.LoadGameAsync(game);
                 var state = _installer.ReadState(_installer.GetInstallDir(game, gm));
                 if (state == null) continue;
                 entries.Add(new LibraryGameEntry
@@ -275,6 +321,13 @@ public partial class MainWindow : Window
         EmptyLibraryText.Visibility = entries.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    private void GameCard_Click(object sender, RoutedEventArgs e) { if ((sender as Button)?.Tag is GameCatalogItem game) { GamesList.SelectedItem = game; ShowHome(); HomeView.ScrollToTop(); } }
+    private void WorkshopNavButton_Click(object sender, RoutedEventArgs e)
+    {
+        HomeView.Visibility = LibraryView.Visibility = Visibility.Collapsed;
+        WorkshopView.Visibility = Visibility.Visible;
+        PageTitleText.Text = "Workshop"; PageSubtitleText.Text = "Create. Share. Explore."; App.Reveal(WorkshopView);
+    }
     private void HomeNavButton_Click(object sender, RoutedEventArgs e) => ShowHome();
 
     private async void LibraryNavButton_Click(object sender, RoutedEventArgs e)
@@ -295,6 +348,8 @@ public partial class MainWindow : Window
     private void ShowHome()
     {
         HomeView.Visibility = Visibility.Visible;
+        WorkshopView.Visibility = Visibility.Collapsed;
+        App.Reveal(HomeView);
         LibraryView.Visibility = Visibility.Collapsed;
         PageTitleText.Text = "Home";
         PageSubtitleText.Text = "Games, releases and studio news";
@@ -304,6 +359,8 @@ public partial class MainWindow : Window
     {
         HomeView.Visibility = Visibility.Collapsed;
         LibraryView.Visibility = Visibility.Visible;
+        WorkshopView.Visibility = Visibility.Collapsed;
+        App.Reveal(LibraryView);
         PageTitleText.Text = "My Library";
         PageSubtitleText.Text = "Installed games on this PC";
     }
@@ -344,12 +401,11 @@ public partial class MainWindow : Window
 
     private void ProfileButton_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new ProfileWindow { Owner = this };
-        if (dialog.ShowDialog() == true && dialog.Profile != null)
+        var dialog = new AccountWindow(_manifest, _bootstrap, true) { Owner = this };
+        if (dialog.ShowDialog() == true)
         {
-            _currentProfile = dialog.Profile;
-            ProfileNameText.Text = _currentProfile.Username;
-            ProfileHintText.Text = _currentProfile.Email;
+            ProfileNameText.Text = AccountService.User?.Username ?? "Account";
+            ProfileHintText.Text = "View profile";
         }
     }
 
@@ -364,7 +420,7 @@ public partial class MainWindow : Window
 
     private static void OpenUrl(string? url)
     {
-        if (string.IsNullOrWhiteSpace(url)) return;
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || uri.Scheme != "https") return;
         try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); } catch { }
     }
 

@@ -18,6 +18,9 @@ public sealed class LauncherManifest
     public LauncherPresentation Presentation { get; set; } = new();
     public List<NewsItem> News { get; set; } = new();
     public List<GameCatalogItem> Games { get; set; } = new();
+    public List<WorkshopItem> Workshop { get; set; } = new();
+    public ThemeConfig Theme { get; set; } = new();
+    public AuthConfig Auth { get; set; } = new();
 }
 
 public sealed class LauncherUpdateInfo
@@ -72,6 +75,10 @@ public sealed class GameCatalogItem
     public string IconUrl { get; set; } = "";
     public string ManifestUrl { get; set; } = "";
     public string WebsiteUrl { get; set; } = "";
+    public string ReleaseRepo { get; set; } = "";
+    public string ReleaseAssetPattern { get; set; } = @"^(?!.*[Ss]ource).*\.zip$";
+    public string Executable { get; set; } = "Game.exe";
+    public string InstallFolder { get; set; } = "";
     public string ProductId { get; set; } = "";
     public string PurchaseUrl { get; set; } = "";
     public bool RequiresOwnership { get; set; }
@@ -100,4 +107,26 @@ public sealed class GameState
     public string Id { get; set; } = "";
     public string Version { get; set; } = "0.0.0";
     public DateTime InstalledAtUtc { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class ThemeConfig
+{
+ public string Background { get; set; } = "#0B0F17";
+ public string Panel { get; set; } = "#111824";
+ public string Card { get; set; } = "#172132";
+ public string Accent { get; set; } = "#80A8FF";
+ public bool Motion { get; set; } = true;
+}
+public sealed class AuthConfig { public string ApiBaseUrl { get; set; } = ""; }
+public sealed class WorkshopItem
+{
+ public string Id { get; set; } = Guid.NewGuid().ToString("N");
+ public string Name { get; set; } = "New item";
+ public string GameId { get; set; } = "castle-survival";
+ public string Category { get; set; } = "Mod";
+ public string Description { get; set; } = "";
+ public string ImageUrl { get; set; } = "";
+ public string DownloadUrl { get; set; } = "";
+ public string Pricing { get; set; } = "free";
+ public bool Visible { get; set; } = false;
 }

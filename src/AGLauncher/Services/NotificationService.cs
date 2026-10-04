@@ -36,10 +36,10 @@ public sealed class NotificationService
         foreach (var game in manifest.Games.Where(x => x.Visible))
         {
             candidates.Add(new LauncherNotification { Key = $"game:{game.Id}", Title = $"Game available: {game.Name}", Message = game.Description, Date = DateTime.Now.ToString("yyyy-MM-dd"), LinkUrl = game.WebsiteUrl });
-            if (string.IsNullOrWhiteSpace(game.ManifestUrl)) continue;
+            if (string.IsNullOrWhiteSpace(game.ManifestUrl) && string.IsNullOrWhiteSpace(game.ReleaseRepo)) continue;
             try
             {
-                var gm = await manifestService.LoadGameAsync(game.ManifestUrl);
+                var gm = await manifestService.LoadGameAsync(game);
                 candidates.Add(new LauncherNotification { Key = $"game-version:{game.Id}:{gm.Version}", Title = $"{game.Name} v{gm.Version}", Message = "A new game version is available in AG Launcher.", Date = DateTime.Now.ToString("yyyy-MM-dd"), LinkUrl = game.WebsiteUrl });
             }
             catch { }
@@ -47,7 +47,7 @@ public sealed class NotificationService
 
         var known = LoadKnown();
         var fresh = candidates.Where(x => !known.Contains(x.Key)).OrderByDescending(x => x.Date).Take(12).ToList();
-        SaveKnown(candidates.Select(x => x.Key));
+        SaveKnown(known.Concat(candidates.Select(x => x.Key)));
         return fresh;
     }
 
