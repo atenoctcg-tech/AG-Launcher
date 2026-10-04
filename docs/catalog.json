@@ -13,11 +13,11 @@
     "discord": "",
     "telegram": "https://t.me/castlesurvival",
     "youTube": "https://www.youtube.com/@atenoct",
-    "support": ""
+    "support": "https://t.me/castle_survival"
   },
   "presentation": {
     "announcement": "",
-    "defaultHeroTitle": "Your next adventure.",
+    "defaultHeroTitle": "Your next adventure is AG.",
     "defaultHeroSubtitle": "Discover new worlds. Build your library. Play your way."
   },
   "news": [
