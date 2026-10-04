@@ -32,20 +32,10 @@
       "visible": true
     },
     {
-      "id": "castle-survival-v081-release",
-      "title": "Castle Survival v0.8.1 is available",
-      "summary": "Castle Survival v0.8.1 can now be installed and updated directly from AG Launcher.",
-      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
-      "linkUrl": "https://github.com/atenoctcg-tech/Castle-Survival-Releases/releases/tag/v0.8.1",
-      "date": "2026-10-04",
-      "pinned": true,
-      "visible": true
-    },
-    {
       "id": "welcome-001",
       "title": "Welcome to AG Launcher",
       "summary": "Atenoct Games launcher is ready for Castle Survival and future games.",
-      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/58b0c6e0-c950-4359-b845-37e6d90e138f.png",
       "linkUrl": "",
       "date": "2026-10-04",
       "pinned": true,
@@ -77,10 +67,10 @@
   ],
   "workshop": [],
   "theme": {
-    "background": "#0B0F17",
+    "background": "#0b0f17",
     "panel": "#111824",
     "card": "#172132",
-    "accent": "#80A8FF",
+    "accent": "#80a8ff",
     "motion": true
   }
 }
