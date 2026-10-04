@@ -6,6 +6,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Text.Json;
+using Microsoft.Win32;
 
 namespace AGLauncher;
 
@@ -22,7 +24,9 @@ public sealed class LibraryGameEntry
 public partial class MainWindow : Window
 {
     private bool _refreshing;
-    private readonly System.Windows.Threading.DispatcherTimer _poll = new() { Interval = TimeSpan.FromMinutes(2) };
+    private readonly System.Windows.Threading.DispatcherTimer _poll = new() { Interval = TimeSpan.FromSeconds(45) };
+    private int _pollCounter;
+    private string _manifestFingerprint = "";
     private BootstrapConfig _bootstrap = new();
     private LauncherManifest _manifest = new();
     private readonly ManifestService _manifestService = new();
@@ -50,12 +54,8 @@ public partial class MainWindow : Window
             _bootstrap = BootstrapService.Load();
             var loaded = await _manifestService.LoadLauncherAsync(_bootstrap);
             _manifest = loaded.Manifest;
-            App.MotionEnabled = _manifest.Theme.Motion;
-            foreach (var pair in new[] { ("BgBrush", _manifest.Theme.Background), ("PanelBrush", _manifest.Theme.Panel), ("CardBrush", _manifest.Theme.Card) })
-                try { Application.Current.Resources[pair.Item1] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(pair.Item2)); } catch { }
-            var localProfile = _profileService.Load();
-            ProfileNameText.Text = string.IsNullOrWhiteSpace(localProfile.Nickname) ? "Guest" : localProfile.Nickname;
-            ProfileHintText.Text = string.IsNullOrWhiteSpace(localProfile.Nickname) ? "Set nickname" : "Local nickname";
+            ApplyTheme();
+            RefreshProfileUi();
             WorkshopItems.ItemsSource = _manifest.Workshop.Where(w => w.Visible).ToList();
             WorkshopEmpty.Visibility = _manifest.Workshop.Any(w => w.Visible) ? Visibility.Collapsed : Visibility.Visible;
 
@@ -78,6 +78,7 @@ public partial class MainWindow : Window
                 return;
             }
 
+            _manifestFingerprint = JsonSerializer.Serialize(_manifest, JsonUtil.Options);
             _allGames = _manifest.Games.Where(g => g.Visible).OrderByDescending(g => g.Featured).ThenBy(g => g.SortOrder).ThenBy(g => g.Name).ToList();
             ApplyGameSearch();
             NewsList.ItemsSource = _manifest.News.Where(n => n.Visible).OrderByDescending(n => n.Pinned).ThenByDescending(n => n.Date).ToList();
@@ -117,18 +118,95 @@ public partial class MainWindow : Window
         {
             var loaded = await _manifestService.LoadLauncherAsync(_bootstrap);
             if (!loaded.Online) return;
-            var fresh = await _notificationService.CollectNewAsync(loaded.Manifest, _manifestService);
-            _notifications.AddRange(fresh); UpdateNotificationButton();
-            if (fresh.Count > 0) { SideInstallStatusText.Text = $"{fresh.Count} new studio updates"; new NotificationWindow(fresh) { Owner = this }.Show(); }
-            var selected = _selectedGame;
-            if (selected != null && GamesList.IsEnabled)
+
+            ConnectionText.Text = $"Connected to Atenoct Games  •  refreshed {DateTime.Now:HH:mm}";
+            var fingerprint = JsonSerializer.Serialize(loaded.Manifest, JsonUtil.Options);
+            var manifestChanged = !string.Equals(fingerprint, _manifestFingerprint, StringComparison.Ordinal);
+
+            if (manifestChanged)
             {
-                var latest = await _manifestService.LoadGameAsync(selected);
-                if (_selectedGame == selected && GamesList.IsEnabled) { _selectedGameManifest = latest; RefreshGameAction(); }
+                var selectedId = _selectedGame?.Id;
+                _manifest = loaded.Manifest;
+                _manifestFingerprint = fingerprint;
+                ApplyTheme();
+                RefreshProfileUi();
+
+                WorkshopItems.ItemsSource = _manifest.Workshop.Where(w => w.Visible).ToList();
+                WorkshopEmpty.Visibility = _manifest.Workshop.Any(w => w.Visible) ? Visibility.Collapsed : Visibility.Visible;
+                _allGames = _manifest.Games.Where(g => g.Visible).OrderByDescending(g => g.Featured).ThenBy(g => g.SortOrder).ThenBy(g => g.Name).ToList();
+                ApplyGameSearch();
+                NewsList.ItemsSource = _manifest.News.Where(n => n.Visible).OrderByDescending(n => n.Pinned).ThenByDescending(n => n.Date).ToList();
+
+                var select = !string.IsNullOrWhiteSpace(selectedId)
+                    ? _allGames.FirstOrDefault(g => g.Id.Equals(selectedId, StringComparison.OrdinalIgnoreCase))
+                    : _allGames.FirstOrDefault();
+                if (select != null) GamesList.SelectedItem = select;
+
+                await RefreshLibraryAsync();
+                var fresh = await _notificationService.CollectNewAsync(_manifest, _manifestService);
+                if (fresh.Count > 0)
+                {
+                    _notifications.AddRange(fresh);
+                    UpdateNotificationButton();
+                    SideInstallStatusText.Text = $"{fresh.Count} new studio updates";
+                    new NotificationWindow(fresh) { Owner = this }.Show();
+                }
+            }
+            else if (++_pollCounter % 3 == 0)
+            {
+                var fresh = await _notificationService.CollectNewAsync(_manifest, _manifestService);
+                if (fresh.Count > 0)
+                {
+                    _notifications.AddRange(fresh);
+                    UpdateNotificationButton();
+                    new NotificationWindow(fresh) { Owner = this }.Show();
+                }
+
+                var selected = _selectedGame;
+                if (selected != null)
+                {
+                    var latest = await _manifestService.LoadGameAsync(selected);
+                    if (_selectedGame?.Id == selected.Id)
+                    {
+                        _selectedGameManifest = latest;
+                        RefreshGameAction();
+                    }
+                }
             }
         }
         catch { }
         finally { _refreshing = false; }
+    }
+
+    private void ApplyTheme()
+    {
+        App.MotionEnabled = _manifest.Theme.Motion;
+        foreach (var pair in new[] { ("BgBrush", _manifest.Theme.Background), ("PanelBrush", _manifest.Theme.Panel), ("CardBrush", _manifest.Theme.Card) })
+            try { Application.Current.Resources[pair.Item1] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(pair.Item2)); } catch { }
+    }
+
+    private void RefreshProfileUi()
+    {
+        var profile = _profileService.Load();
+        ProfileNameText.Text = string.IsNullOrWhiteSpace(profile.Nickname) ? "Guest" : profile.Nickname;
+        ProfileHintText.Text = string.IsNullOrWhiteSpace(profile.PhotoPath) ? "Set profile" : "Edit profile";
+        ProfileAvatarImage.Source = LoadLocalBitmap(profile.PhotoPath);
+    }
+
+    private static BitmapImage? LoadLocalBitmap(string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return null;
+        try
+        {
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.UriSource = new Uri(path, UriKind.Absolute);
+            image.EndInit();
+            image.Freeze();
+            return image;
+        }
+        catch { return null; }
     }
 
     private void ApplyGameSearch()
@@ -258,6 +336,35 @@ public partial class MainWindow : Window
             {
                 _installer.Play(_selectedGame, _selectedGameManifest);
                 return;
+            }
+
+            var currentInstallDir = _installer.GetInstallDir(_selectedGame, _selectedGameManifest);
+            var currentState = _installer.ReadState(currentInstallDir);
+            if (currentState == null && (GameActionButton.Content?.ToString()) == "INSTALL")
+            {
+                var defaultParent = Path.GetDirectoryName(currentInstallDir)
+                    ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var picker = new OpenFolderDialog
+                {
+                    Title = $"Choose where {_selectedGame.Name} will be installed",
+                    InitialDirectory = Directory.Exists(defaultParent) ? defaultParent : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    Multiselect = false
+                };
+                if (picker.ShowDialog(this) != true) return;
+
+                var target = _installer.GetSuggestedInstallFolder(_selectedGame, _selectedGameManifest, picker.FolderName);
+                if (Directory.Exists(target) && Directory.EnumerateFileSystemEntries(target).Any())
+                {
+                    var confirm = MessageBox.Show(
+                        $"The folder already contains files:\n{target}\n\nAG Launcher will preserve files that are not replaced by the game package. Continue?",
+                        "Install location",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+                    if (confirm != MessageBoxResult.Yes) return;
+                }
+                _installer.SetInstallDir(_selectedGame, target);
+                InstallStatusText.Text = $"Install location: {target}";
+                SideInstallStatusText.Text = $"Installing to {target}";
             }
 
             GameActionButton.IsEnabled = false;
@@ -398,9 +505,7 @@ public partial class MainWindow : Window
         var dialog = new ProfileWindow { Owner = this };
         if (dialog.ShowDialog() == true)
         {
-            var profile = _profileService.Load();
-            ProfileNameText.Text = string.IsNullOrWhiteSpace(profile.Nickname) ? "Guest" : profile.Nickname;
-            ProfileHintText.Text = string.IsNullOrWhiteSpace(profile.Nickname) ? "Set nickname" : "Local nickname";
+            RefreshProfileUi();
         }
     }
 
@@ -419,15 +524,57 @@ public partial class MainWindow : Window
         try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); } catch { }
     }
 
+    private async void RefreshButton_Click(object sender, RoutedEventArgs e) => await ManualRefreshAsync();
+
+    private async Task ManualRefreshAsync()
+    {
+        if (_refreshing) return;
+        RefreshButton.IsEnabled = false;
+        ConnectionText.Text = "Refreshing launcher...";
+        try
+        {
+            _manifestFingerprint = "";
+            await InitializeAsync();
+            ConnectionText.Text = $"Connected to Atenoct Games  •  refreshed {DateTime.Now:HH:mm}";
+        }
+        finally
+        {
+            RefreshButton.IsEnabled = true;
+        }
+    }
+
+    private void Window_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        var target = HomeView.Visibility == Visibility.Visible
+            ? HomeView
+            : LibraryView.Visibility == Visibility.Visible
+                ? LibraryView
+                : WorkshopView;
+
+        target.ScrollToVerticalOffset(target.VerticalOffset - e.Delta);
+        e.Handled = true;
+    }
+
     private async void Window_KeyDown(object sender, KeyEventArgs e)
     {
+        if (e.Key == Key.R && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        {
+            e.Handled = true;
+            await ManualRefreshAsync();
+            return;
+        }
+
         if (e.Key == Key.A && Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
         {
             var login = new AdminLoginWindow(_bootstrap) { Owner = this };
             if (login.ShowDialog() == true)
             {
                 var admin = new AdminWindow(_bootstrap, _manifest, login.Token, login.AdminPassword) { Owner = this };
-                if (admin.ShowDialog() == true) await InitializeAsync();
+                if (admin.ShowDialog() == true)
+                {
+                    _manifestFingerprint = "";
+                    await InitializeAsync();
+                }
             }
         }
     }
