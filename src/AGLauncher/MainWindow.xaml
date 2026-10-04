@@ -70,7 +70,7 @@
 
       <Border Grid.Row="4" Background="{DynamicResource CardBrush}" BorderBrush="#262D36" BorderThickness="1" CornerRadius="13" Padding="11">
        <StackPanel>
-        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="12" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.4.3" Foreground="#747D89" FontSize="12"/></Grid>
+        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="12" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.4.4" Foreground="#747D89" FontSize="12"/></Grid>
         <TextBlock x:Name="SideInstallStatusText" Text="Ready" Foreground="#6B7480" FontSize="12" Margin="0,5,0,0" TextTrimming="CharacterEllipsis"/>
         <ProgressBar x:Name="SideInstallProgress" Height="4" Minimum="0" Maximum="1" Visibility="Collapsed" Margin="0,8,0,0"/>
        </StackPanel>
@@ -116,7 +116,7 @@
            <TextBlock x:Name="GameDescriptionText" Text="Select a game." FontSize="14" Foreground="#A2AAB5" MaxWidth="640" TextWrapping="Wrap" LineHeight="22"/>
           </StackPanel>
           <Grid Grid.Row="1"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition/></Grid.ColumnDefinitions>
-           <Button x:Name="GameActionButton" Style="{StaticResource PrimaryButton}" Content="SELECT GAME" MinWidth="176" Height="48" Click="GameActionButton_Click"/>
+           <Button x:Name="GameActionButton" Style="{StaticResource GameActionButton}" Content="SELECT GAME" MinWidth="176" Height="48" Click="GameActionButton_Click"/>
            <Button x:Name="GameWebsiteButton" Grid.Column="1" Style="{StaticResource GhostButton}" Content="Game website" Height="48" Margin="9,0,0,0" Click="GameWebsiteButton_Click" Visibility="Collapsed"/>
            <Button x:Name="OpenInstallFolderButton" Grid.Column="2" Style="{StaticResource GhostButton}" Content="Open folder" Height="48" Margin="9,0,0,0" Click="OpenInstallFolderButton_Click" Visibility="Collapsed"/>
            <StackPanel Grid.Column="3" Margin="18,0,0,0" VerticalAlignment="Center"><TextBlock x:Name="InstallStatusText" Foreground="#858E9A" FontSize="12"/><ProgressBar x:Name="InstallProgress" Height="5" Minimum="0" Maximum="1" Visibility="Collapsed" Margin="0,7,0,0"/></StackPanel>
