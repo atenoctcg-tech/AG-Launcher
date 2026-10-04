@@ -67,8 +67,8 @@
   ],
   "workshop": [],
   "theme": {
-    "background": "#0055ff",
-    "panel": "#005eff",
+    "background": "#252d3c",
+    "panel": "#202c40",
     "card": "#172132",
     "accent": "#80a8ff",
     "motion": true
