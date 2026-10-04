@@ -6,6 +6,7 @@ namespace AGLauncher.Services;
 public sealed class LocalProfile
 {
     public string Nickname { get; set; } = "";
+    public string PhotoPath { get; set; } = "";
     public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
 }
 
@@ -13,6 +14,7 @@ public sealed class ProfileService
 {
     private readonly string _root;
     private readonly string _path;
+    private readonly string _profileMediaDir;
     private readonly string _legacyPath;
 
     public ProfileService()
@@ -21,6 +23,8 @@ public sealed class ProfileService
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "Atenoct Games", "AGLauncher");
         Directory.CreateDirectory(_root);
+        _profileMediaDir = Path.Combine(_root, "Profile");
+        Directory.CreateDirectory(_profileMediaDir);
         _path = Path.Combine(_root, "profile.json");
         _legacyPath = Path.Combine(_root, "profiles.json");
         MigrateLegacyProfile();
@@ -31,7 +35,10 @@ public sealed class ProfileService
         try
         {
             if (!File.Exists(_path)) return new LocalProfile();
-            return JsonSerializer.Deserialize<LocalProfile>(File.ReadAllText(_path), JsonUtil.Options) ?? new LocalProfile();
+            var profile = JsonSerializer.Deserialize<LocalProfile>(File.ReadAllText(_path), JsonUtil.Options) ?? new LocalProfile();
+            if (!string.IsNullOrWhiteSpace(profile.PhotoPath) && !File.Exists(profile.PhotoPath))
+                profile.PhotoPath = "";
+            return profile;
         }
         catch
         {
@@ -39,19 +46,56 @@ public sealed class ProfileService
         }
     }
 
-    public (bool Ok, string Message) SaveNickname(string nickname)
+    public (bool Ok, string Message) Save(string nickname, string? selectedPhotoPath, bool removePhoto = false)
     {
         nickname = (nickname ?? "").Trim();
         if (nickname.Length > 24) return (false, "Nickname must be 24 characters or fewer.");
         if (nickname.Length > 0 && nickname.Length < 2) return (false, "Nickname must contain at least 2 characters.");
 
-        File.WriteAllText(_path, JsonSerializer.Serialize(new LocalProfile
+        var current = Load();
+        var photoPath = current.PhotoPath;
+
+        if (removePhoto)
+        {
+            TryDelete(photoPath);
+            photoPath = "";
+        }
+        else if (!string.IsNullOrWhiteSpace(selectedPhotoPath))
+        {
+            if (!File.Exists(selectedPhotoPath)) return (false, "Selected profile photo was not found.");
+            var info = new FileInfo(selectedPhotoPath);
+            if (info.Length > 8 * 1024 * 1024) return (false, "Profile photo must be smaller than 8 MB.");
+
+            var ext = Path.GetExtension(selectedPhotoPath).ToLowerInvariant();
+            if (ext is not ".png" and not ".jpg" and not ".jpeg" and not ".webp")
+                return (false, "Use PNG, JPG, JPEG or WEBP for the profile photo.");
+
+            foreach (var old in Directory.EnumerateFiles(_profileMediaDir, "avatar.*"))
+                TryDelete(old);
+
+            photoPath = Path.Combine(_profileMediaDir, "avatar" + ext);
+            File.Copy(selectedPhotoPath, photoPath, true);
+        }
+
+        var profile = new LocalProfile
         {
             Nickname = nickname,
+            PhotoPath = photoPath,
             UpdatedAtUtc = DateTime.UtcNow
-        }, JsonUtil.Options));
+        };
+        File.WriteAllText(_path, JsonSerializer.Serialize(profile, JsonUtil.Options));
+        return (true, "Profile saved.");
+    }
 
-        return (true, string.IsNullOrWhiteSpace(nickname) ? "Nickname cleared." : "Nickname saved.");
+    public (bool Ok, string Message) SaveNickname(string nickname) => Save(nickname, null);
+
+    private static void TryDelete(string? path)
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path)) File.Delete(path);
+        }
+        catch { }
     }
 
     private void MigrateLegacyProfile()
