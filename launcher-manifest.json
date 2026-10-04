@@ -35,8 +35,8 @@
     {
       "id": "welcome-001",
       "title": "Welcome to AG Launcher",
-      "summary": "Atenoct Games launcher is ready for Castle Survival and future games.",
-      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "summary": "Atenoct Games is ready for make you happy and change your game life.",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/news/20261004-173650-AG-NEWS.png",
       "linkUrl": "",
       "date": "2026-10-04",
       "pinned": true,
@@ -54,6 +54,8 @@
       "featured": true,
       "sortOrder": 1,
       "bannerUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "animatedBannerUrl": "",
+      "libraryImageUrl": "",
       "iconUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/icons/20261004-163155-photo_2026-09-27_12-23-01.jpg",
       "manifestUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/manifests/castle-survival.json",
       "websiteUrl": "",
@@ -63,20 +65,20 @@
       "installFolder": "Castle Survival",
       "productId": "",
       "purchaseUrl": "",
-      "requiresOwnership": false,
-      "animatedBannerUrl": "",
-      "libraryImageUrl": ""
+      "requiresOwnership": false
     },
     {
       "id": "matiz",
       "name": "MATIZ",
-      "description": "Bu o‘yin emas.",
+      "description": "Bu o\u2018yin emas.",
       "status": "Nima gap",
       "pricing": "free",
       "visible": true,
       "featured": false,
       "sortOrder": 9,
       "bannerUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/e3154ed5-8a1b-448f-82d2-d94b642bca0e.jpg",
+      "animatedBannerUrl": "",
+      "libraryImageUrl": "",
       "iconUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/icons/20261004-120816-0103.jpg",
       "manifestUrl": "",
       "websiteUrl": "",
@@ -86,9 +88,7 @@
       "installFolder": "",
       "productId": "",
       "purchaseUrl": "",
-      "requiresOwnership": false,
-      "animatedBannerUrl": "",
-      "libraryImageUrl": ""
+      "requiresOwnership": false
     }
   ],
   "workshop": [],
