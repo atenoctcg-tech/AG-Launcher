@@ -26,7 +26,8 @@ public sealed class LauncherUpdateInfo
 {
     public string LatestVersion { get; set; } = "0.1.0";
     public string MinimumVersion { get; set; } = "0.1.0";
-    public bool Mandatory { get; set; } = true;
+    public bool Mandatory { get; set; } = false;
+    public bool AutoUpdate { get; set; } = false;
     public string PackageUrl { get; set; } = "";
     public string Sha256 { get; set; } = "";
     public string ReleaseNotes { get; set; } = "";
