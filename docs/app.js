@@ -58,7 +58,7 @@ document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA/.test(d
 $('#notifications').onclick=()=>modal('<h2>Studio updates</h2>'+(catalog.news||[]).filter(n=>n.visible!==false).map(n=>`<p><b>${esc(n.title)}</b><br>${esc(n.date)} · ${esc(n.summary)}</p>`).join(''));
 async function load(){
  try{catalog=await json(liveManifestUrl())}catch{catalog=await json('catalog.json');$('#status').hidden=false;$('#status').textContent='Showing the bundled catalog. Live content is temporarily unavailable.'}
- for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent'}))if(/^#[0-9a-f]{6}$/i.test(catalog.theme?.[key]))document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);document.body.classList.toggle('motion-off',catalog.theme?.motion===false);
+ for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent',text:'text',mutedText:'muted'}))if(/^#[0-9a-f]{6}$/i.test(catalog.theme?.[key]))document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);document.body.classList.toggle('motion-off',catalog.theme?.motion===false);
  $$('[data-social]').forEach(a=>{const key=a.dataset.social;const url=safe(catalog.socials?.[key]||catalog.socials?.[key==='youtube'?'youTube':key]);if(url){a.href=url;a.target='_blank';a.rel='noopener'}else a.onclick=e=>{e.preventDefault();toast('The studio has not added this community link yet.')}});
  const heading=document.querySelector('#home h1');heading.textContent=catalog.presentation?.defaultHeroTitle||'Your next adventure.';
  refreshNickname();render();route();
@@ -70,7 +70,7 @@ async function syncLiveCatalog(){
   const next=await json(liveManifestUrl());
   if(JSON.stringify(next)!==JSON.stringify(catalog)){
    catalog=next;
-   for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent'}))if(/^#[0-9a-f]{6}$/i.test(catalog.theme?.[key]))document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);
+   for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent',text:'text',mutedText:'muted'}))if(/^#[0-9a-f]{6}$/i.test(catalog.theme?.[key]))document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);
    document.body.classList.toggle('motion-off',catalog.theme?.motion===false);
    render();
    toast('Website content refreshed.');
