@@ -1,89 +1,76 @@
 using System.IO;
-using System.Security.Cryptography;
 using System.Text.Json;
 
 namespace AGLauncher.Services;
 
-public class UserProfile
+public sealed class LocalProfile
 {
-    public string Username { get; set; } = "";
-    public string Email { get; set; } = "";
-    public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
-}
-
-internal sealed class StoredUserProfile : UserProfile
-{
-    public string PasswordSalt { get; set; } = "";
-    public string PasswordHash { get; set; } = "";
+    public string Nickname { get; set; } = "";
+    public DateTime UpdatedAtUtc { get; set; } = DateTime.UtcNow;
 }
 
 public sealed class ProfileService
 {
+    private readonly string _root;
     private readonly string _path;
+    private readonly string _legacyPath;
 
     public ProfileService()
     {
-        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Atenoct Games", "AGLauncher");
-        Directory.CreateDirectory(dir);
-        _path = Path.Combine(dir, "profiles.json");
+        _root = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Atenoct Games", "AGLauncher");
+        Directory.CreateDirectory(_root);
+        _path = Path.Combine(_root, "profile.json");
+        _legacyPath = Path.Combine(_root, "profiles.json");
+        MigrateLegacyProfile();
     }
 
-    public (bool Ok, string Message, UserProfile? Profile) Register(string username, string email, string password)
-    {
-        username = username.Trim();
-        email = email.Trim();
-        if (username.Length < 3) return (false, "Username must contain at least 3 characters.", null);
-        if (!email.Contains('@') || email.Length < 5) return (false, "Enter a valid email address.", null);
-        if (password.Length < 8) return (false, "Password must contain at least 8 characters.", null);
-
-        var users = Load();
-        if (users.Any(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase))) return (false, "This username already exists on this PC.", null);
-        if (users.Any(x => x.Email.Equals(email, StringComparison.OrdinalIgnoreCase))) return (false, "This email is already registered on this PC.", null);
-
-        var salt = RandomNumberGenerator.GetBytes(16);
-        var hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, 120_000, HashAlgorithmName.SHA256, 32);
-        var stored = new StoredUserProfile
-        {
-            Username = username,
-            Email = email,
-            CreatedAtUtc = DateTime.UtcNow,
-            PasswordSalt = Convert.ToBase64String(salt),
-            PasswordHash = Convert.ToBase64String(hash)
-        };
-        users.Add(stored);
-        Save(users);
-        return (true, "Profile created.", ToPublic(stored));
-    }
-
-    public (bool Ok, string Message, UserProfile? Profile) Login(string usernameOrEmail, string password)
-    {
-        var users = Load();
-        var value = usernameOrEmail.Trim();
-        var user = users.FirstOrDefault(x => x.Username.Equals(value, StringComparison.OrdinalIgnoreCase) || x.Email.Equals(value, StringComparison.OrdinalIgnoreCase));
-        if (user == null) return (false, "Profile not found.", null);
-
-        try
-        {
-            var salt = Convert.FromBase64String(user.PasswordSalt);
-            var expected = Convert.FromBase64String(user.PasswordHash);
-            var actual = Rfc2898DeriveBytes.Pbkdf2(password, salt, 120_000, HashAlgorithmName.SHA256, expected.Length);
-            if (!CryptographicOperations.FixedTimeEquals(expected, actual)) return (false, "Incorrect password.", null);
-            return (true, "Logged in.", ToPublic(user));
-        }
-        catch { return (false, "The local profile database is damaged.", null); }
-    }
-
-    private List<StoredUserProfile> Load()
+    public LocalProfile Load()
     {
         try
         {
-            if (!File.Exists(_path)) return new();
-            return JsonSerializer.Deserialize<List<StoredUserProfile>>(File.ReadAllText(_path), JsonUtil.Options) ?? new();
+            if (!File.Exists(_path)) return new LocalProfile();
+            return JsonSerializer.Deserialize<LocalProfile>(File.ReadAllText(_path), JsonUtil.Options) ?? new LocalProfile();
         }
-        catch { return new(); }
+        catch
+        {
+            return new LocalProfile();
+        }
     }
 
-    private void Save(List<StoredUserProfile> users) => File.WriteAllText(_path, JsonSerializer.Serialize(users, JsonUtil.Options));
+    public (bool Ok, string Message) SaveNickname(string nickname)
+    {
+        nickname = (nickname ?? "").Trim();
+        if (nickname.Length > 24) return (false, "Nickname must be 24 characters or fewer.");
+        if (nickname.Length > 0 && nickname.Length < 2) return (false, "Nickname must contain at least 2 characters.");
 
-    private static UserProfile ToPublic(StoredUserProfile x) => new() { Username = x.Username, Email = x.Email, CreatedAtUtc = x.CreatedAtUtc };
+        File.WriteAllText(_path, JsonSerializer.Serialize(new LocalProfile
+        {
+            Nickname = nickname,
+            UpdatedAtUtc = DateTime.UtcNow
+        }, JsonUtil.Options));
+
+        return (true, string.IsNullOrWhiteSpace(nickname) ? "Nickname cleared." : "Nickname saved.");
+    }
+
+    private void MigrateLegacyProfile()
+    {
+        if (File.Exists(_path) || !File.Exists(_legacyPath)) return;
+        try
+        {
+            using var doc = JsonDocument.Parse(File.ReadAllText(_legacyPath));
+            if (doc.RootElement.ValueKind == JsonValueKind.Array && doc.RootElement.GetArrayLength() > 0)
+            {
+                var first = doc.RootElement[0];
+                if (first.TryGetProperty("username", out var username))
+                {
+                    var nickname = username.GetString() ?? "";
+                    if (!string.IsNullOrWhiteSpace(nickname)) SaveNickname(nickname);
+                }
+            }
+            File.Delete(_legacyPath);
+        }
+        catch { }
+    }
 }
