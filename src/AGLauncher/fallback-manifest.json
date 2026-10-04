@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "0.4.5",
-    "minimumVersion": "0.4.3",
+    "latestVersion": "0.4.6",
+    "minimumVersion": "0.4.5",
     "mandatory": false,
-    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.5/AGLauncher-v0.4.5-win-x64.zip",
+    "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.6/AGLauncher-v0.4.6-win-x64.zip",
     "sha256": "",
-    "releaseNotes": "AG Launcher v0.4.5 - repaired self-updater. Legacy v0.4.4 and older builds must install v0.4.5 once manually; v0.4.5+ can auto-update without the Windows ShellExecute cancellation error.",
+    "releaseNotes": "AG Launcher v0.4.6 - search suggestions, larger UI text, dark teal action buttons, fixed studio admin password gate, and configurable QUICK LAUNCH icons.",
     "autoUpdate": true
   },
   "socials": {

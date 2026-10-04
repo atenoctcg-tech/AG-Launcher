@@ -18,7 +18,7 @@
       <Image Source="Assets/AGLauncher.ico" Width="22" Height="22"/>
       <StackPanel Margin="10,0,0,0">
        <TextBlock Text="Admin Panel" FontSize="13" FontWeight="SemiBold"/>
-       <TextBlock x:Name="RepoText" Foreground="#646C77" FontSize="8"/>
+       <TextBlock x:Name="RepoText" Foreground="#646C77" FontSize="11"/>
       </StackPanel>
      </StackPanel>
      <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
@@ -36,7 +36,7 @@
      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
      <StackPanel>
       <TextBlock Text="Launcher management" FontSize="24" FontWeight="SemiBold"/>
-      <TextBlock Text="Games, news, social links and launcher updates are published to GitHub." Foreground="#747C87" FontSize="10" Margin="0,4,0,0"/>
+      <TextBlock Text="Games, news, social links and launcher updates are published to GitHub." Foreground="#747C87" FontSize="12" Margin="0,4,0,0"/>
      </StackPanel>
      <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
       <Button Style="{StaticResource GhostButton}" Content="Validate" Click="Validate_Click" Margin="0,0,8,0"/>
@@ -73,7 +73,7 @@
         <Border Grid.Row="7" Grid.ColumnSpan="5" Background="#101319" BorderBrush="#262B32" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,18,0,0">
          <StackPanel>
           <TextBlock Text="Self-update publishing" FontWeight="SemiBold"/>
-          <TextBlock Foreground="#747C87" FontSize="10" TextWrapping="Wrap" Margin="0,6,0,0"
+          <TextBlock Foreground="#747C87" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,0"
                      Text="Publish the launcher ZIP to a stable GitHub Release URL, paste that URL above, calculate its SHA-256, then increase Latest version."/>
          </StackPanel>
         </Border>
@@ -119,7 +119,7 @@
       <DockPanel Margin="14">
        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
         <Button Style="{StaticResource GhostButton}" Content="Upload banner" Click="UploadGameBanner_Click" Margin="0,10,8,0"/>
-        <Button Style="{StaticResource GhostButton}" Content="Upload icon" Click="UploadGameIcon_Click" Margin="0,10,8,0"/>
+        <Button Style="{StaticResource GhostButton}" Content="Upload QUICK LAUNCH icon" Click="UploadGameIcon_Click" ToolTip="This icon is shown in QUICK LAUNCH" Margin="0,10,8,0"/>
         <Button Style="{StaticResource GhostButton}" Content="+ Add game" Click="AddGame_Click" Margin="0,10,8,0"/>
         <Button Style="{StaticResource GhostButton}" Content="Duplicate" Click="DuplicateGame_Click" Margin="0,10,8,0"/>
         <Button Style="{StaticResource GhostButton}" Content="Remove selected" Click="RemoveGame_Click" Margin="0,10,0,0"/>
@@ -155,7 +155,7 @@
         <Border Background="#11161C" BorderBrush="#2A3038" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,18,0,0">
          <StackPanel>
           <TextBlock Text="GitHub publishing token" FontWeight="SemiBold"/>
-          <TextBlock x:Name="TokenStateText" Text="No token saved." Foreground="#747C87" FontSize="9" Margin="0,5,0,10"/>
+          <TextBlock x:Name="TokenStateText" Text="No token saved." Foreground="#747C87" FontSize="11" Margin="0,5,0,10"/>
           <PasswordBox x:Name="AdminTokenBox" Height="42"/>
           <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
            <Button Style="{StaticResource PrimaryButton}" Content="Verify &amp; save token" Click="SaveToken_Click" Margin="0,0,8,0"/>
@@ -166,7 +166,7 @@
         <Border Background="#111419" BorderBrush="#2A3038" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,16,0,0">
          <StackPanel>
           <TextBlock Text="Image publishing" FontWeight="SemiBold"/>
-          <TextBlock TextWrapping="Wrap" Foreground="#747C87" FontSize="10" Margin="0,6,0,0"
+          <TextBlock TextWrapping="Wrap" Foreground="#747C87" FontSize="12" Margin="0,6,0,0"
                      Text="NEWS and GAMES tabs can upload local JPG/PNG/WEBP images directly to docs/media in GitHub. Launcher and website use the generated public image URL automatically."/>
          </StackPanel>
         </Border>
@@ -179,7 +179,7 @@
    </Grid>
 
    <Border Grid.Row="2" Background="#0B0D10" BorderBrush="#20242A" BorderThickness="0,1,0,0">
-    <Grid Margin="18,0"><TextBlock x:Name="StatusText" VerticalAlignment="Center" Foreground="#737B86" FontSize="10" Text="Ready."/><TextBlock Text="Changes are published to launcher-manifest.json" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#454C55" FontSize="9"/></Grid>
+    <Grid Margin="18,0"><TextBlock x:Name="StatusText" VerticalAlignment="Center" Foreground="#737B86" FontSize="12" Text="Ready."/><TextBlock Text="Changes are published to launcher-manifest.json" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#454C55" FontSize="11"/></Grid>
    </Border>
   </Grid>
  </Border>

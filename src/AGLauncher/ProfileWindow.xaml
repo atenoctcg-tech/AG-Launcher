@@ -11,7 +11,7 @@
     <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
     <StackPanel>
      <TextBlock Text="Player profile" FontSize="24" FontWeight="SemiBold"/>
-     <TextBlock Text="Local nickname and profile photo. No account or login required." FontSize="10" Foreground="#737D89" Margin="0,5,0,0"/>
+     <TextBlock Text="Local nickname and profile photo. No account or login required." FontSize="12" Foreground="#737D89" Margin="0,5,0,0"/>
     </StackPanel>
     <Image Grid.Column="1" Source="Assets/AGLauncher.ico" Width="42" Height="42"/>
    </Grid>
@@ -25,21 +25,21 @@
      </Grid>
     </Border>
     <StackPanel Grid.Column="2" VerticalAlignment="Center">
-     <TextBlock Text="Profile photo" Foreground="#9BA4AF" FontSize="10" Margin="0,0,0,8"/>
+     <TextBlock Text="Profile photo" Foreground="#9BA4AF" FontSize="12" Margin="0,0,0,8"/>
      <StackPanel Orientation="Horizontal">
       <Button Style="{StaticResource GhostButton}" Content="Choose photo" Click="ChoosePhoto_Click" Margin="0,0,8,0"/>
       <Button Style="{StaticResource GhostButton}" Content="Remove" Click="RemovePhoto_Click"/>
      </StackPanel>
-     <TextBlock Text="PNG / JPG / WEBP · max 8 MB" Foreground="#68727E" FontSize="9" Margin="0,8,0,0"/>
+     <TextBlock Text="PNG / JPG / WEBP · max 8 MB" Foreground="#68727E" FontSize="11" Margin="0,8,0,0"/>
     </StackPanel>
    </Grid>
 
    <StackPanel Grid.Row="2" Margin="0,8,0,0">
-    <TextBlock Text="Nickname" Foreground="#9BA4AF" FontSize="10" Margin="0,0,0,6"/>
+    <TextBlock Text="Nickname" Foreground="#9BA4AF" FontSize="12" Margin="0,0,0,6"/>
     <TextBox x:Name="NicknameBox" Height="44" MaxLength="24"/>
    </StackPanel>
 
-   <TextBlock x:Name="StatusText" Grid.Row="3" Foreground="#8994A2" FontSize="10" TextWrapping="Wrap" Margin="0,14,0,0"
+   <TextBlock x:Name="StatusText" Grid.Row="3" Foreground="#8994A2" FontSize="12" TextWrapping="Wrap" Margin="0,14,0,0"
               Text="Your profile is stored only on this PC."/>
 
    <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">

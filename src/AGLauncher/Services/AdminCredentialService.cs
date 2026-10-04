@@ -7,8 +7,6 @@ namespace AGLauncher.Services;
 
 internal sealed class AdminCredentialFile
 {
-    public string PasswordSalt { get; set; } = "";
-    public string PasswordHash { get; set; } = "";
     public string TokenSalt { get; set; } = "";
     public string TokenNonce { get; set; } = "";
     public string TokenTag { get; set; } = "";
@@ -19,6 +17,10 @@ public sealed class AdminCredentialService
 {
     private readonly string _path;
 
+    // PBKDF2 verifier for the studio password. The plaintext password is never stored in the repository.
+    private static readonly byte[] AdminSalt = Convert.FromBase64String("QUdMYXVuY2hlckFkbWluLXYx");
+    private static readonly byte[] AdminHash = Convert.FromBase64String("jW5moYnX6rA0/7PVpYsRQkPkhbdeoA9KvGlXbO4z1P0=");
+
     public AdminCredentialService()
     {
         var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Atenoct Games", "AGLauncher");
@@ -26,35 +28,29 @@ public sealed class AdminCredentialService
         _path = Path.Combine(dir, "admin-credentials.json");
     }
 
-    public bool IsConfigured => File.Exists(_path) && Load() != null;
+    public bool IsConfigured => true;
 
-    public (bool Ok, string Message) SetupPassword(string password)
-    {
-        if (password.Length < 8) return (false, "Admin password must contain at least 8 characters.");
-        var salt = RandomNumberGenerator.GetBytes(16);
-        var hash = HashPassword(password, salt);
-        Save(new AdminCredentialFile { PasswordSalt = Convert.ToBase64String(salt), PasswordHash = Convert.ToBase64String(hash) });
-        return (true, "Admin password created.");
-    }
+    public (bool Ok, string Message) SetupPassword(string password) =>
+        (false, "The studio admin password is managed by Atenoct Games.");
 
     public bool VerifyPassword(string password)
     {
-        var file = Load();
-        if (file == null) return false;
-        try
-        {
-            var salt = Convert.FromBase64String(file.PasswordSalt);
-            var expected = Convert.FromBase64String(file.PasswordHash);
-            var actual = HashPassword(password, salt);
-            return CryptographicOperations.FixedTimeEquals(expected, actual);
-        }
-        catch { return false; }
+        if (string.IsNullOrEmpty(password)) return false;
+        var actual = Rfc2898DeriveBytes.Pbkdf2(
+            Encoding.UTF8.GetBytes(password),
+            AdminSalt,
+            200_000,
+            HashAlgorithmName.SHA256,
+            32);
+        return CryptographicOperations.FixedTimeEquals(AdminHash, actual);
     }
 
     public string LoadToken(string password)
     {
+        if (!VerifyPassword(password)) return "";
         var file = Load();
-        if (file == null || !VerifyPassword(password) || string.IsNullOrWhiteSpace(file.TokenCipher)) return "";
+        if (file == null || string.IsNullOrWhiteSpace(file.TokenCipher)) return "";
+
         try
         {
             var salt = Convert.FromBase64String(file.TokenSalt);
@@ -72,17 +68,19 @@ public sealed class AdminCredentialService
 
     public (bool Ok, string Message) SaveToken(string password, string token)
     {
-        var file = Load();
-        if (file == null || !VerifyPassword(password)) return (false, "Admin password is not valid.");
+        if (!VerifyPassword(password)) return (false, "Admin password is not valid.");
         if (string.IsNullOrWhiteSpace(token)) return (false, "GitHub token cannot be empty.");
 
+        var file = Load() ?? new AdminCredentialFile();
         var salt = RandomNumberGenerator.GetBytes(16);
         var nonce = RandomNumberGenerator.GetBytes(12);
         var key = DeriveEncryptionKey(password, salt);
         var plain = Encoding.UTF8.GetBytes(token.Trim());
         var cipher = new byte[plain.Length];
         var tag = new byte[16];
-        using (var aes = new AesGcm(key, 16)) aes.Encrypt(nonce, plain, cipher, tag);
+
+        using (var aes = new AesGcm(key, 16))
+            aes.Encrypt(nonce, plain, cipher, tag);
 
         file.TokenSalt = Convert.ToBase64String(salt);
         file.TokenNonce = Convert.ToBase64String(nonce);
@@ -92,8 +90,8 @@ public sealed class AdminCredentialService
         return (true, "GitHub token saved encrypted on this PC.");
     }
 
-    private static byte[] HashPassword(string password, byte[] salt) => Rfc2898DeriveBytes.Pbkdf2(password, salt, 150_000, HashAlgorithmName.SHA256, 32);
-    private static byte[] DeriveEncryptionKey(string password, byte[] salt) => Rfc2898DeriveBytes.Pbkdf2(password, salt, 180_000, HashAlgorithmName.SHA256, 32);
+    private static byte[] DeriveEncryptionKey(string password, byte[] salt) =>
+        Rfc2898DeriveBytes.Pbkdf2(Encoding.UTF8.GetBytes(password), salt, 180_000, HashAlgorithmName.SHA256, 32);
 
     private AdminCredentialFile? Load()
     {
@@ -105,5 +103,6 @@ public sealed class AdminCredentialService
         catch { return null; }
     }
 
-    private void Save(AdminCredentialFile file) => File.WriteAllText(_path, JsonSerializer.Serialize(file, JsonUtil.Options));
+    private void Save(AdminCredentialFile file) =>
+        File.WriteAllText(_path, JsonSerializer.Serialize(file, JsonUtil.Options));
 }

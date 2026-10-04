@@ -152,4 +152,4 @@ async function syncLiveCatalog(){
   }
  }catch{}
 }
-load().then(()=>setInterval(syncLiveCatalog,30000)).catch(err=>{$('#status').hidden=false;$('#status').textContent='Unable to load the catalog: '+(err?.message||'Unknown error')+'. Please refresh.';console.error(err)});
+load().then(()=>setInterval(syncLiveCatalog,30000)).catch(err=>{$('#status').hidden=true;console.error('AG website catalog error',err)});

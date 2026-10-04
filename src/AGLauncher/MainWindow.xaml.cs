@@ -227,14 +227,87 @@ public partial class MainWindow : Window
     private void ApplyGameSearch()
     {
         var q = SearchBox?.Text?.Trim() ?? "";
-        var items = string.IsNullOrWhiteSpace(q)
-            ? _allGames
-            : _allGames.Where(x => x.Name.Contains(q, StringComparison.OrdinalIgnoreCase) || x.Description.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
-        GamesList.ItemsSource = items;
-        if (GameCards != null) GameCards.ItemsSource = items;
+        var results = string.IsNullOrWhiteSpace(q)
+            ? new List<GameCatalogItem>()
+            : _allGames
+                .Where(x => x.Name.Contains(q, StringComparison.OrdinalIgnoreCase)
+                         || x.Description.Contains(q, StringComparison.OrdinalIgnoreCase)
+                         || x.Status.Contains(q, StringComparison.OrdinalIgnoreCase))
+                .Take(8)
+                .ToList();
+
+        // QUICK LAUNCH always remains the complete visible catalog.
+        GamesList.ItemsSource = _allGames;
+
+        // The main game cards can still be filtered by the search query.
+        if (GameCards != null)
+            GameCards.ItemsSource = string.IsNullOrWhiteSpace(q)
+                ? _allGames
+                : _allGames.Where(x => x.Name.Contains(q, StringComparison.OrdinalIgnoreCase)
+                                    || x.Description.Contains(q, StringComparison.OrdinalIgnoreCase)
+                                    || x.Status.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        if (SearchResultsList != null)
+        {
+            SearchResultsList.ItemsSource = results;
+            SearchResultsPopup.IsOpen = results.Count > 0 && SearchBox.IsKeyboardFocusWithin;
+        }
     }
 
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e) => ApplyGameSearch();
+    private void SearchBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) => ApplyGameSearch();
+
+    private void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
+        {
+            SearchResultsPopup.IsOpen = false;
+            e.Handled = true;
+            return;
+        }
+
+        if ((e.Key == Key.Down || e.Key == Key.Enter) && SearchResultsList.Items.Count > 0)
+        {
+            SearchResultsList.SelectedIndex = Math.Max(0, SearchResultsList.SelectedIndex);
+            if (e.Key == Key.Enter && SearchResultsList.SelectedItem is GameCatalogItem game)
+                ActivateSearchResult(game);
+            else
+                SearchResultsList.Focus();
+
+            e.Handled = true;
+        }
+    }
+
+    private void SearchResultsList_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && SearchResultsList.SelectedItem is GameCatalogItem game)
+        {
+            ActivateSearchResult(game);
+            e.Handled = true;
+        }
+        else if (e.Key == Key.Escape)
+        {
+            SearchResultsPopup.IsOpen = false;
+            SearchBox.Focus();
+            e.Handled = true;
+        }
+    }
+
+    private void SearchResultsList_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (SearchResultsList.SelectedItem is GameCatalogItem game)
+            ActivateSearchResult(game);
+    }
+
+    private void ActivateSearchResult(GameCatalogItem game)
+    {
+        SearchResultsPopup.IsOpen = false;
+        SearchBox.Text = game.Name;
+        SearchResultsPopup.IsOpen = false;
+        GamesList.SelectedItem = game;
+        ShowHome();
+        HomeView.ScrollToTop();
+    }
 
     private async void GamesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {

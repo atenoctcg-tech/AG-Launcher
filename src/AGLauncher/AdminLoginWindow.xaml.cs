@@ -7,7 +7,6 @@ namespace AGLauncher;
 public partial class AdminLoginWindow : Window
 {
     private readonly AdminCredentialService _credentials = new();
-    private readonly bool _firstSetup;
 
     public string Token { get; private set; } = "";
     public string AdminPassword { get; private set; } = "";
@@ -15,22 +14,11 @@ public partial class AdminLoginWindow : Window
     public AdminLoginWindow(BootstrapConfig cfg)
     {
         InitializeComponent();
-        _firstSetup = !_credentials.IsConfigured;
-
-        if (_firstSetup)
-        {
-            TitleText.Text = "Create admin password";
-            InfoText.Text = "First setup: choose a local admin password. After the panel opens, save your GitHub token once in SECURITY. The token will be encrypted on this PC.";
-            ConfirmPanel.Visibility = Visibility.Visible;
-            OpenButton.Content = "Create & open";
-        }
-        else
-        {
-            TitleText.Text = "Admin access";
-            InfoText.Text = "Enter your local admin password. Your saved GitHub token is decrypted only for this admin session.";
-            ConfirmPanel.Visibility = Visibility.Collapsed;
-            OpenButton.Content = "Open admin";
-        }
+        TitleText.Text = "What's the Password?";
+        InfoText.Text = "Enter the Atenoct Games studio admin password.";
+        ConfirmPanel.Visibility = Visibility.Collapsed;
+        OpenButton.Content = "Open admin";
+        PasswordBox.Focus();
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e) => DialogResult = false;
@@ -44,21 +32,11 @@ public partial class AdminLoginWindow : Window
             return;
         }
 
-        if (_firstSetup)
-        {
-            if (password != ConfirmBox.Password)
-            {
-                StatusText.Text = "Passwords do not match.";
-                return;
-            }
-
-            var setup = _credentials.SetupPassword(password);
-            StatusText.Text = setup.Message;
-            if (!setup.Ok) return;
-        }
-        else if (!_credentials.VerifyPassword(password))
+        if (!_credentials.VerifyPassword(password))
         {
             StatusText.Text = "Incorrect admin password.";
+            PasswordBox.SelectAll();
+            PasswordBox.Focus();
             return;
         }
 
