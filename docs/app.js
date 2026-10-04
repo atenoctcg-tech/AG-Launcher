@@ -2,16 +2,44 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safe=u=>{if(typeof u!=='string'||!u.trim())return '';try{const x=new URL(u,location.href);return x.protocol==='https:'||x.origin===location.origin?x.href:''}catch{return ''}};
 const raw='https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/launcher-manifest.json';
+const liveManifestUrl=()=>raw+(raw.includes('?')?'&':'?')+'_ag='+Date.now();
 let catalog,category='All',versions=new Map();
-const nicknameKey='ag-local-nickname';
+const nicknameKey='ag-local-nickname',avatarKey='ag-local-avatar';
 async function json(url,options={}){const r=await fetch(url,{cache:'no-store',...options,signal:AbortSignal.timeout(15000)});const text=await r.text();let d={};try{d=text?JSON.parse(text):{}}catch{}if(!r.ok)throw Error(d.error||d.message||`Request failed (${r.status})`);return d}
 function modal(html){$('#modalContent').innerHTML=html;if(!$('#modal').open)$('#modal').showModal()}
 function toast(message){$('#toast').textContent=message;$('#toast').hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>$('#toast').hidden=true,4200)}
 const image=(url,alt='')=>`<img src="${esc(safe(url)||'media/castle-survival.png')}" alt="${esc(alt)}" loading="lazy">`;
 const download=()=>$('.download').href;
 function nickname(){return (localStorage.getItem(nicknameKey)||'').trim()}
-function refreshNickname(){const n=nickname();$('#profileName').textContent=n||'Guest';const hint=$('#profileButton small');if(hint)hint.textContent=n?'Edit nickname ↗':'Set nickname ↗'}
-function openNickname(){const current=nickname();modal(`<p class="eyebrow">LOCAL PROFILE</p><h2>Choose your nickname.</h2><p>No account, email or login is required. This nickname stays only in this browser.</p><form id="nicknameForm"><label class="field">Nickname<input name="nickname" maxlength="24" minlength="2" value="${esc(current)}" placeholder="Your nickname"></label><p class="form-error" id="nicknameError"></p><div class="auth-actions"><button type="button" class="secondary" id="clearNickname">Clear</button><button class="primary">Save nickname</button></div></form>`);$('#nicknameForm').onsubmit=e=>{e.preventDefault();const n=String(new FormData(e.target).get('nickname')||'').trim();if(n&&n.length<2){$('#nicknameError').textContent='Nickname must contain at least 2 characters.';return}localStorage.setItem(nicknameKey,n);refreshNickname();$('#modal').close();toast(n?'Nickname saved.':'Nickname cleared.')};$('#clearNickname').onclick=()=>{localStorage.removeItem(nicknameKey);refreshNickname();$('#modal').close();toast('Nickname cleared.')}}
+function refreshNickname(){
+ const n=nickname(),avatar=localStorage.getItem(avatarKey)||'';
+ $('#profileName').textContent=n||'Guest';
+ const hint=$('#profileButton small');if(hint)hint.textContent=(n||avatar)?'Edit profile ↗':'Set profile ↗';
+ const img=$('#profileAvatar'),initials=$('#profileInitials');
+ if(avatar){img.src=avatar;img.hidden=false;initials.hidden=true}else{img.removeAttribute('src');img.hidden=true;initials.hidden=false}
+}
+async function avatarData(file){
+ if(!file)return '';
+ if(file.size>6*1024*1024)throw Error('Profile photo must be smaller than 6 MB.');
+ if(!/^image\/(png|jpeg|webp)$/i.test(file.type))throw Error('Use PNG, JPG or WEBP.');
+ const url=URL.createObjectURL(file);
+ try{
+  const img=new Image();await new Promise((ok,bad)=>{img.onload=ok;img.onerror=bad;img.src=url});
+  const size=256,canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
+  const ctx=canvas.getContext('2d'),scale=Math.max(size/img.width,size/img.height),w=img.width*scale,h=img.height*scale;
+  ctx.drawImage(img,(size-w)/2,(size-h)/2,w,h);
+  return canvas.toDataURL('image/jpeg',.86);
+ }finally{URL.revokeObjectURL(url)}
+}
+function openNickname(){
+ const current=nickname(),currentAvatar=localStorage.getItem(avatarKey)||'';
+ modal(`<p class="eyebrow">LOCAL PROFILE</p><h2>Your player profile.</h2><p>No account, email or login is required. Nickname and photo stay only in this browser.</p><form id="nicknameForm"><div class="web-profile-preview"><span id="modalInitials">AG</span><img id="modalAvatar" alt="" ${currentAvatar?'src="'+esc(currentAvatar)+'"':'hidden'}></div><label class="field">Nickname<input name="nickname" maxlength="24" minlength="2" value="${esc(current)}" placeholder="Your nickname"></label><label class="field">Profile photo<input name="photo" type="file" accept="image/png,image/jpeg,image/webp"></label><p class="form-error" id="nicknameError"></p><div class="auth-actions"><button type="button" class="secondary" id="clearAvatar">Remove photo</button><button class="primary">Save profile</button></div></form>`);
+ let removeAvatar=false;
+ const photo=$('#nicknameForm [name=photo]');
+ photo.onchange=async()=>{try{const data=await avatarData(photo.files[0]);if(data){$('#modalAvatar').src=data;$('#modalAvatar').hidden=false;$('#modalInitials').hidden=true}}catch(x){$('#nicknameError').textContent=x.message}};
+ $('#clearAvatar').onclick=()=>{removeAvatar=true;photo.value='';$('#modalAvatar').removeAttribute('src');$('#modalAvatar').hidden=true;$('#modalInitials').hidden=false};
+ $('#nicknameForm').onsubmit=async e=>{e.preventDefault();const n=String(new FormData(e.target).get('nickname')||'').trim();if(n&&n.length<2){$('#nicknameError').textContent='Nickname must contain at least 2 characters.';return}try{let data='';if(photo.files[0])data=await avatarData(photo.files[0]);localStorage.setItem(nicknameKey,n);if(removeAvatar)localStorage.removeItem(avatarKey);else if(data)localStorage.setItem(avatarKey,data);refreshNickname();$('#modal').close();toast('Profile saved.')}catch(x){$('#nicknameError').textContent=x.message}}
+}
 function render(){
  const q=$('#search').value.toLowerCase();const games=(catalog.games||[]).filter(g=>g.visible!==false).sort((a,b)=>Number(b.featured)-Number(a.featured)||(a.sortOrder||0)-(b.sortOrder||0));
  const news=(catalog.news||[]).filter(n=>n.visible!==false).sort((a,b)=>Number(b.pinned)-Number(a.pinned)||String(b.date).localeCompare(String(a.date)));
@@ -29,12 +57,24 @@ document.addEventListener('click',e=>{const n=e.target.closest('[data-news]');if
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('#search').focus()}});
 $('#notifications').onclick=()=>modal('<h2>Studio updates</h2>'+(catalog.news||[]).filter(n=>n.visible!==false).map(n=>`<p><b>${esc(n.title)}</b><br>${esc(n.date)} · ${esc(n.summary)}</p>`).join(''));
 async function load(){
- try{catalog=await json(raw)}catch{catalog=await json('catalog.json');$('#status').hidden=false;$('#status').textContent='Showing the bundled catalog. Live content is temporarily unavailable.'}
+ try{catalog=await json(liveManifestUrl())}catch{catalog=await json('catalog.json');$('#status').hidden=false;$('#status').textContent='Showing the bundled catalog. Live content is temporarily unavailable.'}
  for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent'}))if(/^#[0-9a-f]{6}$/i.test(catalog.theme?.[key]))document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);document.body.classList.toggle('motion-off',catalog.theme?.motion===false);
  $$('[data-social]').forEach(a=>{const key=a.dataset.social;const url=safe(catalog.socials?.[key]||catalog.socials?.[key==='youtube'?'youTube':key]);if(url){a.href=url;a.target='_blank';a.rel='noopener'}else a.onclick=e=>{e.preventDefault();toast('The studio has not added this community link yet.')}});
  const heading=document.querySelector('#home h1');heading.textContent=catalog.presentation?.defaultHeroTitle||'Your next adventure.';
  refreshNickname();render();route();
  try{const r=await json('https://api.github.com/repos/atenoctcg-tech/AG-Launcher/releases/latest');const a=(r.assets||[]).find(a=>/^AGLauncher.*win.*x64.*\.zip$/i.test(a.name)&&!/source/i.test(a.name));if(a&&safe(a.browser_download_url))$$('.download').forEach(x=>x.href=safe(a.browser_download_url))}catch{}
- await Promise.allSettled((catalog.games||[]).filter(g=>g.visible!==false).map(async g=>{let gm=g;if(g.manifestUrl)gm=await json(g.manifestUrl);if(gm.releaseRepo){const r=await json('https://api.github.com/repos/'+gm.releaseRepo+'/releases/latest');if((r.assets||[]).some(a=>/\.zip$/i.test(a.name)&&!/source/i.test(a.name)))versions.set(g.id,r.tag_name)}else if(gm.version)versions.set(g.id,'v'+gm.version)}));render();
+ await Promise.allSettled((catalog.games||[]).filter(g=>g.visible!==false).map(async g=>{let gm=g;if(g.manifestUrl)gm=await json(g.manifestUrl+(g.manifestUrl.includes('?')?'&':'?')+'_ag='+Date.now());if(gm.releaseRepo){const r=await json('https://api.github.com/repos/'+gm.releaseRepo+'/releases/latest');if((r.assets||[]).some(a=>/\.zip$/i.test(a.name)&&!/source/i.test(a.name)))versions.set(g.id,r.tag_name)}else if(gm.version)versions.set(g.id,'v'+gm.version)}));render();
 }
-load().catch(()=>{$('#status').hidden=false;$('#status').textContent='Unable to load the catalog. Please refresh.'});
+async function syncLiveCatalog(){
+ try{
+  const next=await json(liveManifestUrl());
+  if(JSON.stringify(next)!==JSON.stringify(catalog)){
+   catalog=next;
+   for(const [key,variable] of Object.entries({background:'bg',panel:'panel',card:'card',accent:'accent'}))if(/^#[0-9a-f]{6}$/i.test(catalog.theme?.[key]))document.documentElement.style.setProperty('--'+variable,catalog.theme[key]);
+   document.body.classList.toggle('motion-off',catalog.theme?.motion===false);
+   render();
+   toast('Website content refreshed.');
+  }
+ }catch{}
+}
+load().then(()=>setInterval(syncLiveCatalog,30000)).catch(()=>{$('#status').hidden=false;$('#status').textContent='Unable to load the catalog. Please refresh.'});
