@@ -78,7 +78,12 @@ function render(){
 function route(){const page=['home','library','workshop'].includes(location.hash.slice(1))?location.hash.slice(1):'home';$$('.page').forEach(e=>e.hidden=e.id!==page);$$('[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page))}
 $('#modal .close-modal').onclick=()=>$('#modal').close();$('#modal').onclick=e=>{if(e.target===$('#modal'))$('#modal').close()};$('#profileButton').onclick=openNickname;$('#search').oninput=render;window.onhashchange=route;
 $$('[data-category]').forEach(b=>b.onclick=()=>{category=b.dataset.category;$$('[data-category]').forEach(x=>x.classList.toggle('selected',x===b));render()});
-function openNewsItem(id){const item=(catalog.news||[]).find(x=>x.id===id);if(item)modal(`${image(item.imageUrl)}<p class="eyebrow">${esc(item.date)}</p><h2>${esc(item.title)}</h2><p>${esc(item.summary)}</p>`)}
+function openNewsItem(id){
+ const item=(catalog.news||[]).find(x=>x.id===id);
+ if(!item)return;
+ const src=esc(safe(item.imageUrl)||'media/castle-survival.png');
+ modal(`<div class="modal-news"><div class="modal-media"><img class="modal-art" src="${src}" alt="${esc(item.title)}" loading="lazy"></div><div class="modal-news-copy"><p class="eyebrow">${esc(item.date)}</p><h2>${esc(item.title)}</h2><p>${esc(item.summary)}</p></div></div>`);
+}
 document.addEventListener('click',e=>{const dl=e.target.closest('.download,[data-launcher-download]');if(dl){downloadLauncher({preventDefault:()=>e.preventDefault(),currentTarget:dl});return}const n=e.target.closest('[data-news]');if(n){e.preventDefault();openNewsItem(n.dataset.news)}});
 document.addEventListener('keydown',e=>{const n=e.target.closest?.('[data-news]');if(n&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openNewsItem(n.dataset.news)}});
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();$('#search').focus()}});
