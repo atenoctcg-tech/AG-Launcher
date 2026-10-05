@@ -1,7 +1,7 @@
 <Window x:Class="AGLauncher.CropPhotoWindow"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- Title="Crop profile photo" Width="650" Height="650"
+ Title="Crop profile photo" Width="760" Height="700"
  WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
  Background="#080A0D" Icon="Assets/AGLauncher.ico">
  <Border Margin="12" Background="#0E1318" BorderBrush="#29313A" BorderThickness="1" CornerRadius="20">
@@ -9,27 +9,34 @@
    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
    <StackPanel>
     <TextBlock Text="Crop profile photo" FontSize="24" FontWeight="SemiBold"/>
-    <TextBlock Text="Drag the photo and zoom until the 1:1 square looks right." Foreground="#8793A2" FontSize="13" Margin="0,5,0,0"/>
+    <TextBlock Text="The whole image stays visible. Move the 1:1 square to choose your profile photo." Foreground="#8793A2" FontSize="13" Margin="0,5,0,0"/>
    </StackPanel>
-   <TextBlock Grid.Row="1" Text="The square below is exactly what will be saved." Foreground="#697582" FontSize="12" Margin="0,14,0,10"/>
-   <Border x:Name="CropViewport" Grid.Row="2" Width="400" Height="400" HorizontalAlignment="Center" VerticalAlignment="Center"
-           Background="#05070A" BorderBrush="#4D7B86" BorderThickness="2" CornerRadius="10" ClipToBounds="True"
-           MouseLeftButtonDown="CropViewport_MouseLeftButtonDown" MouseLeftButtonUp="CropViewport_MouseLeftButtonUp"
-           MouseMove="CropViewport_MouseMove" MouseLeave="CropViewport_MouseLeave">
-    <Grid ClipToBounds="True">
-     <Image x:Name="CropImage" Stretch="None" HorizontalAlignment="Left" VerticalAlignment="Top" RenderOptions.BitmapScalingMode="HighQuality">
-      <Image.RenderTransform>
-       <TransformGroup>
-        <ScaleTransform x:Name="ImageScale" ScaleX="1" ScaleY="1"/>
-        <TranslateTransform x:Name="ImageTranslate"/>
-       </TransformGroup>
-      </Image.RenderTransform>
+   <TextBlock Grid.Row="1" Text="Drag the square to reposition it. Use Zoom to get closer without changing the 1:1 crop." Foreground="#697582" FontSize="12" Margin="0,14,0,10"/>
+   <Border Grid.Row="2" Width="620" Height="410" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#06080B" BorderBrush="#27313B" BorderThickness="1" CornerRadius="12" ClipToBounds="True">
+    <Canvas x:Name="PreviewCanvas" Width="620" Height="410" Background="#06080B"
+            MouseLeftButtonDown="PreviewCanvas_MouseLeftButtonDown"
+            MouseLeftButtonUp="PreviewCanvas_MouseLeftButtonUp"
+            MouseMove="PreviewCanvas_MouseMove"
+            MouseLeave="PreviewCanvas_MouseLeave">
+     <Image x:Name="CropImage" Stretch="None" RenderOptions.BitmapScalingMode="HighQuality">
+      <Image.RenderTransform><TransformGroup><ScaleTransform x:Name="ImageScale" ScaleX="1" ScaleY="1"/><TranslateTransform x:Name="ImageTranslate"/></TransformGroup></Image.RenderTransform>
      </Image>
-     <Border BorderBrush="#D8FFFFFF" BorderThickness="1" CornerRadius="8" IsHitTestVisible="False"/>
-    </Grid>
+     <Rectangle x:Name="ShadeTop" Fill="#88000000" IsHitTestVisible="False"/>
+     <Rectangle x:Name="ShadeBottom" Fill="#88000000" IsHitTestVisible="False"/>
+     <Rectangle x:Name="ShadeLeft" Fill="#88000000" IsHitTestVisible="False"/>
+     <Rectangle x:Name="ShadeRight" Fill="#88000000" IsHitTestVisible="False"/>
+     <Border x:Name="CropBox" Width="250" Height="250" BorderBrush="#F3F7FF" BorderThickness="2" CornerRadius="2" Background="#01FFFFFF" Cursor="SizeAll">
+      <Grid>
+       <Border BorderBrush="#80FFFFFF" BorderThickness="1" Margin="3"/>
+       <Grid><Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+        <Border Grid.Row="0" Grid.Column="1" BorderBrush="#40FFFFFF" BorderThickness="1,0,1,0"/>
+        <Border Grid.Row="1" Grid.Column="0" BorderBrush="#40FFFFFF" BorderThickness="0,1,0,1"/>
+       </Grid>
+      </Grid>
+     </Border>
+    </Canvas>
    </Border>
-   <Grid Grid.Row="3" Margin="40,16,40,0">
-    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+   <Grid Grid.Row="3" Margin="44,16,44,0"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
     <TextBlock Text="Zoom" Foreground="#9BA7B5" VerticalAlignment="Center" Margin="0,0,12,0"/>
     <Slider x:Name="ZoomSlider" Grid.Column="1" Minimum="1" Maximum="4" Value="1" ValueChanged="ZoomSlider_ValueChanged"/>
     <Button Grid.Column="2" Style="{StaticResource GhostButton}" Content="Reset" Click="Reset_Click" Margin="12,0,0,0"/>

@@ -1,19 +1,23 @@
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace AGLauncher;
 
 public partial class CropPhotoWindow : Window
 {
-    private const double ViewportSize = 400;
+    private const double PreviewWidth = 620;
+    private const double PreviewHeight = 410;
     private readonly BitmapImage _bitmap;
-    private bool _dragging;
+    private bool _draggingCrop;
     private Point _lastPoint;
-    private double _minimumScale = 1;
-    private double _currentScale = 1;
+    private double _fitScale;
+    private double _currentScale;
+    private double _cropSize;
     private bool _ready;
 
     public string CroppedPhotoPath { get; private set; } = "";
@@ -21,98 +25,151 @@ public partial class CropPhotoWindow : Window
     public CropPhotoWindow(string sourcePath)
     {
         InitializeComponent();
-
         _bitmap = new BitmapImage();
         _bitmap.BeginInit();
         _bitmap.CacheOption = BitmapCacheOption.OnLoad;
         _bitmap.UriSource = new Uri(sourcePath, UriKind.Absolute);
         _bitmap.EndInit();
         _bitmap.Freeze();
-
         CropImage.Source = _bitmap;
         CropImage.Width = _bitmap.PixelWidth;
         CropImage.Height = _bitmap.PixelHeight;
-
         Loaded += (_, __) => ResetCrop();
     }
 
     private void ResetCrop()
     {
-        _minimumScale = Math.Max(ViewportSize / _bitmap.PixelWidth, ViewportSize / _bitmap.PixelHeight);
-        _currentScale = _minimumScale;
+        _fitScale = Math.Min(PreviewWidth / _bitmap.PixelWidth, PreviewHeight / _bitmap.PixelHeight);
+        _currentScale = _fitScale;
 
         _ready = false;
-        ZoomSlider.Minimum = _minimumScale;
-        ZoomSlider.Maximum = _minimumScale * 4;
-        ZoomSlider.Value = _minimumScale;
+        ZoomSlider.Minimum = _fitScale;
+        ZoomSlider.Maximum = _fitScale * 4;
+        ZoomSlider.Value = _fitScale;
         _ready = true;
 
-        ImageScale.ScaleX = ImageScale.ScaleY = _minimumScale;
-        ImageTranslate.X = (ViewportSize - _bitmap.PixelWidth * _minimumScale) / 2;
-        ImageTranslate.Y = (ViewportSize - _bitmap.PixelHeight * _minimumScale) / 2;
-        ClampImage();
+        ImageScale.ScaleX = ImageScale.ScaleY = _fitScale;
+        ImageTranslate.X = (PreviewWidth - _bitmap.PixelWidth * _fitScale) / 2;
+        ImageTranslate.Y = (PreviewHeight - _bitmap.PixelHeight * _fitScale) / 2;
+
+        var renderedWidth = _bitmap.PixelWidth * _fitScale;
+        var renderedHeight = _bitmap.PixelHeight * _fitScale;
+        _cropSize = Math.Clamp(Math.Min(renderedWidth, renderedHeight) * 0.72, 120, 280);
+
+        CropBox.Width = CropBox.Height = _cropSize;
+        Canvas.SetLeft(CropBox, ImageTranslate.X + (renderedWidth - _cropSize) / 2);
+        Canvas.SetTop(CropBox, ImageTranslate.Y + (renderedHeight - _cropSize) / 2);
+        ClampCrop();
+        UpdateShade();
     }
 
     private void ZoomSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        if (!_ready || _bitmap == null) return;
-        var next = e.NewValue;
-        if (next <= 0) return;
+        if (!_ready || e.NewValue <= 0) return;
 
-        var center = ViewportSize / 2;
-        var imageX = (center - ImageTranslate.X) / _currentScale;
-        var imageY = (center - ImageTranslate.Y) / _currentScale;
+        var cropCenterX = Canvas.GetLeft(CropBox) + _cropSize / 2;
+        var cropCenterY = Canvas.GetTop(CropBox) + _cropSize / 2;
+        var imageX = (cropCenterX - ImageTranslate.X) / _currentScale;
+        var imageY = (cropCenterY - ImageTranslate.Y) / _currentScale;
 
-        _currentScale = next;
-        ImageScale.ScaleX = ImageScale.ScaleY = next;
-        ImageTranslate.X = center - imageX * next;
-        ImageTranslate.Y = center - imageY * next;
-        ClampImage();
+        _currentScale = e.NewValue;
+        ImageScale.ScaleX = ImageScale.ScaleY = _currentScale;
+        ImageTranslate.X = cropCenterX - imageX * _currentScale;
+        ImageTranslate.Y = cropCenterY - imageY * _currentScale;
+
+        KeepImageCoveringCrop();
+        ClampCrop();
+        UpdateShade();
     }
 
-    private void CropViewport_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    private void PreviewCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        _dragging = true;
-        _lastPoint = e.GetPosition(CropViewport);
-        CropViewport.CaptureMouse();
-        Cursor = Cursors.SizeAll;
-    }
+        var p = e.GetPosition(PreviewCanvas);
+        var left = Canvas.GetLeft(CropBox);
+        var top = Canvas.GetTop(CropBox);
+        if (p.X < left || p.X > left + _cropSize || p.Y < top || p.Y > top + _cropSize) return;
 
-    private void CropViewport_MouseMove(object sender, MouseEventArgs e)
-    {
-        if (!_dragging || e.LeftButton != MouseButtonState.Pressed) return;
-        var p = e.GetPosition(CropViewport);
-        ImageTranslate.X += p.X - _lastPoint.X;
-        ImageTranslate.Y += p.Y - _lastPoint.Y;
+        _draggingCrop = true;
         _lastPoint = p;
-        ClampImage();
+        PreviewCanvas.CaptureMouse();
+        Cursor = Cursors.SizeAll;
+        e.Handled = true;
     }
 
-    private void CropViewport_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) => StopDrag();
-    private void CropViewport_MouseLeave(object sender, MouseEventArgs e)
+    private void PreviewCanvas_MouseMove(object sender, MouseEventArgs e)
     {
-        if (e.LeftButton != MouseButtonState.Pressed) StopDrag();
+        if (!_draggingCrop || e.LeftButton != MouseButtonState.Pressed) return;
+        var p = e.GetPosition(PreviewCanvas);
+        Canvas.SetLeft(CropBox, Canvas.GetLeft(CropBox) + p.X - _lastPoint.X);
+        Canvas.SetTop(CropBox, Canvas.GetTop(CropBox) + p.Y - _lastPoint.Y);
+        _lastPoint = p;
+        ClampCrop();
+        UpdateShade();
     }
+
+    private void PreviewCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) => StopDrag();
+    private void PreviewCanvas_MouseLeave(object sender, MouseEventArgs e) { if (e.LeftButton != MouseButtonState.Pressed) StopDrag(); }
 
     private void StopDrag()
     {
-        _dragging = false;
-        CropViewport.ReleaseMouseCapture();
+        _draggingCrop = false;
+        PreviewCanvas.ReleaseMouseCapture();
         Cursor = Cursors.Arrow;
     }
 
-    private void ClampImage()
+    private void KeepImageCoveringCrop()
     {
-        var width = _bitmap.PixelWidth * _currentScale;
-        var height = _bitmap.PixelHeight * _currentScale;
+        var imageWidth = _bitmap.PixelWidth * _currentScale;
+        var imageHeight = _bitmap.PixelHeight * _currentScale;
+        var cropLeft = Canvas.GetLeft(CropBox);
+        var cropTop = Canvas.GetTop(CropBox);
+        var cropRight = cropLeft + _cropSize;
+        var cropBottom = cropTop + _cropSize;
 
-        ImageTranslate.X = width <= ViewportSize
-            ? (ViewportSize - width) / 2
-            : Math.Clamp(ImageTranslate.X, ViewportSize - width, 0);
+        if (ImageTranslate.X > cropLeft) ImageTranslate.X = cropLeft;
+        if (ImageTranslate.Y > cropTop) ImageTranslate.Y = cropTop;
+        if (ImageTranslate.X + imageWidth < cropRight) ImageTranslate.X = cropRight - imageWidth;
+        if (ImageTranslate.Y + imageHeight < cropBottom) ImageTranslate.Y = cropBottom - imageHeight;
+    }
 
-        ImageTranslate.Y = height <= ViewportSize
-            ? (ViewportSize - height) / 2
-            : Math.Clamp(ImageTranslate.Y, ViewportSize - height, 0);
+    private void ClampCrop()
+    {
+        var imageLeft = ImageTranslate.X;
+        var imageTop = ImageTranslate.Y;
+        var imageRight = ImageTranslate.X + _bitmap.PixelWidth * _currentScale;
+        var imageBottom = ImageTranslate.Y + _bitmap.PixelHeight * _currentScale;
+
+        var minLeft = Math.Max(0, imageLeft);
+        var minTop = Math.Max(0, imageTop);
+        var maxRight = Math.Min(PreviewWidth, imageRight);
+        var maxBottom = Math.Min(PreviewHeight, imageBottom);
+
+        var left = Math.Clamp(Canvas.GetLeft(CropBox), minLeft, Math.Max(minLeft, maxRight - _cropSize));
+        var top = Math.Clamp(Canvas.GetTop(CropBox), minTop, Math.Max(minTop, maxBottom - _cropSize));
+
+        Canvas.SetLeft(CropBox, left);
+        Canvas.SetTop(CropBox, top);
+        KeepImageCoveringCrop();
+    }
+
+    private void UpdateShade()
+    {
+        var left = Canvas.GetLeft(CropBox);
+        var top = Canvas.GetTop(CropBox);
+        var right = left + _cropSize;
+        var bottom = top + _cropSize;
+        SetRect(ShadeTop, 0, 0, PreviewWidth, Math.Max(0, top));
+        SetRect(ShadeBottom, 0, bottom, PreviewWidth, Math.Max(0, PreviewHeight - bottom));
+        SetRect(ShadeLeft, 0, top, Math.Max(0, left), _cropSize);
+        SetRect(ShadeRight, right, top, Math.Max(0, PreviewWidth - right), _cropSize);
+    }
+
+    private static void SetRect(Rectangle rect, double left, double top, double width, double height)
+    {
+        Canvas.SetLeft(rect, left);
+        Canvas.SetTop(rect, top);
+        rect.Width = width;
+        rect.Height = height;
     }
 
     private void Reset_Click(object sender, RoutedEventArgs e) => ResetCrop();
@@ -121,16 +178,19 @@ public partial class CropPhotoWindow : Window
     {
         try
         {
-            ClampImage();
+            ClampCrop();
+            var cropLeft = Canvas.GetLeft(CropBox);
+            var cropTop = Canvas.GetTop(CropBox);
+            var x = (int)Math.Round((cropLeft - ImageTranslate.X) / _currentScale);
+            var y = (int)Math.Round((cropTop - ImageTranslate.Y) / _currentScale);
+            var size = (int)Math.Round(_cropSize / _currentScale);
 
-            var x = Math.Max(0, (int)Math.Floor(-ImageTranslate.X / _currentScale));
-            var y = Math.Max(0, (int)Math.Floor(-ImageTranslate.Y / _currentScale));
-            var size = Math.Max(1, (int)Math.Ceiling(ViewportSize / _currentScale));
-            size = Math.Min(size, Math.Min(_bitmap.PixelWidth - x, _bitmap.PixelHeight - y));
+            x = Math.Clamp(x, 0, Math.Max(0, _bitmap.PixelWidth - 1));
+            y = Math.Clamp(y, 0, Math.Max(0, _bitmap.PixelHeight - 1));
+            size = Math.Max(1, Math.Min(size, Math.Min(_bitmap.PixelWidth - x, _bitmap.PixelHeight - y)));
 
             var crop = new CroppedBitmap(_bitmap, new Int32Rect(x, y, size, size));
             BitmapSource output = crop;
-
             if (crop.PixelWidth != 512)
             {
                 var scale = 512.0 / crop.PixelWidth;
@@ -142,12 +202,10 @@ public partial class CropPhotoWindow : Window
             var dir = Path.Combine(Path.GetTempPath(), "AGLauncherProfileCrops");
             Directory.CreateDirectory(dir);
             CroppedPhotoPath = Path.Combine(dir, $"avatar-{Guid.NewGuid():N}.png");
-
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(output));
             using var stream = File.Create(CroppedPhotoPath);
             encoder.Save(stream);
-
             DialogResult = true;
         }
         catch (Exception ex)

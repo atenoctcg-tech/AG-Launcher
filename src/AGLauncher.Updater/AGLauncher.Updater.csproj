@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>AGLauncher.Updater</AssemblyName>
     <RootNamespace>AGLauncher.Updater</RootNamespace>
-    <Version>1.0</Version>
+    <Version>1.0.0.1</Version>
+    <DisplayVersion>1.0</DisplayVersion>
   </PropertyGroup>
 </Project>

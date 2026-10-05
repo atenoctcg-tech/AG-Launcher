@@ -27,6 +27,7 @@ public sealed class LauncherManifest
 public sealed class LauncherUpdateInfo
 {
     public string LatestVersion { get; set; } = "0.1.0";
+    public string DisplayVersion { get; set; } = "";
     public string MinimumVersion { get; set; } = "0.1.0";
     public bool Mandatory { get; set; } = false;
     public bool AutoUpdate { get; set; } = false;

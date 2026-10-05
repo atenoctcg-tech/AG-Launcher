@@ -67,8 +67,10 @@ jobs:
         run: |
           [xml]$project = Get-Content ".\src\AGLauncher\AGLauncher.csproj"
           $version = [string]$project.Project.PropertyGroup.Version
+          $displayVersion = [string]$project.Project.PropertyGroup.DisplayVersion
           if ([string]::IsNullOrWhiteSpace($version)) { throw "Launcher version not found in AGLauncher.csproj" }
-          $tag = "v$version"
+          if ([string]::IsNullOrWhiteSpace($displayVersion)) { $displayVersion = $version }
+          $tag = "v$displayVersion"
           $zip = ".\dist\AGLauncher-win-x64.zip"
           $assetName = "AG Launcher.zip"
           Copy-Item $zip $assetName -Force
@@ -79,6 +81,7 @@ jobs:
           if ($LASTEXITCODE -eq 0) {
             Write-Host "Release $tag already exists; replacing Windows asset."
             gh release upload $tag $assetName $sourceName --clobber --repo "${{ github.repository }}"
+            gh release edit $tag --repo "${{ github.repository }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Updated v1.0 build with improved profile crop and the existing v1.0 feature set."
           } else {
             gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. v1.0 adds vertical Explore covers, profile crop, Workshop ZIP marketplace, mod import groundwork and notification-center-only alerts."
           }

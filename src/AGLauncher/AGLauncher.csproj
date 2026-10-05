@@ -10,9 +10,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>AGLauncher</AssemblyName>
     <RootNamespace>AGLauncher</RootNamespace>
-    <Version>1.0</Version>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.0.1</Version>
+    <DisplayVersion>1.0</DisplayVersion>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
     <ApplicationIcon>Assets\AGLauncher.ico</ApplicationIcon>
   </PropertyGroup>
 

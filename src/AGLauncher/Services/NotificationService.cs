@@ -34,7 +34,7 @@ public sealed class NotificationService
             candidates.Add(new LauncherNotification
             {
                 Key = $"launcher:{manifest.Launcher.LatestVersion}",
-                Title = $"AG Launcher v{manifest.Launcher.LatestVersion}",
+                Title = $"AG Launcher v{(string.IsNullOrWhiteSpace(manifest.Launcher.DisplayVersion) ? manifest.Launcher.LatestVersion : manifest.Launcher.DisplayVersion)}",
                 Message = manifest.Launcher.ReleaseNotes,
                 Date = DateTime.Now.ToString("yyyy-MM-dd")
             });

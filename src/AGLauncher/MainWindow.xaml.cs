@@ -77,7 +77,7 @@ public partial class MainWindow : Window
 
             if (_selfUpdate.UpdateRequired(_manifest.Launcher))
             {
-                ConnectionText.Text = $"Updating AG Launcher to {_manifest.Launcher.LatestVersion}...";
+                ConnectionText.Text = $"Updating AG Launcher to {DisplayLauncherVersion(_manifest.Launcher)}...";
                 InstallProgress.Visibility = Visibility.Visible;
                 SideInstallProgress.Visibility = Visibility.Visible;
                 await _selfUpdate.StartMandatoryUpdateAsync(_manifest.Launcher, new Progress<double>(p =>
@@ -185,6 +185,9 @@ public partial class MainWindow : Window
         catch { }
         finally { _refreshing = false; }
     }
+
+    private static string DisplayLauncherVersion(LauncherUpdateInfo info) =>
+        string.IsNullOrWhiteSpace(info.DisplayVersion) ? info.LatestVersion : info.DisplayVersion;
 
     private void ApplyTheme()
     {
