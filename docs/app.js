@@ -10,7 +10,7 @@ function modal(html){$('#modalContent').innerHTML=html;if(!$('#modal').open)$('#
 function toast(message){$('#toast').textContent=message;$('#toast').hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>$('#toast').hidden=true,4200)}
 const image=(url,alt='')=>`<img src="${esc(safe(url)||'media/castle-survival.png')}" alt="${esc(alt)}" loading="lazy">`;
 const heroMedia=g=>{const u=safe(g?.animatedBannerUrl||'');if(u&&/\.mp4(?:$|[?#])/i.test(u))return `<video class="hero-media" src="${esc(u)}" poster="${esc(safe(g.bannerUrl)||'media/castle-survival.png')}" autoplay muted loop playsinline preload="metadata"></video>`;if(u&&/\.gif(?:$|[?#])/i.test(u))return image(u,g.name);return image(g?.bannerUrl,g?.name)};
-const download=()=>safe(catalog?.launcher?.packageUrl)||'https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v0.4.7/AG.Launcher.zip';
+const download=()=>safe(catalog?.launcher?.packageUrl)||'https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip';
 
 function applyDownloadLinks(){
  const url=download();
