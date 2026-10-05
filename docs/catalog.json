@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "launcher": {
     "latestVersion": "1.0.0.2",
+    "displayVersion": "1.0",
     "minimumVersion": "0.4.5",
     "mandatory": false,
     "autoUpdate": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip",
     "sha256": "b9d5de306eec3137ae0bc78b72db25483abd1767b4c2e9a5dce366de5c253cce",
-    "releaseNotes": "AG Launcher v1.0 hotfix - profile crop now starts with the full image visible and the largest possible 1:1 crop. Zoom remains optional.",
-    "displayVersion": "1.0"
+    "releaseNotes": "AG Launcher v1.0 hotfix - profile crop now starts with the full image visible and the largest possible 1:1 crop. Zoom remains optional."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
@@ -69,7 +69,23 @@
       "requiresOwnership": false
     }
   ],
-  "workshop": [],
+  "workshop": [
+    {
+      "id": "6e0748f305eb4aca84380d49610aa34e",
+      "name": "Knight 3D model",
+      "gameId": "castle-survival",
+      "category": "3D model",
+      "description": "",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/workshop/20261005-105304-KNIGHT-PREW.png",
+      "downloadUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/workshop/files/20261005-105130-CastleSurvival_Knight.zip",
+      "fileName": "CastleSurvival_Knight.zip",
+      "fileFormat": "BLEND, GLB",
+      "pricing": "free",
+      "visible": false,
+      "autoImport": false,
+      "importPath": ""
+    }
+  ],
   "theme": {
     "background": "#070a0f",
     "panel": "#0d1726",
