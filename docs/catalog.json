@@ -24,12 +24,12 @@
   },
   "news": [
     {
-      "id": "castle-survival-v082-release",
-      "title": "Castle Survival v0.8.2 is available",
-      "summary": "New mines. Smarter knights. A kingdom worth fighting for. Discover everything in Castle Survival 0.8.2.",
+      "id": "496e87e03d69480dab3d95b55466aaee",
+      "title": "Castle Survival v1.0 is available",
+      "summary": "New COMPETITIVE mode added. Now you can play 8 round fast match with 6players. In Competitive mode have 2 maps : 1) LAST STAND, 2) 3vs3 TEAM. Enjoy!",
       "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
-      "linkUrl": "https://github.com/atenoctcg-tech/Castle-Survival-Releases/releases/tag/v0.8.2",
-      "date": "2026-10-04",
+      "linkUrl": "",
+      "date": "2026-10-05",
       "pinned": true,
       "visible": true
     },
