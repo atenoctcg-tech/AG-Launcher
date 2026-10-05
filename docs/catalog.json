@@ -126,7 +126,7 @@
       "fileName": "Small Island map 3D.zip",
       "fileFormat": "BLEND",
       "pricing": "free",
-      "visible": false,
+      "visible": true,
       "autoImport": false,
       "importPath": ""
     }
