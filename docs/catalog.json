@@ -81,7 +81,37 @@
       "fileName": "CastleSurvival_Knight.zip",
       "fileFormat": "BLEND, GLB",
       "pricing": "free",
-      "visible": false,
+      "visible": true,
+      "autoImport": false,
+      "importPath": ""
+    },
+    {
+      "id": "9af97e2631854e98ab4c8698c0bdb954",
+      "name": "Castle 3D model",
+      "gameId": "castle-survival",
+      "category": "3D model",
+      "description": "",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/workshop/20261005-110012-CASTLE-PREW.png",
+      "downloadUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/workshop/files/20261005-110021-CastleSurvival_Castle.zip",
+      "fileName": "CastleSurvival_Castle.zip",
+      "fileFormat": "BLEND, GLB",
+      "pricing": "free",
+      "visible": true,
+      "autoImport": false,
+      "importPath": ""
+    },
+    {
+      "id": "122e8d61315e4f0a81d7452ab0cf2824",
+      "name": "CoinTower 3D model",
+      "gameId": "castle-survival",
+      "category": "3D model",
+      "description": "",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/workshop/20261005-110113-COINTOWER-PREW.png",
+      "downloadUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/workshop/files/20261005-110120-CastleSurvival_CoinTower.zip",
+      "fileName": "CastleSurvival_CoinTower.zip",
+      "fileFormat": "BLEND, GLB",
+      "pricing": "free",
+      "visible": true,
       "autoImport": false,
       "importPath": ""
     }
