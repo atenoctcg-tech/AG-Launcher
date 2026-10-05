@@ -1,13 +1,14 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "1.0",
+    "latestVersion": "1.0.0.1",
     "minimumVersion": "0.4.5",
     "mandatory": false,
     "autoUpdate": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip",
-    "sha256": "ee4379b3b548dc31fe16d50d32800cd5ad58186682bd1a75958f1dc8ba5fe4a0",
-    "releaseNotes": "AG Launcher v1.0 - vertical Explore covers, custom 1:1 profile crop, downloadable Workshop ZIP marketplace, safe mod auto-import groundwork, and notification-center-only alerts."
+    "sha256": "aa36c660a1fde0ed4eb8d5a131762afbd8fae06c276e029a8af65c28817ead10",
+    "releaseNotes": "AG Launcher v1.0 hotfix - profile crop now shows the full imported image with a movable 1:1 selection square and zoom.",
+    "displayVersion": "1.0"
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
