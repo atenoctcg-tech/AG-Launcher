@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "1.0.0.1",
+    "latestVersion": "1.0.0.2",
     "minimumVersion": "0.4.5",
     "mandatory": false,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip",
     "sha256": "",
-    "releaseNotes": "AG Launcher v1.0 hotfix - full-image profile crop preview with movable 1:1 selection and zoom.",
+    "releaseNotes": "AG Launcher v1.0 hotfix - profile crop opens with the full image visible and the largest possible 1:1 selection. Zoom remains optional.",
     "autoUpdate": true,
     "displayVersion": "1.0"
   },

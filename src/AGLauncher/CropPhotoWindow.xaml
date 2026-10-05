@@ -9,9 +9,9 @@
    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
    <StackPanel>
     <TextBlock Text="Crop profile photo" FontSize="24" FontWeight="SemiBold"/>
-    <TextBlock Text="The whole image stays visible. Move the 1:1 square to choose your profile photo." Foreground="#8793A2" FontSize="13" Margin="0,5,0,0"/>
+    <TextBlock Text="The whole image is shown first. The 1:1 square starts as large as possible." Foreground="#8793A2" FontSize="13" Margin="0,5,0,0"/>
    </StackPanel>
-   <TextBlock Grid.Row="1" Text="Drag the square to reposition it. Use Zoom to get closer without changing the 1:1 crop." Foreground="#697582" FontSize="12" Margin="0,14,0,10"/>
+   <TextBlock Grid.Row="1" Text="Drag the square to reposition it. Zoom only when you want a closer crop." Foreground="#697582" FontSize="12" Margin="0,14,0,10"/>
    <Border Grid.Row="2" Width="620" Height="410" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#06080B" BorderBrush="#27313B" BorderThickness="1" CornerRadius="12" ClipToBounds="True">
     <Canvas x:Name="PreviewCanvas" Width="620" Height="410" Background="#06080B"
             MouseLeftButtonDown="PreviewCanvas_MouseLeftButtonDown"

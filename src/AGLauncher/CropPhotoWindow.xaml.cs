@@ -54,7 +54,10 @@ public partial class CropPhotoWindow : Window
 
         var renderedWidth = _bitmap.PixelWidth * _fitScale;
         var renderedHeight = _bitmap.PixelHeight * _fitScale;
-        _cropSize = Math.Clamp(Math.Min(renderedWidth, renderedHeight) * 0.72, 120, 280);
+
+        // Start with the largest possible 1:1 crop while the entire image is visible.
+        // For an already-square source this means the crop is the full image (no initial zoom/cut).
+        _cropSize = Math.Min(renderedWidth, renderedHeight);
 
         CropBox.Width = CropBox.Height = _cropSize;
         Canvas.SetLeft(CropBox, ImageTranslate.X + (renderedWidth - _cropSize) / 2);
