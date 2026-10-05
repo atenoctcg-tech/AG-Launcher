@@ -125,4 +125,32 @@ public sealed class GitHubAdminService
         return $"https://raw.githubusercontent.com/{cfg.Owner}/{cfg.Repo}/{cfg.Branch}/{path}";
     }
 
+    public async Task<string> UploadWorkshopFileAsync(BootstrapConfig cfg, string token, byte[] bytes, string originalName)
+    {
+        using var c = Client(token);
+        var ext = Path.GetExtension(originalName).ToLowerInvariant();
+        if (ext != ".zip") throw new InvalidDataException("Workshop packages must be ZIP files.");
+
+        var stem = Path.GetFileNameWithoutExtension(originalName);
+        stem = Regex.Replace(stem, "[^a-zA-Z0-9_-]+", "-").Trim('-');
+        if (string.IsNullOrWhiteSpace(stem)) stem = "workshop-item";
+
+        var path = $"docs/workshop/files/{DateTime.UtcNow:yyyyMMdd-HHmmss}-{stem}.zip";
+        var payload = JsonSerializer.Serialize(new
+        {
+            message = "Upload Workshop ZIP for AG Launcher",
+            content = Convert.ToBase64String(bytes),
+            branch = cfg.Branch
+        });
+
+        using var put = await c.PutAsync(
+            $"https://api.github.com/repos/{cfg.Owner}/{cfg.Repo}/contents/{path}",
+            new StringContent(payload, Encoding.UTF8, "application/json"));
+
+        if (!put.IsSuccessStatusCode)
+            throw new HttpRequestException($"Workshop ZIP upload failed: {(int)put.StatusCode} {await put.Content.ReadAsStringAsync()}");
+
+        return $"https://raw.githubusercontent.com/{cfg.Owner}/{cfg.Repo}/{cfg.Branch}/{path}";
+    }
+
 }

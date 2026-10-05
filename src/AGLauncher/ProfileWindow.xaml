@@ -30,7 +30,7 @@
       <Button Style="{StaticResource GhostButton}" Content="Choose photo" Click="ChoosePhoto_Click" Margin="0,0,8,0"/>
       <Button Style="{StaticResource GhostButton}" Content="Remove" Click="RemovePhoto_Click"/>
      </StackPanel>
-     <TextBlock Text="PNG / JPG / WEBP · max 8 MB" Foreground="#68727E" FontSize="11" Margin="0,8,0,0"/>
+     <TextBlock Text="PNG / JPG / WEBP · max 8 MB · choose any image and crop a 1:1 profile photo" Foreground="#68727E" FontSize="11" TextWrapping="Wrap" Margin="0,8,0,0"/>
     </StackPanel>
    </Grid>
 

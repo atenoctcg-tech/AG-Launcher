@@ -18,6 +18,7 @@ public partial class AdminWindow : Window
     private readonly LauncherManifest _manifest;
     private readonly ObservableCollection<NewsItem> _news;
     private readonly ObservableCollection<GameCatalogItem> _games;
+    private readonly ObservableCollection<WorkshopItem> _workshop;
 
     public AdminWindow(BootstrapConfig cfg, LauncherManifest source, string token, string adminPassword)
     {
@@ -29,10 +30,11 @@ public partial class AdminWindow : Window
         _manifest = JsonSerializer.Deserialize<LauncherManifest>(JsonSerializer.Serialize(source, JsonUtil.Options), JsonUtil.Options) ?? new LauncherManifest();
         _news = new(_manifest.News);
         _games = new(_manifest.Games);
+        _workshop = new(_manifest.Workshop);
         ThemeJsonBox.Text = JsonSerializer.Serialize(_manifest.Theme, JsonUtil.Options);
-        WorkshopJsonBox.Text = JsonSerializer.Serialize(_manifest.Workshop, JsonUtil.Options);
         NewsGrid.ItemsSource = _news;
         GamesGrid.ItemsSource = _games;
+        WorkshopGrid.ItemsSource = _workshop;
 
         LatestVersionBox.Text = _manifest.Launcher.LatestVersion;
         MinimumVersionBox.Text = _manifest.Launcher.MinimumVersion;
@@ -83,6 +85,88 @@ public partial class AdminWindow : Window
     private void RemoveGame_Click(object sender, RoutedEventArgs e)
     {
         if (GamesGrid.SelectedItem is GameCatalogItem item) _games.Remove(item);
+    }
+
+    private void AddWorkshop_Click(object sender, RoutedEventArgs e)
+    {
+        _workshop.Add(new WorkshopItem
+        {
+            Name = "New Workshop item",
+            Category = "3D model",
+            GameId = "castle-survival",
+            FileFormat = "ZIP",
+            Pricing = "free",
+            Visible = false
+        });
+        WorkshopGrid.SelectedIndex = _workshop.Count - 1;
+        WorkshopGrid.ScrollIntoView(WorkshopGrid.SelectedItem);
+    }
+
+    private void RemoveWorkshop_Click(object sender, RoutedEventArgs e)
+    {
+        if (WorkshopGrid.SelectedItem is WorkshopItem item) _workshop.Remove(item);
+    }
+
+    private async void UploadWorkshopPreview_Click(object sender, RoutedEventArgs e)
+    {
+        if (WorkshopGrid.SelectedItem is not WorkshopItem item)
+        {
+            MessageBox.Show("Select a Workshop row first.");
+            return;
+        }
+
+        var url = await UploadImageAsync("workshop");
+        if (!string.IsNullOrWhiteSpace(url))
+        {
+            item.ImageUrl = url;
+            WorkshopGrid.Items.Refresh();
+            StatusText.Text = "Workshop preview uploaded.";
+        }
+    }
+
+    private async void UploadWorkshopZip_Click(object sender, RoutedEventArgs e)
+    {
+        if (WorkshopGrid.SelectedItem is not WorkshopItem item)
+        {
+            MessageBox.Show("Select a Workshop row first.");
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(_token))
+        {
+            MessageBox.Show("Save your GitHub token in SECURITY first.", "AG Launcher Admin", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        var picker = new OpenFileDialog
+        {
+            Title = "Choose Workshop ZIP",
+            Filter = "ZIP package|*.zip"
+        };
+        if (picker.ShowDialog(this) != true) return;
+
+        var info = new FileInfo(picker.FileName);
+        if (info.Length > 45L * 1024 * 1024)
+        {
+            MessageBox.Show("Workshop ZIP must be smaller than 45 MB for direct GitHub publishing.");
+            return;
+        }
+
+        try
+        {
+            StatusText.Text = "Uploading Workshop ZIP to GitHub...";
+            var url = await new GitHubAdminService().UploadWorkshopFileAsync(
+                _cfg, _token, await File.ReadAllBytesAsync(picker.FileName), Path.GetFileName(picker.FileName));
+
+            item.DownloadUrl = url;
+            item.FileName = Path.GetFileName(picker.FileName);
+            if (string.IsNullOrWhiteSpace(item.FileFormat)) item.FileFormat = "ZIP";
+            WorkshopGrid.Items.Refresh();
+            StatusText.Text = "Workshop ZIP uploaded.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Workshop upload failed", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private async void UploadNewsImage_Click(object sender, RoutedEventArgs e)
@@ -206,7 +290,8 @@ public partial class AdminWindow : Window
         NewsGrid.CommitEdit(); NewsGrid.CommitEdit(System.Windows.Controls.DataGridEditingUnit.Row, true);
         GamesGrid.CommitEdit(); GamesGrid.CommitEdit(System.Windows.Controls.DataGridEditingUnit.Row, true);
         _manifest.Theme = JsonSerializer.Deserialize<ThemeConfig>(ThemeJsonBox.Text, JsonUtil.Options) ?? new();
-        _manifest.Workshop = JsonSerializer.Deserialize<List<WorkshopItem>>(WorkshopJsonBox.Text, JsonUtil.Options) ?? new();
+        WorkshopGrid.CommitEdit(); WorkshopGrid.CommitEdit(System.Windows.Controls.DataGridEditingUnit.Row, true);
+        _manifest.Workshop = _workshop.ToList();
         _manifest.Launcher.LatestVersion = LatestVersionBox.Text.Trim();
         _manifest.Launcher.MinimumVersion = MinimumVersionBox.Text.Trim();
         _manifest.Launcher.Mandatory = MandatoryUpdateCheck.IsChecked == true;

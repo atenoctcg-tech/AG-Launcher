@@ -80,7 +80,7 @@ jobs:
             Write-Host "Release $tag already exists; replacing Windows asset."
             gh release upload $tag $assetName $sourceName --clobber --repo "${{ github.repository }}"
           } else {
-            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Animated GIF/MP4 banners, separate Library art, improved install UI and automatic updates."
+            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. v1.0 adds vertical Explore covers, profile crop, Workshop ZIP marketplace, mod import groundwork and notification-center-only alerts."
           }
           if ($LASTEXITCODE -ne 0) { throw "GitHub Release publishing failed." }
 

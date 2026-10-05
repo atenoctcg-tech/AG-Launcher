@@ -38,10 +38,13 @@ public partial class ProfileWindow : Window
             return;
         }
 
-        _selectedPhotoPath = picker.FileName;
+        var crop = new CropPhotoWindow(picker.FileName) { Owner = this };
+        if (crop.ShowDialog() != true || string.IsNullOrWhiteSpace(crop.CroppedPhotoPath)) return;
+
+        _selectedPhotoPath = crop.CroppedPhotoPath;
         _removePhoto = false;
         SetPreview(_selectedPhotoPath);
-        StatusText.Text = "Photo selected. Save profile to apply it.";
+        StatusText.Text = "1:1 crop ready. Save profile to apply it.";
     }
 
     private void RemovePhoto_Click(object sender, RoutedEventArgs e)

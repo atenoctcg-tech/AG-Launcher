@@ -1,4 +1,5 @@
 using System.IO;
+using System.IO.Compression;
 using AGLauncher.Models;
 using AGLauncher.Services;
 using System.Diagnostics;
@@ -38,6 +39,7 @@ public partial class MainWindow : Window
     private readonly SelfUpdateService _selfUpdate = new();
     private readonly NotificationService _notificationService = new();
     private readonly ProfileService _profileService = new();
+    private readonly WorkshopService _workshopService = new();
     private List<GameCatalogItem> _allGames = new();
     private List<LauncherNotification> _notifications = new();
     private GameCatalogItem? _selectedGame;
@@ -107,11 +109,7 @@ public partial class MainWindow : Window
             _notifications = await _notificationService.CollectNewAsync(_manifest, _manifestService);
             UpdateNotificationButton();
             if (_notifications.Count > 0)
-            {
-                SideInstallStatusText.Text = $"{_notifications.Count} new update{(_notifications.Count == 1 ? "" : "s")}";
-                var popup = new NotificationWindow(_notifications) { Owner = this };
-                popup.Show();
-            }
+                SideInstallStatusText.Text = $"{_notifications.Count} unread notification{(_notifications.Count == 1 ? "" : "s")}";
         }
         catch (Exception ex)
         {
@@ -159,7 +157,7 @@ public partial class MainWindow : Window
                     _notifications.AddRange(fresh);
                     UpdateNotificationButton();
                     SideInstallStatusText.Text = $"{fresh.Count} new studio updates";
-                    new NotificationWindow(fresh) { Owner = this }.Show();
+                    SideInstallStatusText.Text = $"{_notifications.Count} unread notification{(_notifications.Count == 1 ? "" : "s")}";
                 }
             }
             else if (++_pollCounter % 3 == 0)
@@ -169,7 +167,7 @@ public partial class MainWindow : Window
                 {
                     _notifications.AddRange(fresh);
                     UpdateNotificationButton();
-                    new NotificationWindow(fresh) { Owner = this }.Show();
+                    SideInstallStatusText.Text = $"{_notifications.Count} unread notification{(_notifications.Count == 1 ? "" : "s")}";
                 }
 
                 var selected = _selectedGame;
@@ -745,8 +743,14 @@ public partial class MainWindow : Window
 
     private void NotificationButton_Click(object sender, RoutedEventArgs e)
     {
+        if (_notifications.Count == 0)
+        {
+            MessageBox.Show("No unread notifications.", "AG Launcher", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
         new NotificationWindow(_notifications) { Owner = this }.ShowDialog();
         _notifications.Clear();
+        _notificationService.MarkAllRead();
         UpdateNotificationButton();
     }
 
@@ -756,6 +760,62 @@ public partial class MainWindow : Window
     {
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || uri.Scheme != "https") return;
         try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); } catch { }
+    }
+
+    private async void DownloadWorkshop_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as Button)?.Tag is not WorkshopItem item || string.IsNullOrWhiteSpace(item.DownloadUrl))
+        {
+            MessageBox.Show("This Workshop item does not have a downloadable file yet.", "AG Launcher", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        try
+        {
+            SideInstallProgress.Visibility = Visibility.Visible;
+            SideInstallProgress.Value = 0;
+            SideInstallStatusText.Text = $"Downloading {item.Name}...";
+
+            GameCatalogItem? game = null;
+            GameManifest? manifest = null;
+            if (!string.IsNullOrWhiteSpace(item.GameId))
+            {
+                game = _manifest.Games.FirstOrDefault(g => g.Id.Equals(item.GameId, StringComparison.OrdinalIgnoreCase));
+                if (game != null && (item.AutoImport || item.Category.Equals("Mod", StringComparison.OrdinalIgnoreCase)))
+                {
+                    try { manifest = await _manifestService.LoadGameAsync(game); } catch { }
+                }
+            }
+
+            var result = await _workshopService.DownloadAsync(
+                item, game, manifest, _installer,
+                new Progress<(double Value, string Status)>(p =>
+                {
+                    SideInstallProgress.Value = p.Value;
+                    SideInstallStatusText.Text = p.Status;
+                }));
+
+            SideInstallProgress.Value = 1;
+            SideInstallStatusText.Text = result.Imported ? "Mod imported." : "Workshop download complete.";
+
+            var message = result.Imported
+                ? $"Installed into:\n{result.Path}"
+                : $"Downloaded to:\n{result.Path}";
+            if (!result.Imported && item.Category.Equals("Mod", StringComparison.OrdinalIgnoreCase) && item.AutoImport)
+                message += "\n\nAutomatic Godot/PCK injection is not enabled unless a safe relative Import Path is configured.";
+
+            MessageBox.Show(message, item.Name, MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            SideInstallStatusText.Text = "Workshop download failed.";
+            MessageBox.Show(ex.Message, "Workshop", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            await Task.Delay(350);
+            SideInstallProgress.Visibility = Visibility.Collapsed;
+        }
     }
 
     private async void RefreshButton_Click(object sender, RoutedEventArgs e) => await ManualRefreshAsync();

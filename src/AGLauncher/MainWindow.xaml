@@ -70,7 +70,7 @@
 
       <Border Grid.Row="4" Background="{DynamicResource CardBrush}" BorderBrush="#262D36" BorderThickness="1" CornerRadius="13" Padding="11">
        <StackPanel>
-        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="13" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v0.4.7" Foreground="#747D89" FontSize="13"/></Grid>
+        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><TextBlock Text="AG Launcher" FontSize="13" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="v1.0" Foreground="#747D89" FontSize="13"/></Grid>
         <TextBlock x:Name="SideInstallStatusText" Text="Ready" Foreground="#6B7480" FontSize="13" Margin="0,5,0,0" TextTrimming="CharacterEllipsis"/>
         <ProgressBar x:Name="SideInstallProgress" Height="4" Minimum="0" Maximum="1" Visibility="Collapsed" Margin="0,8,0,0"/>
        </StackPanel>
@@ -187,7 +187,18 @@
        </ListBox>
        <TextBlock Text="Explore our games" FontSize="24" FontWeight="SemiBold" Margin="0,24,0,18"/>
        <ItemsControl x:Name="GameCards"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate>
-        <Border Style="{StaticResource ZoomPanel}" Width="325" Margin="0,0,18,18" Background="{DynamicResource CardBrush}" CornerRadius="14" ClipToBounds="True"><StackPanel><Image Source="{Binding BannerUrl}" Height="180" Stretch="UniformToFill"/><StackPanel Margin="18"><TextBlock Text="{Binding Name}" FontSize="19" FontWeight="SemiBold"/><TextBlock Text="{Binding Description}" Foreground="#B7C3D6" TextWrapping="Wrap" MaxHeight="64" Margin="0,8"/><Button Style="{StaticResource GhostButton}" Content="VIEW GAME  →" Tag="{Binding}" Click="GameCard_Click"/></StackPanel></StackPanel></Border>
+        <Border Style="{StaticResource ZoomPanel}" Width="250" Height="430" Margin="0,0,18,18" Background="{DynamicResource CardBrush}" CornerRadius="14" ClipToBounds="True">
+         <Grid>
+          <Grid.RowDefinitions><RowDefinition Height="312"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+          <Border Background="#151B22"><Image Source="{Binding ExploreImageUrl}" Stretch="UniformToFill"/></Border>
+          <Grid Grid.Row="1" Margin="16,14">
+           <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+           <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap"/>
+           <TextBlock Grid.Row="1" Text="{Binding Description}" Foreground="#9AA7B8" FontSize="13" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Margin="0,7,0,8"/>
+           <Button Grid.Row="2" Style="{StaticResource GhostButton}" Content="VIEW GAME  →" Tag="{Binding}" Click="GameCard_Click"/>
+          </Grid>
+         </Grid>
+        </Border>
        </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
       </StackPanel>
      </ScrollViewer>
@@ -204,8 +215,28 @@
       </StackPanel>
      </ScrollViewer>
      <ScrollViewer x:Name="WorkshopView" Grid.Row="1" Visibility="Collapsed" VerticalScrollBarVisibility="Auto"><StackPanel Margin="28,10,28,34">
-      <TextBlock Text="The Workshop" FontSize="32" FontWeight="SemiBold"/><TextBlock Text="Mods, 3D models and tools for your next creation." Foreground="#A5B4CA" Margin="0,12,0,28"/>
-      <ItemsControl x:Name="WorkshopItems"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate><Border Style="{StaticResource ZoomPanel}" Width="310" Background="{DynamicResource CardBrush}" Margin="0,0,18,18" CornerRadius="14" ClipToBounds="True"><StackPanel><Image Source="{Binding ImageUrl}" Height="174" Stretch="UniformToFill"/><StackPanel Margin="18"><TextBlock Text="{Binding Category}" Foreground="#80A8FF"/><TextBlock Text="{Binding Name}" FontSize="20" Margin="0,8"/><TextBlock Text="{Binding Description}" TextWrapping="Wrap" Foreground="#B7C3D6"/><Button Content="View creation →" Style="{StaticResource GhostButton}" Margin="0,14,0,0" Tag="{Binding DownloadUrl}" Click="OpenLinkButton_Click"/></StackPanel></StackPanel></Border></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+      <TextBlock Text="The Workshop" FontSize="32" FontWeight="SemiBold"/>
+      <TextBlock Text="A free marketplace for 3D models, mods, maps and creator tools." Foreground="#A5B4CA" FontSize="14" Margin="0,10,0,6"/>
+      <TextBlock Text="3D models download as ZIP files. Mods can optionally auto-import into an installed game when an import path is configured." Foreground="#728096" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,28"/>
+      <ItemsControl x:Name="WorkshopItems"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate>
+       <Border Style="{StaticResource ZoomPanel}" Width="310" Height="410" Background="{DynamicResource CardBrush}" Margin="0,0,18,18" CornerRadius="14" ClipToBounds="True">
+        <Grid>
+         <Grid.RowDefinitions><RowDefinition Height="180"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+         <Image Source="{Binding ImageUrl}" Stretch="UniformToFill"/>
+         <Grid Grid.Row="1" Margin="18,15">
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+           <TextBlock Text="{Binding Category}" Foreground="#80A8FF" FontSize="13" FontWeight="SemiBold"/>
+           <Border Grid.Column="1" Background="#18242F" CornerRadius="999" Padding="8,3"><TextBlock Text="{Binding FileFormat}" FontSize="12" Foreground="#A9B8CA"/></Border>
+          </Grid>
+          <TextBlock Grid.Row="1" Text="{Binding Name}" FontSize="20" FontWeight="SemiBold" Margin="0,8,0,0" TextWrapping="Wrap"/>
+          <TextBlock Grid.Row="2" Text="{Binding Description}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Foreground="#B7C3D6" FontSize="13" Margin="0,7,0,8"/>
+          <TextBlock Grid.Row="3" Text="{Binding Pricing}" Foreground="#8D9BAC" FontSize="12" Margin="0,0,0,8"/>
+          <Button Grid.Row="4" Content="DOWNLOAD  ↓" Style="{StaticResource GameActionButton}" Tag="{Binding}" Click="DownloadWorkshop_Click"/>
+         </Grid>
+        </Grid>
+       </Border>
+      </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
       <TextBlock x:Name="WorkshopEmpty" Text="New community creations will appear here when published." Foreground="#A5B4CA" Margin="0,32"/>
      </StackPanel></ScrollViewer>
     </Grid>

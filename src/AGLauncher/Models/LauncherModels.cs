@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace AGLauncher.Models;
 
 public sealed class BootstrapConfig
@@ -74,6 +76,8 @@ public sealed class GameCatalogItem
     public string BannerUrl { get; set; } = "";
     public string AnimatedBannerUrl { get; set; } = "";
     public string LibraryImageUrl { get; set; } = "";
+    [JsonIgnore]
+    public string ExploreImageUrl => string.IsNullOrWhiteSpace(LibraryImageUrl) ? BannerUrl : LibraryImageUrl;
     public string IconUrl { get; set; } = "";
     public string ManifestUrl { get; set; } = "";
     public string WebsiteUrl { get; set; } = "";
@@ -126,10 +130,14 @@ public sealed class WorkshopItem
  public string Id { get; set; } = Guid.NewGuid().ToString("N");
  public string Name { get; set; } = "New item";
  public string GameId { get; set; } = "castle-survival";
- public string Category { get; set; } = "Mod";
+ public string Category { get; set; } = "3D model";
  public string Description { get; set; } = "";
  public string ImageUrl { get; set; } = "";
  public string DownloadUrl { get; set; } = "";
+ public string FileName { get; set; } = "";
+ public string FileFormat { get; set; } = "ZIP";
  public string Pricing { get; set; } = "free";
  public bool Visible { get; set; } = false;
+ public bool AutoImport { get; set; } = false;
+ public string ImportPath { get; set; } = "";
 }
