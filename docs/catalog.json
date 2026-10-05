@@ -114,6 +114,21 @@
       "visible": true,
       "autoImport": false,
       "importPath": ""
+    },
+    {
+      "id": "9617f02701374b45b9299ee256294a0c",
+      "name": "Small Island map 3D",
+      "gameId": "castle-survival",
+      "category": "3D model",
+      "description": "",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/workshop/20261005-111918-Small-Island-map.jpg",
+      "downloadUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/workshop/files/20261005-112023-Small-Island-map-3D.zip",
+      "fileName": "Small Island map 3D.zip",
+      "fileFormat": "BLEND",
+      "pricing": "free",
+      "visible": false,
+      "autoImport": false,
+      "importPath": ""
     }
   ],
   "theme": {
