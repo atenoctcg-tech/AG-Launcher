@@ -735,6 +735,13 @@ public partial class MainWindow : Window
 
     private void OpenLinkButton_Click(object sender, RoutedEventArgs e) => OpenUrl((sender as Button)?.Tag?.ToString());
 
+    private void NewsCard_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.Tag is not NewsItem item) return;
+        e.Handled = true;
+        new NewsDetailWindow(item) { Owner = this }.ShowDialog();
+    }
+
     private void ProfileButton_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new ProfileWindow { Owner = this };
