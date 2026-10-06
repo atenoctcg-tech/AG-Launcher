@@ -72,18 +72,18 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($displayVersion)) { $displayVersion = $version }
           $tag = "v$displayVersion"
           $zip = ".\dist\AGLauncher-win-x64.zip"
-          $assetName = "AG Launcher.zip"
+          $assetName = "AG.Launcher.zip"
           Copy-Item $zip $assetName -Force
-          $sourceName = "AG Launcher Source.zip"
+          $sourceName = "AG.Launcher.Source.zip"
           git archive --format=zip --output=$sourceName HEAD
 
           gh release view $tag --repo "${{ github.repository }}" *> $null
           if ($LASTEXITCODE -eq 0) {
             Write-Host "Release $tag already exists; replacing Windows asset."
             gh release upload $tag $assetName $sourceName --clobber --repo "${{ github.repository }}"
-            gh release edit $tag --repo "${{ github.repository }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Updated v1.0 build with improved profile crop and the existing v1.0 feature set."
+            gh release edit $tag --repo "${{ github.repository }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Smarter profile photo crop for arbitrary resolutions and in-launcher Latest News detail view."
           } else {
-            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. v1.0 adds vertical Explore covers, profile crop, Workshop ZIP marketplace, mod import groundwork and notification-center-only alerts."
+            gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Includes profile photo crop with pan/zoom, Latest News detail view, Workshop and game library features."
           }
           if ($LASTEXITCODE -ne 0) { throw "GitHub Release publishing failed." }
 
