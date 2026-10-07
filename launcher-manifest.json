@@ -24,6 +24,16 @@
   },
   "news": [
     {
+      "id": "24ce46bf795048abb6143de5998d37d1",
+      "title": "Castle Survival v1.0.1 is available",
+      "summary": "1) Added Sell item by press Right Mouse and then X button. 2) Added Footsteps, press ctrl to silent moving  3) Now BOTs playing more smarter . Enjoy!",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "linkUrl": "",
+      "date": "2026-10-05",
+      "pinned": true,
+      "visible": true
+    },
+    {
       "id": "47f6a86c936949ee87f027661b63c1e3",
       "title": "SILENT ATTACK!",
       "summary": "Silent footsteps let you sneak up behind enemies for a surprise attack!",
