@@ -24,6 +24,26 @@
   },
   "news": [
     {
+      "id": "47f6a86c936949ee87f027661b63c1e3",
+      "title": "SILENT ATTACK!",
+      "summary": "Silent footsteps let you sneak up behind enemies for a surprise attack!",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/news/20261007-131535-SILENT-ATTACK.png",
+      "linkUrl": "",
+      "date": "2026-10-07",
+      "pinned": true,
+      "visible": true
+    },
+    {
+      "id": "3576f9217224480695c3d6473bc1314a",
+      "title": "SMART KNIGHTS!",
+      "summary": "Now BOT players playing smarter :) Enjoy at single player mode too !",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/news/20261007-131321-SMART-KNIGHTS.png",
+      "linkUrl": "",
+      "date": "2026-10-07",
+      "pinned": true,
+      "visible": true
+    },
+    {
       "id": "80eaae0617cc4c2d9fa38649eac5627b",
       "title": "NEW COMPETITIVE MODE MAPS!",
       "summary": "6players, 2-3minutes for each round. Rounds 8.  In 3vs3 map you must take over all mine buildings",
