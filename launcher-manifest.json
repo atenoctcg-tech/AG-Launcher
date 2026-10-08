@@ -24,6 +24,16 @@
   },
   "news": [
     {
+      "id": "e252d8f304714220b829cbaa3557197b",
+      "title": "Castle Survival v1.0.3 is available",
+      "summary": "1) Added Voice chat to the game. 2) Optimized gameplay now you can play with better FPS. 3) Added Jump sound. Enjoy!",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "linkUrl": "",
+      "date": "2026-10-08",
+      "pinned": true,
+      "visible": true
+    },
+    {
       "id": "f21f18ccb70844e78872e998d7356009",
       "title": "Castle Survival v1.0.2 is available",
       "summary": "Players can now only enter their own castles, and enemy castles take damage exclusively from frontal attacks. A new live TAB scoreboard is available in all game modes, featuring player-colored statistics, team-based rankings, and automatic MVP sorting by SCORE (1 XP per knight purchased, 2 XP per knight killed, 4 XP per player killed, 5 XP per castle eliminated, and 1 XP per 100 coins earned). Rankings update in real time and remain visible on the post-match results screen.",
