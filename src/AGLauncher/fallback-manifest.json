@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "1.0.0.4",
+    "latestVersion": "1.0.0.5",
     "minimumVersion": "0.4.5",
     "mandatory": false,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip",
     "sha256": "",
-    "releaseNotes": "AG Launcher v1.0 update - Latest News now auto-slides smoothly one card at a time, with manual previous/next controls.",
+    "releaseNotes": "AG Launcher v1.0 update - Latest News now moves as a slow, continuous and seamless infinite carousel. The last post flows directly back into the first, and new posts join automatically.",
     "autoUpdate": true,
     "displayVersion": "1.0"
   },
