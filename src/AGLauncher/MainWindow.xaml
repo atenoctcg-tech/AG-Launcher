@@ -176,19 +176,20 @@
        </Border>
 
        <Grid Margin="2,24,2,12"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="Latest news" FontSize="18" FontWeight="SemiBold"/><TextBlock Text="Image posts, releases and development updates" Foreground="#6F7884" FontSize="13"/></StackPanel><TextBlock Grid.Column="1" Text="ATENOCT GAMES" Foreground="#4E5661" FontSize="13" VerticalAlignment="Bottom"/></Grid>
-       <Grid x:Name="NewsCarousel" Height="340" ClipToBounds="True" MouseEnter="NewsCarousel_MouseEnter" MouseLeave="NewsCarousel_MouseLeave">
+       <Grid x:Name="NewsCarousel" Height="340" ClipToBounds="True" SizeChanged="NewsCarousel_SizeChanged">
         <Grid.Resources>
          <Style x:Key="NewsArrowButton" TargetType="Button">
-          <Setter Property="Width" Value="52"/>
-          <Setter Property="Height" Value="52"/>
+          <Setter Property="Width" Value="46"/>
+          <Setter Property="Height" Value="46"/>
           <Setter Property="Foreground" Value="#F4F7FB"/>
           <Setter Property="Background" Value="#B00A0E14"/>
           <Setter Property="BorderBrush" Value="#D9FFFFFF"/>
           <Setter Property="BorderThickness" Value="2"/>
-          <Setter Property="FontSize" Value="31"/>
+          <Setter Property="FontSize" Value="28"/>
           <Setter Property="FontWeight" Value="Light"/>
           <Setter Property="Cursor" Value="Hand"/>
-          <Setter Property="Padding" Value="0,-4,0,0"/>
+          <Setter Property="Padding" Value="0,-3,0,0"/>
+          <Setter Property="Opacity" Value="0.55"/>
           <Setter Property="Template">
            <Setter.Value>
             <ControlTemplate TargetType="Button">
@@ -198,6 +199,7 @@
              <ControlTemplate.Triggers>
               <Trigger Property="IsMouseOver" Value="True">
                <Setter TargetName="ArrowCircle" Property="Background" Value="#E01B2735"/>
+               <Setter Property="Opacity" Value="1"/>
                <Setter Property="RenderTransform">
                 <Setter.Value><ScaleTransform ScaleX="1.06" ScaleY="1.06"/></Setter.Value>
                </Setter>
@@ -216,11 +218,14 @@
          </Style>
         </Grid.Resources>
 
-        <Border x:Name="NewsViewport" Background="Transparent" ClipToBounds="True">
+        <ScrollViewer x:Name="NewsViewport"
+                      Background="Transparent"
+                      HorizontalScrollBarVisibility="Hidden"
+                      VerticalScrollBarVisibility="Disabled"
+                      CanContentScroll="False"
+                      PanningMode="HorizontalOnly"
+                      Focusable="False">
          <ItemsControl x:Name="NewsList" HorizontalAlignment="Left">
-          <ItemsControl.RenderTransform>
-           <TranslateTransform x:Name="NewsStripTranslate" X="0"/>
-          </ItemsControl.RenderTransform>
           <ItemsControl.ItemsPanel>
            <ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
@@ -249,7 +254,7 @@
            </DataTemplate>
           </ItemsControl.ItemTemplate>
          </ItemsControl>
-        </Border>
+        </ScrollViewer>
 
         <Button x:Name="NewsPreviousButton" Style="{StaticResource NewsArrowButton}" Content="‹" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0" Panel.ZIndex="5" Click="NewsPreviousButton_Click"/>
         <Button x:Name="NewsNextButton" Style="{StaticResource NewsArrowButton}" Content="›" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0" Panel.ZIndex="5" Click="NewsNextButton_Click"/>
