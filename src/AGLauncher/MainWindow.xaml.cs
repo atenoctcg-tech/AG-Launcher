@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Text.Json;
@@ -51,12 +53,33 @@ public partial class MainWindow : Window
     private List<TimeSpan> _heroGifDelays = new();
     private int _heroGifIndex;
 
+    private const double NewsCardStride = 339.0;
+    private readonly DispatcherTimer _newsCarouselTimer = new() { Interval = TimeSpan.FromSeconds(5.5) };
+    private List<NewsItem> _newsCarouselItems = new();
+    private int _newsCarouselIndex;
+    private bool _newsCarouselHover;
+    private bool _newsCarouselAnimating;
+
     public MainWindow()
     {
         InitializeComponent();
-        Loaded += async (_, __) => { await InitializeAsync(); _poll.Start(); };
+        Loaded += async (_, __) =>
+        {
+            await InitializeAsync();
+            _poll.Start();
+            _newsCarouselTimer.Start();
+        };
         _poll.Tick += async (_, __) => await PollUpdatesAsync();
-        Closed += (_, __) => _poll.Stop();
+        _newsCarouselTimer.Tick += (_, __) =>
+        {
+            if (!_newsCarouselHover && HomeView.Visibility == Visibility.Visible)
+                MoveNewsCarousel(1, automatic: true);
+        };
+        Closed += (_, __) =>
+        {
+            _poll.Stop();
+            _newsCarouselTimer.Stop();
+        };
     }
 
     private async Task InitializeAsync()
@@ -93,7 +116,7 @@ public partial class MainWindow : Window
             _manifestFingerprint = JsonSerializer.Serialize(_manifest, JsonUtil.Options);
             _allGames = _manifest.Games.Where(g => g.Visible).OrderByDescending(g => g.Featured).ThenBy(g => g.SortOrder).ThenBy(g => g.Name).ToList();
             ApplyGameSearch();
-            NewsList.ItemsSource = _manifest.News.Where(n => n.Visible).OrderByDescending(n => n.Pinned).ThenByDescending(n => n.Date).ToList();
+            BindNewsCarousel();
 
             if (_allGames.Count > 0)
                 GamesList.SelectedItem = _allGames[0];
@@ -143,7 +166,7 @@ public partial class MainWindow : Window
                 WorkshopEmpty.Visibility = _manifest.Workshop.Any(w => w.Visible) ? Visibility.Collapsed : Visibility.Visible;
                 _allGames = _manifest.Games.Where(g => g.Visible).OrderByDescending(g => g.Featured).ThenBy(g => g.SortOrder).ThenBy(g => g.Name).ToList();
                 ApplyGameSearch();
-                NewsList.ItemsSource = _manifest.News.Where(n => n.Visible).OrderByDescending(n => n.Pinned).ThenByDescending(n => n.Date).ToList();
+                BindNewsCarousel();
 
                 var select = !string.IsNullOrWhiteSpace(selectedId)
                     ? _allGames.FirstOrDefault(g => g.Id.Equals(selectedId, StringComparison.OrdinalIgnoreCase))
@@ -656,6 +679,109 @@ public partial class MainWindow : Window
         LibraryList.ItemsSource = entries;
         EmptyLibraryText.Visibility = entries.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
+
+    private void BindNewsCarousel()
+    {
+        _newsCarouselItems = _manifest.News
+            .Where(n => n.Visible)
+            .OrderByDescending(n => n.Pinned)
+            .ThenByDescending(n => n.Date)
+            .ToList();
+
+        NewsStripTranslate.BeginAnimation(TranslateTransform.XProperty, null);
+        NewsStripTranslate.X = 0;
+        _newsCarouselIndex = 0;
+        _newsCarouselAnimating = false;
+
+        // A duplicated sequence makes the last -> first transition seamless:
+        // the strip moves only one card, then silently normalizes to the first copy.
+        NewsList.ItemsSource = _newsCarouselItems.Count > 1
+            ? _newsCarouselItems.Concat(_newsCarouselItems).ToList()
+            : _newsCarouselItems;
+
+        var showArrows = _newsCarouselItems.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
+        NewsPreviousButton.Visibility = showArrows;
+        NewsNextButton.Visibility = showArrows;
+    }
+
+    private void MoveNewsCarousel(int direction, bool automatic = false)
+    {
+        var count = _newsCarouselItems.Count;
+        if (count <= 1 || _newsCarouselAnimating) return;
+
+        if (!automatic)
+        {
+            _newsCarouselTimer.Stop();
+            _newsCarouselTimer.Start();
+        }
+
+        if (direction < 0 && _newsCarouselIndex == 0)
+        {
+            // Jump to the identical duplicated first card, then animate back by one card.
+            NewsStripTranslate.BeginAnimation(TranslateTransform.XProperty, null);
+            _newsCarouselIndex = count;
+            NewsStripTranslate.X = -count * NewsCardStride;
+        }
+
+        var targetIndex = direction >= 0 ? _newsCarouselIndex + 1 : _newsCarouselIndex - 1;
+        var normalizeAfter = direction >= 0 && targetIndex >= count;
+
+        AnimateNewsCarousel(targetIndex, normalizeAfter);
+    }
+
+    private void AnimateNewsCarousel(int targetIndex, bool normalizeAfter)
+    {
+        var from = NewsStripTranslate.X;
+        var to = -targetIndex * NewsCardStride;
+
+        var animation = new DoubleAnimation
+        {
+            From = from,
+            To = to,
+            Duration = TimeSpan.FromMilliseconds(560),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
+            FillBehavior = FillBehavior.HoldEnd
+        };
+
+        _newsCarouselAnimating = true;
+        animation.Completed += (_, __) =>
+        {
+            NewsStripTranslate.BeginAnimation(TranslateTransform.XProperty, null);
+
+            if (normalizeAfter)
+            {
+                _newsCarouselIndex = 0;
+                NewsStripTranslate.X = 0;
+            }
+            else
+            {
+                _newsCarouselIndex = targetIndex;
+                NewsStripTranslate.X = to;
+            }
+
+            _newsCarouselAnimating = false;
+        };
+
+        NewsStripTranslate.BeginAnimation(
+            TranslateTransform.XProperty,
+            animation,
+            HandoffBehavior.SnapshotAndReplace);
+    }
+
+    private void NewsPreviousButton_Click(object sender, RoutedEventArgs e)
+    {
+        e.Handled = true;
+        MoveNewsCarousel(-1);
+    }
+
+    private void NewsNextButton_Click(object sender, RoutedEventArgs e)
+    {
+        e.Handled = true;
+        MoveNewsCarousel(1);
+    }
+
+    private void NewsCarousel_MouseEnter(object sender, MouseEventArgs e) => _newsCarouselHover = true;
+    private void NewsCarousel_MouseLeave(object sender, MouseEventArgs e) => _newsCarouselHover = false;
 
     private void GameCard_Click(object sender, RoutedEventArgs e) { if ((sender as Button)?.Tag is GameCatalogItem game) { GamesList.SelectedItem = game; ShowHome(); HomeView.ScrollToTop(); } }
     private void WorkshopNavButton_Click(object sender, RoutedEventArgs e)
