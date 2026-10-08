@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "1.0.0.4",
+    "latestVersion": "1.0.0.5",
     "displayVersion": "1.0",
     "minimumVersion": "0.4.5",
     "mandatory": false,
     "autoUpdate": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip",
-    "sha256": "45d6868265ed6e4ec34d877dd9f65ac0a7bfc90756c864e61563cf0f4cf0bcd3",
-    "releaseNotes": "AG Launcher v1.0 update - Latest News now slides smoothly one card at a time automatically, with manual previous/next arrow controls."
+    "sha256": "231afe643401367b7e8d00c9574e4e7d052ef0d2704c53afa697c41f4075c1e6",
+    "releaseNotes": "AG Launcher v1.0 update - Latest News now moves slowly and continuously as a seamless infinite carousel. The last post flows directly into the first, new posts join automatically, and manual arrows remain smooth without stopping the motion."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
