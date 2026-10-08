@@ -81,7 +81,7 @@ jobs:
           if ($LASTEXITCODE -eq 0) {
             Write-Host "Release $tag already exists; replacing Windows asset."
             gh release upload $tag $assetName $sourceName --clobber --repo "${{ github.repository }}"
-            gh release edit $tag --repo "${{ github.repository }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Latest News now includes smooth automatic one-card sliding and manual previous/next controls."
+            gh release edit $tag --repo "${{ github.repository }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Latest News now uses a slow, seamless, continuously moving infinite carousel with manual previous/next controls."
           } else {
             gh release create $tag $assetName $sourceName --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "AG Launcher $tag" --notes "AG Launcher $tag Windows x64. Includes smooth Latest News carousel, profile crop, news detail view, Workshop and game library features."
           }
