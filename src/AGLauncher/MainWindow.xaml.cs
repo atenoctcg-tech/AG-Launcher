@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Text.Json;
@@ -54,11 +53,15 @@ public partial class MainWindow : Window
     private int _heroGifIndex;
 
     private const double NewsCardStride = 339.0;
-    private readonly DispatcherTimer _newsCarouselTimer = new() { Interval = TimeSpan.FromSeconds(5.5) };
+    private const double NewsContinuousPixelsPerSecond = 18.0;
+    private const double NewsManualMaxPixelsPerSecond = 900.0;
+    private readonly Stopwatch _newsFrameClock = new();
     private List<NewsItem> _newsCarouselItems = new();
-    private int _newsCarouselIndex;
-    private bool _newsCarouselHover;
-    private bool _newsCarouselAnimating;
+    private double _newsScrollOffset;
+    private double _newsManualRemaining;
+    private double _newsSequenceWidth;
+    private int _newsRepeatCount;
+    private bool _newsRenderingSubscribed;
 
     public MainWindow()
     {
@@ -67,18 +70,24 @@ public partial class MainWindow : Window
         {
             await InitializeAsync();
             _poll.Start();
-            _newsCarouselTimer.Start();
+
+            if (!_newsRenderingSubscribed)
+            {
+                CompositionTarget.Rendering += NewsCarousel_Rendering;
+                _newsRenderingSubscribed = true;
+            }
+            _newsFrameClock.Restart();
         };
         _poll.Tick += async (_, __) => await PollUpdatesAsync();
-        _newsCarouselTimer.Tick += (_, __) =>
-        {
-            if (!_newsCarouselHover && HomeView.Visibility == Visibility.Visible)
-                MoveNewsCarousel(1, automatic: true);
-        };
         Closed += (_, __) =>
         {
             _poll.Stop();
-            _newsCarouselTimer.Stop();
+            if (_newsRenderingSubscribed)
+            {
+                CompositionTarget.Rendering -= NewsCarousel_Rendering;
+                _newsRenderingSubscribed = false;
+            }
+            _newsFrameClock.Stop();
         };
     }
 
@@ -688,100 +697,128 @@ public partial class MainWindow : Window
             .ThenByDescending(n => n.Date)
             .ToList();
 
-        NewsStripTranslate.BeginAnimation(TranslateTransform.XProperty, null);
-        NewsStripTranslate.X = 0;
-        _newsCarouselIndex = 0;
-        _newsCarouselAnimating = false;
+        _newsScrollOffset = 0;
+        _newsManualRemaining = 0;
+        _newsSequenceWidth = _newsCarouselItems.Count * NewsCardStride;
+        _newsRepeatCount = 0;
 
-        // A duplicated sequence makes the last -> first transition seamless:
-        // the strip moves only one card, then silently normalizes to the first copy.
-        NewsList.ItemsSource = _newsCarouselItems.Count > 1
-            ? _newsCarouselItems.Concat(_newsCarouselItems).ToList()
-            : _newsCarouselItems;
+        EnsureNewsRepeats(force: true);
+        NewsViewport.ScrollToHorizontalOffset(0);
 
         var showArrows = _newsCarouselItems.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
         NewsPreviousButton.Visibility = showArrows;
         NewsNextButton.Visibility = showArrows;
+
+        _newsFrameClock.Restart();
     }
 
-    private void MoveNewsCarousel(int direction, bool automatic = false)
+    private void EnsureNewsRepeats(bool force = false)
     {
-        var count = _newsCarouselItems.Count;
-        if (count <= 1 || _newsCarouselAnimating) return;
-
-        if (!automatic)
+        if (_newsCarouselItems.Count == 0)
         {
-            _newsCarouselTimer.Stop();
-            _newsCarouselTimer.Start();
+            NewsList.ItemsSource = Array.Empty<NewsItem>();
+            _newsRepeatCount = 0;
+            return;
         }
 
-        if (direction < 0 && _newsCarouselIndex == 0)
+        var sequenceWidth = Math.Max(NewsCardStride, _newsCarouselItems.Count * NewsCardStride);
+        _newsSequenceWidth = sequenceWidth;
+
+        // Keep enough copies after the first sequence to fill any visible launcher width.
+        // The scroll offset is normalized inside the first sequence, so this guarantees
+        // there is always another identical sequence immediately to the right.
+        var viewportWidth = Math.Max(NewsCarousel.ActualWidth, 1400.0);
+        var repeats = Math.Max(3, (int)Math.Ceiling(viewportWidth / sequenceWidth) + 3);
+
+        if (!force && repeats == _newsRepeatCount) return;
+        _newsRepeatCount = repeats;
+
+        var repeated = new List<NewsItem>(_newsCarouselItems.Count * repeats);
+        for (var i = 0; i < repeats; i++)
+            repeated.AddRange(_newsCarouselItems);
+
+        NewsList.ItemsSource = repeated;
+
+        Dispatcher.BeginInvoke(() =>
         {
-            // Jump to the identical duplicated first card, then animate back by one card.
-            NewsStripTranslate.BeginAnimation(TranslateTransform.XProperty, null);
-            _newsCarouselIndex = count;
-            NewsStripTranslate.X = -count * NewsCardStride;
-        }
-
-        var targetIndex = direction >= 0 ? _newsCarouselIndex + 1 : _newsCarouselIndex - 1;
-        var normalizeAfter = direction >= 0 && targetIndex >= count;
-
-        AnimateNewsCarousel(targetIndex, normalizeAfter);
+            NormalizeNewsOffset();
+            NewsViewport.ScrollToHorizontalOffset(_newsScrollOffset);
+        }, DispatcherPriority.Loaded);
     }
 
-    private void AnimateNewsCarousel(int targetIndex, bool normalizeAfter)
+    private void NewsCarousel_Rendering(object? sender, EventArgs e)
     {
-        var from = NewsStripTranslate.X;
-        var to = -targetIndex * NewsCardStride;
-
-        var animation = new DoubleAnimation
+        if (!_newsFrameClock.IsRunning)
         {
-            From = from,
-            To = to,
-            Duration = TimeSpan.FromMilliseconds(560),
-            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
-            FillBehavior = FillBehavior.HoldEnd
-        };
+            _newsFrameClock.Restart();
+            return;
+        }
 
-        _newsCarouselAnimating = true;
-        animation.Completed += (_, __) =>
+        var elapsed = _newsFrameClock.Elapsed.TotalSeconds;
+        _newsFrameClock.Restart();
+
+        if (elapsed <= 0 || _newsCarouselItems.Count <= 1 || _newsSequenceWidth <= 0)
+            return;
+
+        // Prevent a large jump after minimize/suspend while keeping normal motion frame-rate independent.
+        var dt = Math.Min(elapsed, 0.05);
+        var delta = NewsContinuousPixelsPerSecond * dt;
+
+        if (Math.Abs(_newsManualRemaining) > 0.01)
         {
-            NewsStripTranslate.BeginAnimation(TranslateTransform.XProperty, null);
+            var eased = _newsManualRemaining * (1.0 - Math.Exp(-7.0 * dt));
+            var maxStep = NewsManualMaxPixelsPerSecond * dt;
+            var manualStep = Math.Clamp(eased, -maxStep, maxStep);
 
-            if (normalizeAfter)
-            {
-                _newsCarouselIndex = 0;
-                NewsStripTranslate.X = 0;
-            }
-            else
-            {
-                _newsCarouselIndex = targetIndex;
-                NewsStripTranslate.X = to;
-            }
+            if (Math.Abs(manualStep) > Math.Abs(_newsManualRemaining))
+                manualStep = _newsManualRemaining;
 
-            _newsCarouselAnimating = false;
-        };
+            _newsManualRemaining -= manualStep;
+            delta += manualStep;
+        }
+        else
+        {
+            _newsManualRemaining = 0;
+        }
 
-        NewsStripTranslate.BeginAnimation(
-            TranslateTransform.XProperty,
-            animation,
-            HandoffBehavior.SnapshotAndReplace);
+        _newsScrollOffset += delta;
+        NormalizeNewsOffset();
+        NewsViewport.ScrollToHorizontalOffset(_newsScrollOffset);
+    }
+
+    private void NormalizeNewsOffset()
+    {
+        if (_newsSequenceWidth <= 0)
+        {
+            _newsScrollOffset = 0;
+            return;
+        }
+
+        while (_newsScrollOffset >= _newsSequenceWidth)
+            _newsScrollOffset -= _newsSequenceWidth;
+
+        while (_newsScrollOffset < 0)
+            _newsScrollOffset += _newsSequenceWidth;
+    }
+
+    private void NewsCarousel_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        EnsureNewsRepeats();
     }
 
     private void NewsPreviousButton_Click(object sender, RoutedEventArgs e)
     {
         e.Handled = true;
-        MoveNewsCarousel(-1);
+        if (_newsCarouselItems.Count <= 1) return;
+        _newsManualRemaining -= NewsCardStride;
     }
 
     private void NewsNextButton_Click(object sender, RoutedEventArgs e)
     {
         e.Handled = true;
-        MoveNewsCarousel(1);
+        if (_newsCarouselItems.Count <= 1) return;
+        _newsManualRemaining += NewsCardStride;
     }
-
-    private void NewsCarousel_MouseEnter(object sender, MouseEventArgs e) => _newsCarouselHover = true;
-    private void NewsCarousel_MouseLeave(object sender, MouseEventArgs e) => _newsCarouselHover = false;
 
     private void GameCard_Click(object sender, RoutedEventArgs e) { if ((sender as Button)?.Tag is GameCatalogItem game) { GamesList.SelectedItem = game; ShowHome(); HomeView.ScrollToTop(); } }
     private void WorkshopNavButton_Click(object sender, RoutedEventArgs e)
