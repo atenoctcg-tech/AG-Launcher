@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "1.0.0.3",
+    "latestVersion": "1.0.0.5",
     "displayVersion": "1.0",
     "minimumVersion": "0.4.5",
     "mandatory": false,
     "autoUpdate": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip",
-    "sha256": "4d1914c766ce32ba9d6132a6ff3195ef68faedfd2acabb06d871ac47cadbb706",
-    "releaseNotes": "AG Launcher v1.0 update - smarter profile photo crop for arbitrary image resolutions with pan/zoom, plus in-launcher Latest News detail windows."
+    "sha256": "231afe643401367b7e8d00c9574e4e7d052ef0d2704c53afa697c41f4075c1e6",
+    "releaseNotes": "AG Launcher v1.0 update - Latest News now moves slowly and continuously as a seamless infinite carousel. The last post flows directly into the first, new posts join automatically, and manual arrows remain smooth without stopping the motion."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
@@ -23,6 +23,16 @@
     "defaultHeroSubtitle": "Discover new worlds. Build your library."
   },
   "news": [
+    {
+      "id": "f21f18ccb70844e78872e998d7356009",
+      "title": "Castle Survival v1.0.2 is available",
+      "summary": "Players can now only enter their own castles, and enemy castles take damage exclusively from frontal attacks. A new live TAB scoreboard is available in all game modes, featuring player-colored statistics, team-based rankings, and automatic MVP sorting by SCORE (1 XP per knight purchased, 2 XP per knight killed, 4 XP per player killed, 5 XP per castle eliminated, and 1 XP per 100 coins earned). Rankings update in real time and remain visible on the post-match results screen.",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
+      "linkUrl": "",
+      "date": "2026-10-08",
+      "pinned": true,
+      "visible": true
+    },
     {
       "id": "24ce46bf795048abb6143de5998d37d1",
       "title": "Castle Survival v1.0.1 is available",
