@@ -176,15 +176,84 @@
        </Border>
 
        <Grid Margin="2,24,2,12"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions><StackPanel><TextBlock Text="Latest news" FontSize="18" FontWeight="SemiBold"/><TextBlock Text="Image posts, releases and development updates" Foreground="#6F7884" FontSize="13"/></StackPanel><TextBlock Grid.Column="1" Text="ATENOCT GAMES" Foreground="#4E5661" FontSize="13" VerticalAlignment="Bottom"/></Grid>
-       <ListBox x:Name="NewsList" Background="Transparent" BorderThickness="0" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-        <ListBox.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ListBox.ItemsPanel>
-        <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="0"/><Setter Property="Margin" Value="0,0,14,14"/></Style></ListBox.ItemContainerStyle>
-        <ListBox.ItemTemplate><DataTemplate><Border Style="{StaticResource ZoomPanel}" Width="325" Height="340" Background="{DynamicResource CardBrush}" BorderBrush="#252C35" BorderThickness="1" CornerRadius="16" ClipToBounds="True" Tag="{Binding}" Cursor="Hand" MouseLeftButtonUp="NewsCard_MouseLeftButtonUp"><Grid>
-         <Grid.RowDefinitions><RowDefinition Height="160"/><RowDefinition/></Grid.RowDefinitions>
-         <Border Background="#161C23"><Grid><Image Source="{Binding ImageUrl}" Stretch="UniformToFill"/><Border Background="#D012171D" CornerRadius="999" Padding="8,4" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Visibility="{Binding Pinned, Converter={StaticResource BoolToVisibility}}"><TextBlock Text="FEATURED" FontSize="13"/></Border></Grid></Border>
-         <Grid Grid.Row="1" Margin="14,11"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions><TextBlock Text="{Binding Date}" Foreground="#5D6672" FontSize="13"/><TextBlock Grid.Row="1" Text="{Binding Title}" FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap" Margin="0,6,0,0"/><TextBlock Grid.Row="2" Text="{Binding Summary}" Foreground="#7C8591" FontSize="13" TextWrapping="Wrap" Margin="0,5,0,0"/><TextBlock Grid.Row="3" Text="Read post  →" Foreground="#E7ECF3" FontSize="13" Margin="0,8,0,0" HorizontalAlignment="Left"/></Grid>
-        </Grid></Border></DataTemplate></ListBox.ItemTemplate>
-       </ListBox>
+       <Grid x:Name="NewsCarousel" Height="340" ClipToBounds="True" MouseEnter="NewsCarousel_MouseEnter" MouseLeave="NewsCarousel_MouseLeave">
+        <Grid.Resources>
+         <Style x:Key="NewsArrowButton" TargetType="Button">
+          <Setter Property="Width" Value="52"/>
+          <Setter Property="Height" Value="52"/>
+          <Setter Property="Foreground" Value="#F4F7FB"/>
+          <Setter Property="Background" Value="#B00A0E14"/>
+          <Setter Property="BorderBrush" Value="#D9FFFFFF"/>
+          <Setter Property="BorderThickness" Value="2"/>
+          <Setter Property="FontSize" Value="31"/>
+          <Setter Property="FontWeight" Value="Light"/>
+          <Setter Property="Cursor" Value="Hand"/>
+          <Setter Property="Padding" Value="0,-4,0,0"/>
+          <Setter Property="Template">
+           <Setter.Value>
+            <ControlTemplate TargetType="Button">
+             <Border x:Name="ArrowCircle" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="28">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+             </Border>
+             <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+               <Setter TargetName="ArrowCircle" Property="Background" Value="#E01B2735"/>
+               <Setter Property="RenderTransform">
+                <Setter.Value><ScaleTransform ScaleX="1.06" ScaleY="1.06"/></Setter.Value>
+               </Setter>
+               <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+               <Setter Property="RenderTransform">
+                <Setter.Value><ScaleTransform ScaleX="0.96" ScaleY="0.96"/></Setter.Value>
+               </Setter>
+               <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+              </Trigger>
+             </ControlTemplate.Triggers>
+            </ControlTemplate>
+           </Setter.Value>
+          </Setter>
+         </Style>
+        </Grid.Resources>
+
+        <Border x:Name="NewsViewport" Background="Transparent" ClipToBounds="True">
+         <ItemsControl x:Name="NewsList" HorizontalAlignment="Left">
+          <ItemsControl.RenderTransform>
+           <TranslateTransform x:Name="NewsStripTranslate" X="0"/>
+          </ItemsControl.RenderTransform>
+          <ItemsControl.ItemsPanel>
+           <ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+           <DataTemplate>
+            <Border Style="{StaticResource ZoomPanel}" Width="325" Height="340" Margin="0,0,14,0" Background="{DynamicResource CardBrush}" BorderBrush="#252C35" BorderThickness="1" CornerRadius="16" ClipToBounds="True" Tag="{Binding}" Cursor="Hand" MouseLeftButtonUp="NewsCard_MouseLeftButtonUp">
+             <Grid>
+              <Grid.RowDefinitions><RowDefinition Height="160"/><RowDefinition/></Grid.RowDefinitions>
+              <Border Background="#161C23">
+               <Grid>
+                <Image Source="{Binding ImageUrl}" Stretch="UniformToFill"/>
+                <Border Background="#D012171D" CornerRadius="999" Padding="8,4" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Visibility="{Binding Pinned, Converter={StaticResource BoolToVisibility}}">
+                 <TextBlock Text="FEATURED" FontSize="13"/>
+                </Border>
+               </Grid>
+              </Border>
+              <Grid Grid.Row="1" Margin="14,11">
+               <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+               <TextBlock Text="{Binding Date}" Foreground="#5D6672" FontSize="13"/>
+               <TextBlock Grid.Row="1" Text="{Binding Title}" FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap" Margin="0,6,0,0"/>
+               <TextBlock Grid.Row="2" Text="{Binding Summary}" Foreground="#7C8591" FontSize="13" TextWrapping="Wrap" Margin="0,5,0,0"/>
+               <TextBlock Grid.Row="3" Text="Read post  →" Foreground="#E7ECF3" FontSize="13" Margin="0,8,0,0" HorizontalAlignment="Left"/>
+              </Grid>
+             </Grid>
+            </Border>
+           </DataTemplate>
+          </ItemsControl.ItemTemplate>
+         </ItemsControl>
+        </Border>
+
+        <Button x:Name="NewsPreviousButton" Style="{StaticResource NewsArrowButton}" Content="‹" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0" Panel.ZIndex="5" Click="NewsPreviousButton_Click"/>
+        <Button x:Name="NewsNextButton" Style="{StaticResource NewsArrowButton}" Content="›" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,8,0" Panel.ZIndex="5" Click="NewsNextButton_Click"/>
+       </Grid>
        <TextBlock Text="Explore our games" FontSize="24" FontWeight="SemiBold" Margin="0,24,0,18"/>
        <ItemsControl x:Name="GameCards"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate>
         <Border Style="{StaticResource ZoomPanel}" Width="250" Height="430" Margin="0,0,18,18" Background="{DynamicResource CardBrush}" CornerRadius="14" ClipToBounds="True">
