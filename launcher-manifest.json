@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "1.0.0.3",
+    "latestVersion": "1.0.0.4",
     "displayVersion": "1.0",
     "minimumVersion": "0.4.5",
     "mandatory": false,
     "autoUpdate": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip",
-    "sha256": "4d1914c766ce32ba9d6132a6ff3195ef68faedfd2acabb06d871ac47cadbb706",
-    "releaseNotes": "AG Launcher v1.0 update - smarter profile photo crop for arbitrary image resolutions with pan/zoom, plus in-launcher Latest News detail windows."
+    "sha256": "45d6868265ed6e4ec34d877dd9f65ac0a7bfc90756c864e61563cf0f4cf0bcd3",
+    "releaseNotes": "AG Launcher v1.0 update - Latest News now slides smoothly one card at a time automatically, with manual previous/next arrow controls."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
