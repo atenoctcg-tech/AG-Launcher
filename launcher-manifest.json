@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "1.0.0.5",
+    "latestVersion": "1.0.0.6",
     "displayVersion": "1.0",
     "minimumVersion": "0.4.5",
     "mandatory": false,
     "autoUpdate": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip",
-    "sha256": "231afe643401367b7e8d00c9574e4e7d052ef0d2704c53afa697c41f4075c1e6",
-    "releaseNotes": "AG Launcher v1.0 update - Latest News now moves slowly and continuously as a seamless infinite carousel. The last post flows directly into the first, new posts join automatically, and manual arrows remain smooth without stopping the motion."
+    "sha256": "84ae1503dd441ffe926ef89cd7cfaffec4c3548310cc68953a238d8b9cd4b571",
+    "releaseNotes": "AG Launcher v1.0 update - faster game downloads with up to 8 parallel HTTP range segments, 1 MB buffers, automatic fallback, live MB/s speed and ETA."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
