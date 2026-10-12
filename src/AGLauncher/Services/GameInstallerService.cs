@@ -379,6 +379,8 @@ public sealed class GameInstallerService
 
         for (var attempt = 1; attempt <= 3; attempt++)
         {
+            long creditedBytes = 0;
+
             try
             {
                 if (File.Exists(destination))
@@ -422,6 +424,7 @@ public sealed class GameInstallerService
 
                     await destinationStream.WriteAsync(buffer.AsMemory(0, read));
                     written += read;
+                    creditedBytes += read;
                     reporter.AddBytes(read);
                 }
 
@@ -433,6 +436,9 @@ public sealed class GameInstallerService
             }
             catch (Exception ex)
             {
+                if (creditedBytes > 0)
+                    reporter.AddBytes(-creditedBytes);
+
                 lastError = ex;
                 if (attempt < 3)
                     await Task.Delay(250 * attempt);
@@ -550,7 +556,7 @@ public sealed class GameInstallerService
             _progress = progress;
         }
 
-        public void AddBytes(int bytes)
+        public void AddBytes(long bytes)
         {
             Interlocked.Add(ref _downloadedBytes, bytes);
             Report(force: false);
@@ -594,7 +600,7 @@ public sealed class GameInstallerService
                     ? $"Downloading {_packageName}... {speedMb:0.0} MB/s{etaText}"
                     : $"Downloading {_packageName}...";
 
-                _progress.Report((Math.Clamp(overall, 0, 0.92), status));
+                _progress.Report((Math.Clamp(overall, 0, 1), status));
             }
         }
 
