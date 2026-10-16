@@ -24,6 +24,26 @@
   },
   "news": [
     {
+      "id": "f6a6bfa100f544e889ea7daa4235250c",
+      "title": "NEW MAP! Riftwood Valley",
+      "summary": "More realism, more details, more gaming ! releasing in v1.0.5",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/news/20261016-174614-photo_2026-10-16_22-03-50.jpg",
+      "linkUrl": "",
+      "date": "2026-10-16",
+      "pinned": true,
+      "visible": true
+    },
+    {
+      "id": "2d2c6adc0b1e41b8a4d7d1c9a8dacdf6",
+      "title": "Castle Survival v1.0.5 is available",
+      "summary": "added NEW map, new functions. knights now attacking smartly, added BONUS TASK ! some bugs are fixed!",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/news/20261016-175810-image.png",
+      "linkUrl": "",
+      "date": "2026-10-16",
+      "pinned": true,
+      "visible": true
+    },
+    {
       "id": "7d4e403e75484f159f9f5bb54994d488",
       "title": "Castle Survival v1.0.4 is available",
       "summary": "Castle Survival v1.0.4 brings a massive new update with a completely redesigned game interface, creative medieval-themed menus, player profiles, unique nicknames, Player IDs, XP progression, and a new leveling system! Complete daily XP tasks, unlock exclusive Knight Skins including White, Black, and legendary Gold armor, track your achievements, and build your reputation on the battlefield! Explore the Friends List, online player status, multiplayer invitations, global leaderboards, and improved lobby management with public and private rooms, Quick Play, and room codes. Enjoy competitive multiplayer battles across LAST STAND and 3v3 TEAM maps, featuring 6-player matches, 8 intense rounds, real-time TAB scoreboards, MVP rankings, and detailed player statistics! Experience voice chat, improved FPS performance, smarter AI bots, realistic footsteps, silent movement, improved combat mechanics, and enhanced gameplay. Customize your knight, complete challenges, earn XP, climb the ranks, and dominate the battlefield! YOUR KNIGHT. YOUR CASTLE. YOUR LEGEND. Castle Survival v1.0.4 \u2014 Developed by ATENOCT GAMES!",
