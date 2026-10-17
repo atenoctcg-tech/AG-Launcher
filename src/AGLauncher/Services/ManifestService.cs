@@ -35,7 +35,25 @@ public sealed class ManifestService
 
     public async Task<GameManifest> LoadGameAsync(GameCatalogItem game)
     {
-        if (!string.IsNullOrWhiteSpace(game.ManifestUrl)) return await LoadGameAsync(game.ManifestUrl);
+        if (!string.IsNullOrWhiteSpace(game.ManifestUrl))
+        {
+            var manifest = await LoadGameAsync(game.ManifestUrl);
+            // The catalog is authoritative for release discovery. Avoid letting an
+            // outdated static JSON disable dynamic latest-release resolution.
+            if (!string.IsNullOrWhiteSpace(game.ReleaseRepo))
+            {
+                manifest.ReleaseRepo = game.ReleaseRepo;
+                if (!string.IsNullOrWhiteSpace(game.ReleaseAssetPattern))
+                    manifest.ReleaseAssetPattern = game.ReleaseAssetPattern;
+                try { await ApplyLatestGitHubReleaseAsync(manifest); }
+                catch
+                {
+                    // The static package remains an installable fallback, updated
+                    // separately in manifests/castle-survival.json.
+                }
+            }
+            return manifest;
+        }
         var manifest = new GameManifest { Id = game.Id, ReleaseRepo = game.ReleaseRepo, ReleaseAssetPattern = game.ReleaseAssetPattern, Executable = game.Executable, InstallFolder = string.IsNullOrWhiteSpace(game.InstallFolder) ? game.Id : game.InstallFolder };
         await ApplyLatestGitHubReleaseAsync(manifest);
         return manifest;
@@ -69,7 +87,8 @@ public sealed class ManifestService
         if (repo.Split('/').Length != 2)
             throw new InvalidDataException("releaseRepo must be in owner/repository format.");
 
-        var json = await _http.GetStringAsync($"https://api.github.com/repos/{repo}/releases/latest");
+        var json = await _http.GetStringAsync(
+            CacheBust($"https://api.github.com/repos/{repo}/releases/latest"));
         using var doc = JsonDocument.Parse(json);
         var root = doc.RootElement;
 
