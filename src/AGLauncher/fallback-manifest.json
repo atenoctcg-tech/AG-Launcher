@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "1.0.0.6",
+    "latestVersion": "1.0.0.7",
     "minimumVersion": "0.4.5",
     "mandatory": false,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip",
     "sha256": "",
-    "releaseNotes": "AG Launcher v1.0 update - faster game downloads with up to 8 parallel HTTP range segments, 1 MB buffers, automatic single-stream fallback, live MB/s speed and ETA.",
+    "releaseNotes": "AG Launcher v1.0 maintenance: new installations resolve the latest published Castle Survival release, with an updated offline-compatible game package fallback.",
     "autoUpdate": true,
     "displayVersion": "1.0"
   },
