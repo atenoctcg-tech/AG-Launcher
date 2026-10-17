@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
   "launcher": {
-    "latestVersion": "1.0.0.6",
+    "latestVersion": "1.0.0.7",
     "displayVersion": "1.0",
     "minimumVersion": "0.4.5",
     "mandatory": false,
     "autoUpdate": true,
     "packageUrl": "https://github.com/atenoctcg-tech/AG-Launcher/releases/download/v1.0/AG.Launcher.zip",
-    "sha256": "84ae1503dd441ffe926ef89cd7cfaffec4c3548310cc68953a238d8b9cd4b571",
-    "releaseNotes": "AG Launcher v1.0 update - faster game downloads with up to 8 parallel HTTP range segments, 1 MB buffers, automatic fallback, live MB/s speed and ETA."
+    "sha256": "5dbe44ac9be1fbd6912deb7f5698889798e42fccfc92abbae4ac6d8487271bb1",
+    "releaseNotes": "AG Launcher v1.0: Fixed fresh Castle Survival installations selecting obsolete v0.8.2. Installer now prioritizes current GitHub Releases; static fallback updated to v1.0.5."
   },
   "socials": {
     "website": "https://atenoctcg-tech.github.io/AG-Launcher/",
-    "discord": "https://discord.gg/5fHTWg39",
+    "discord": "https://discord.com/invite/t8arUtkU",
     "telegram": "https://t.me/castlesurvival",
     "youTube": "https://www.youtube.com/@atenoct",
     "support": "https://t.me/castle_survival"
