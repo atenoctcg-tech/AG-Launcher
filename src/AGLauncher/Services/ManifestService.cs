@@ -37,22 +37,22 @@ public sealed class ManifestService
     {
         if (!string.IsNullOrWhiteSpace(game.ManifestUrl))
         {
-            var manifest = await LoadGameAsync(game.ManifestUrl);
+            var remoteManifest = await LoadGameAsync(game.ManifestUrl);
             // The catalog is authoritative for release discovery. Avoid letting an
             // outdated static JSON disable dynamic latest-release resolution.
             if (!string.IsNullOrWhiteSpace(game.ReleaseRepo))
             {
-                manifest.ReleaseRepo = game.ReleaseRepo;
+                remoteManifest.ReleaseRepo = game.ReleaseRepo;
                 if (!string.IsNullOrWhiteSpace(game.ReleaseAssetPattern))
-                    manifest.ReleaseAssetPattern = game.ReleaseAssetPattern;
-                try { await ApplyLatestGitHubReleaseAsync(manifest); }
+                    remoteManifest.ReleaseAssetPattern = game.ReleaseAssetPattern;
+                try { await ApplyLatestGitHubReleaseAsync(remoteManifest); }
                 catch
                 {
                     // The static package remains an installable fallback, updated
                     // separately in manifests/castle-survival.json.
                 }
             }
-            return manifest;
+            return remoteManifest;
         }
         var manifest = new GameManifest { Id = game.Id, ReleaseRepo = game.ReleaseRepo, ReleaseAssetPattern = game.ReleaseAssetPattern, Executable = game.Executable, InstallFolder = string.IsNullOrWhiteSpace(game.InstallFolder) ? game.Id : game.InstallFolder };
         await ApplyLatestGitHubReleaseAsync(manifest);
