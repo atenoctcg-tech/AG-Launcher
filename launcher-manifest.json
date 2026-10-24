@@ -46,7 +46,7 @@
     {
       "id": "7d4e403e75484f159f9f5bb54994d488",
       "title": "Castle Survival v1.0.4 is available",
-      "summary": "Castle Survival v1.0.4 brings a massive new update with a completely redesigned game interface, creative medieval-themed menus, player profiles, unique nicknames, Player IDs, XP progression, and a new leveling system! Complete daily XP tasks, unlock exclusive Knight Skins including White, Black, and legendary Gold armor, track your achievements, and build your reputation on the battlefield! Explore the Friends List, online player status, multiplayer invitations, global leaderboards, and improved lobby management with public and private rooms, Quick Play, and room codes. Enjoy competitive multiplayer battles across LAST STAND and 3v3 TEAM maps, featuring 6-player matches, 8 intense rounds, real-time TAB scoreboards, MVP rankings, and detailed player statistics! Experience voice chat, improved FPS performance, smarter AI bots, realistic footsteps, silent movement, improved combat mechanics, and enhanced gameplay. Customize your knight, complete challenges, earn XP, climb the ranks, and dominate the battlefield! YOUR KNIGHT. YOUR CASTLE. YOUR LEGEND. Castle Survival v1.0.4 — Developed by ATENOCT GAMES!",
+      "summary": "Castle Survival v1.0.4 brings a massive new update with a completely redesigned game interface, creative medieval-themed menus, player profiles, unique nicknames, Player IDs, XP progression, and a new leveling system! Complete daily XP tasks, unlock exclusive Knight Skins including White, Black, and legendary Gold armor, track your achievements, and build your reputation on the battlefield! Explore the Friends List, online player status, multiplayer invitations, global leaderboards, and improved lobby management with public and private rooms, Quick Play, and room codes. Enjoy competitive multiplayer battles across LAST STAND and 3v3 TEAM maps, featuring 6-player matches, 8 intense rounds, real-time TAB scoreboards, MVP rankings, and detailed player statistics! Experience voice chat, improved FPS performance, smarter AI bots, realistic footsteps, silent movement, improved combat mechanics, and enhanced gameplay. Customize your knight, complete challenges, earn XP, climb the ranks, and dominate the battlefield! YOUR KNIGHT. YOUR CASTLE. YOUR LEGEND. Castle Survival v1.0.4 \u2014 Developed by ATENOCT GAMES!",
       "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/news/20261012-092359-V1-0-4.jpg",
       "linkUrl": "",
       "date": "2026-10-12",
@@ -160,9 +160,9 @@
     },
     {
       "id": "viking-sea-raid",
-      "name": "Viking Sea Raid",
+      "name": "Viking Sea Raid (Alpha)",
       "description": "",
-      "status": "Available",
+      "status": "ALPHA",
       "pricing": "free",
       "visible": true,
       "featured": true,
