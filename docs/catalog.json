@@ -157,6 +157,29 @@
       "productId": "",
       "purchaseUrl": "",
       "requiresOwnership": false
+    },
+    {
+      "id": "viking-sea-raid",
+      "name": "Viking Sea Raid",
+      "description": "",
+      "status": "Available",
+      "pricing": "free",
+      "visible": true,
+      "featured": true,
+      "sortOrder": 2,
+      "bannerUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/games/20261024-131901-Pasted-image.png",
+      "animatedBannerUrl": "",
+      "libraryImageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/library/20261024-131929-image.png",
+      "iconUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/icons/20261024-132156-image.png",
+      "manifestUrl": "",
+      "websiteUrl": "",
+      "releaseRepo": "",
+      "releaseAssetPattern": "^(?!.*[Ss]ource).*\\.zip$",
+      "executable": "Game.exe",
+      "installFolder": "",
+      "productId": "",
+      "purchaseUrl": "",
+      "requiresOwnership": false
     }
   ],
   "workshop": [
