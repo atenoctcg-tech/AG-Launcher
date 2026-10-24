@@ -171,7 +171,7 @@
       "animatedBannerUrl": "",
       "libraryImageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/library/20261024-131929-image.png",
       "iconUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/icons/20261024-132156-image.png",
-      "manifestUrl": "",
+      "manifestUrl": "https://github.com/atenoctcg-tech/AG-Launcher/blob/main/manifests/viking-sea-raid.json",
       "websiteUrl": "",
       "releaseRepo": "",
       "releaseAssetPattern": "^(?!.*[Ss]ource).*\\.zip$",
