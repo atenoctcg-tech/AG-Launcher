@@ -1,0 +1,15 @@
+{
+  "id": "viking-sea-raid",
+  "version": "0.1",
+  "executable": "Viking Sea Raid.exe",
+  "installFolder": "Viking Sea Raid",
+  "releaseRepo": "atenoctcg-tech/Viking-Sea-Raid-Releases",
+  "releaseAssetPattern": "^(?!.*[Ss]ource)VikingSeaRaid.*\\.zip$",
+  "packages": [
+    {
+      "name": "VikingSeaRaid.v0.1.zip",
+      "url": "https://github.com/atenoctcg-tech/Viking-Sea-Raid-Releases/releases/download/Viking.v0.1/VikingSeaRaid.v0.1.zip",
+      "sha256": "a3203a152913c56fc5b32ee647463ddad717870552d37816c1f89482b8ca5462"
+    }
+  ]
+}
