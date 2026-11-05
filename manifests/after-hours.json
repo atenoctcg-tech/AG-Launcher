@@ -1,0 +1,9 @@
+{
+  "id": "after-hours",
+  "version": "0.5",
+  "executable": "Game.exe",
+  "installFolder": "After Hours",
+  "releaseRepo": "atenoctcg-tech/After-Hours-Releases",
+  "releaseAssetPattern": "^(?!.*[Ss]ource).*\\.zip$",
+  "packages": []
+}
