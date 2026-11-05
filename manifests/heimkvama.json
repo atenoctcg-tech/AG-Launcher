@@ -5,5 +5,11 @@
   "installFolder": "Heimkvama",
   "releaseRepo": "atenoctcg-tech/Heimkvama-Releases",
   "releaseAssetPattern": "^HEIMKVAMA\\.v[^/]+\\.zip$",
-  "packages": []
+  "packages": [
+    {
+      "name": "HEIMKVAMA.v1.0.zip",
+      "url": "https://github.com/atenoctcg-tech/Heimkvama-Releases/releases/download/v1.0/HEIMKVAMA.v1.0.zip",
+      "sha256": "5e9acfc972f2a22db782b648b531e9c224818b4e0ba90f9ba684645aea188a4f"
+    }
+  ]
 }
