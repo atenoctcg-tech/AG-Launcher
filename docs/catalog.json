@@ -44,46 +44,6 @@
       "visible": true
     },
     {
-      "id": "7d4e403e75484f159f9f5bb54994d488",
-      "title": "Castle Survival v1.0.4 is available",
-      "summary": "Castle Survival v1.0.4 brings a massive new update with a completely redesigned game interface, creative medieval-themed menus, player profiles, unique nicknames, Player IDs, XP progression, and a new leveling system! Complete daily XP tasks, unlock exclusive Knight Skins including White, Black, and legendary Gold armor, track your achievements, and build your reputation on the battlefield! Explore the Friends List, online player status, multiplayer invitations, global leaderboards, and improved lobby management with public and private rooms, Quick Play, and room codes. Enjoy competitive multiplayer battles across LAST STAND and 3v3 TEAM maps, featuring 6-player matches, 8 intense rounds, real-time TAB scoreboards, MVP rankings, and detailed player statistics! Experience voice chat, improved FPS performance, smarter AI bots, realistic footsteps, silent movement, improved combat mechanics, and enhanced gameplay. Customize your knight, complete challenges, earn XP, climb the ranks, and dominate the battlefield! YOUR KNIGHT. YOUR CASTLE. YOUR LEGEND. Castle Survival v1.0.4 \u2014 Developed by ATENOCT GAMES!",
-      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/news/20261012-092359-V1-0-4.jpg",
-      "linkUrl": "",
-      "date": "2026-10-12",
-      "pinned": true,
-      "visible": true
-    },
-    {
-      "id": "e252d8f304714220b829cbaa3557197b",
-      "title": "Castle Survival v1.0.3 is available",
-      "summary": "1) Added Voice chat to the game. 2) Optimized gameplay now you can play with better FPS. 3) Added Jump sound. Enjoy!",
-      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
-      "linkUrl": "",
-      "date": "2026-10-08",
-      "pinned": true,
-      "visible": true
-    },
-    {
-      "id": "f21f18ccb70844e78872e998d7356009",
-      "title": "Castle Survival v1.0.2 is available",
-      "summary": "Players can now only enter their own castles, and enemy castles take damage exclusively from frontal attacks. A new live TAB scoreboard is available in all game modes, featuring player-colored statistics, team-based rankings, and automatic MVP sorting by SCORE (1 XP per knight purchased, 2 XP per knight killed, 4 XP per player killed, 5 XP per castle eliminated, and 1 XP per 100 coins earned). Rankings update in real time and remain visible on the post-match results screen.",
-      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
-      "linkUrl": "",
-      "date": "2026-10-08",
-      "pinned": true,
-      "visible": true
-    },
-    {
-      "id": "24ce46bf795048abb6143de5998d37d1",
-      "title": "Castle Survival v1.0.1 is available",
-      "summary": "1) Added Sell item by press Right Mouse and then X button. 2) Added Footsteps, press ctrl to silent moving  3) Now BOTs playing more smarter . Enjoy!",
-      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/castle-survival.png",
-      "linkUrl": "",
-      "date": "2026-10-07",
-      "pinned": true,
-      "visible": true
-    },
-    {
       "id": "47f6a86c936949ee87f027661b63c1e3",
       "title": "SILENT ATTACK!",
       "summary": "Silent footsteps let you sneak up behind enemies for a surprise attack!",
