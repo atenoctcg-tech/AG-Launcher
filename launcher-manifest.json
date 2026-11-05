@@ -24,6 +24,16 @@
   },
   "news": [
     {
+      "id": "f211402706104cafa086947aeb7c00cd",
+      "title": "The horses are ours!",
+      "summary": "The fight at the Skarholm stable is over. The guards have fallen, the gate is open, and the horses are safe with Ketil and his crew. But the road ahead is long, and the raid has only just begun.",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/news/20261105-122653-skarholm.png",
+      "linkUrl": "",
+      "date": "2026-11-05",
+      "pinned": true,
+      "visible": true
+    },
+    {
       "id": "f6a6bfa100f544e889ea7daa4235250c",
       "title": "NEW MAP! Riftwood Valley",
       "summary": "More realism, more details, more gaming ! releasing in v1.0.5",
@@ -157,7 +167,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/manifests/after-hours.json",
       "websiteUrl": "",
       "releaseRepo": "atenoctcg-tech/After-Hours-Releases",
-      "releaseAssetPattern": "^AFTER_HOURS\\.v[^/]+\\.zip$",
+      "releaseAssetPattern": "^AFTER_HOURS\\.v[^/]\u002B\\.zip$",
       "executable": "AFTER_HOURS.exe",
       "installFolder": "After Hours",
       "productId": "",
@@ -180,8 +190,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/manifests/heimkvama.json",
       "websiteUrl": "",
       "releaseRepo": "atenoctcg-tech/Heimkvama-Releases",
-      "releaseAssetPattern": "^HEIMKVAMA\\.v[^/]+\\.zip$",
-      "executable": "HEIMKVÁMA.exe",
+      "releaseAssetPattern": "^HEIMKVAMA\\.v[^/]\u002B\\.zip$",
+      "executable": "HEIMKV\u00C1MA.exe",
       "installFolder": "Heimkvama",
       "productId": "",
       "purchaseUrl": "",
