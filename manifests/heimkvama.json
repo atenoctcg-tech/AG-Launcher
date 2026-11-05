@@ -1,9 +1,9 @@
 {
   "id": "heimkvama",
   "version": "1.0",
-  "executable": "Game.exe",
+  "executable": "HEIMKVÁMA.exe",
   "installFolder": "Heimkvama",
   "releaseRepo": "atenoctcg-tech/Heimkvama-Releases",
-  "releaseAssetPattern": "^(?!.*[Ss]ource).*\\.zip$",
+  "releaseAssetPattern": "^HEIMKVAMA\\.v[^/]+\\.zip$",
   "packages": []
 }
