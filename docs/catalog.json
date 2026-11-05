@@ -24,6 +24,16 @@
   },
   "news": [
     {
+      "id": "02bea1ac26704117a6671313798c1c4b",
+      "title": "HEIMKVAMA v1.0 is out now !",
+      "summary": "HEIMKVAMA is a story-driven 2D pixel-art game set in the Viking Age. To pay off his debt, Ketil joins a raid and promises his son he will come home. Across seven chapters, raid villages, fight with axe and shield, ride through hostile lands, sneak into a castle and escape your pursuers. Every step takes him further from home. Will he keep his promise? Languages: Uzbek, English, Russian. Developer: Kinglant Games.",
+      "imageUrl": "https://raw.githubusercontent.com/atenoctcg-tech/AG-Launcher/main/docs/media/news/20261105-123235-Poster.png",
+      "linkUrl": "",
+      "date": "2026-11-05",
+      "pinned": true,
+      "visible": true
+    },
+    {
       "id": "f211402706104cafa086947aeb7c00cd",
       "title": "The horses are ours!",
       "summary": "The fight at the Skarholm stable is over. The guards have fallen, the gate is open, and the horses are safe with Ketil and his crew. But the road ahead is long, and the raid has only just begun.",
