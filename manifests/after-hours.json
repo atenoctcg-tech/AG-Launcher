@@ -5,5 +5,11 @@
   "installFolder": "After Hours",
   "releaseRepo": "atenoctcg-tech/After-Hours-Releases",
   "releaseAssetPattern": "^AFTER_HOURS\\.v[^/]+\\.zip$",
-  "packages": []
+  "packages": [
+    {
+      "name": "AFTER_HOURS.v0.5.5.zip",
+      "url": "https://github.com/atenoctcg-tech/After-Hours-Releases/releases/download/v0.5/AFTER_HOURS.v0.5.5.zip",
+      "sha256": "a1df4e7bb4c1a6dbcb206135e96efcc2d5afb05f28315216b6468250960531be"
+    }
+  ]
 }
